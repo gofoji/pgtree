@@ -26,7 +26,7 @@ This has a dependency on the postgres source code (compile with C) and can impac
 ### Parsing SQL
 
 ```go
-sql := "select * from foo"
+sql := "select * from foo left join bar on foo.id = bar.id;"
 root, err := pgtree.Parse(sql)
 if err != nil {
     return err
