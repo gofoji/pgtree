@@ -43,8 +43,10 @@ func TestParseAndPretty(t *testing.T) {
 				t.Errorf("Error: %v\ngot:\n`%v`\nwant:\n`%v`", err, got, string(want))
 				return
 			}
-			if got != string(want) {
-				t.Errorf("Mismatch diff:\n`%v`", diff(got, string(want)))
+			w := string(want)
+			if got != w {
+				t.Errorf("Mismatch diff:\n`%v`", diff(got, w))
+				t.Errorf("got:\n`%v`\nwant:\n`%v`", got, w)
 				return
 			}
 		})
@@ -56,7 +58,9 @@ func diff(got, want string) string {
 	gg := strings.Split(got, "\n")
 	ww := strings.Split(want, "\n")
 	for i, g := range gg {
-		if ww[i] != g {
+		if i >= len(ww) {
+			result = append(result, "<<<<<", "`"+g+"`", ">>>>>", "=====")
+		} else if ww[i] != g {
 			result = append(result, "<<<<<", "`"+g+"`", ">>>>>", "`"+ww[i]+"`", "=====")
 		} else {
 			result = append(result, g)

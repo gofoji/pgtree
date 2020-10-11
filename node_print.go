@@ -332,8 +332,7 @@ func (p *printer) printFloat(node *Float) string {
 }
 
 func (p *printer) printBitString(node *BitString) string {
-	// TODO: Does this need to be encoded?
-	return node.Str
+	return "B'" + node.Str[1:] + "'"
 }
 
 func (p *printer) printNull(_ *Null) string {
@@ -374,8 +373,11 @@ func (p *printer) printCreateStmt(node *CreateStmt) string {
 	b.Append(sub)
 
 	if len(node.InhRelations) > 0 {
+		if p.pretty {
+			b.LF()
+		}
 		b.keyword("INHERITS")
-		b.Append(p.printSubClause(node.InhRelations))
+		b.Append(p.printSubClauseInline(node.InhRelations))
 	}
 	opts := p.printNodes(node.Options, ",")
 	if opts != "" {
@@ -1451,4 +1453,20 @@ func (p *printer) printSqlvalueFunction(node *SqlvalueFunction) string {
 
 func (p *printer) printIndexElem(node *IndexElem) string {
 	return node.Name
+}
+
+func (p *printer) printCurrentOfExpr(node *CurrentOfExpr) string {
+	return p.keyword("CURRENT OF ") + node.CursorName
+}
+
+func (p *printer) printRangeFunction(node *RangeFunction) string {
+	b := p.builder()
+	b.Append(p.printNodes(node.Functions, ", "))
+	b.keywordIf("WITH ORDINALITY", node.Ordinality)
+	if node.Alias != nil {
+		b.keyword("AS")
+		b.Append(p.printAlias(node.Alias))
+	}
+	b.Append(p.printSubClauseInline(node.Coldeflist))
+	return b.Join(" ")
 }

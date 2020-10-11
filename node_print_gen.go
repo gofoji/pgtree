@@ -1341,11 +1341,6 @@ func (p *printer) printSetToDefault(node *SetToDefault) string {
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCurrentOfExpr(node *CurrentOfExpr) string {
-	p.addError(errors.New("CurrentOfExpr not implemented"))
-	return "NOT IMPLEMENTED"
-}
-
 func (p *printer) printNextValueExpr(node *NextValueExpr) string {
 	p.addError(errors.New("NextValueExpr not implemented"))
 	return "NOT IMPLEMENTED"
@@ -1848,11 +1843,6 @@ func (p *printer) printCollateClause(node *CollateClause) string {
 
 func (p *printer) printWindowDef(node *WindowDef) string {
 	p.addError(errors.New("WindowDef not implemented"))
-	return "NOT IMPLEMENTED"
-}
-
-func (p *printer) printRangeFunction(node *RangeFunction) string {
-	p.addError(errors.New("RangeFunction not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
