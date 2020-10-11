@@ -7,9 +7,18 @@ import (
 "fmt"
 "reflect"
 "strings"
+"unsafe"
 )
 
+// Thanks to zerolog for this utility
+func isNilValue(i interface{}) bool {
+return (*[2]uintptr)(unsafe.Pointer(&i))[1] == 0
+}
+
 func (p *printer) printNode(node Node) (result string) {
+if node == nil || isNilValue(node) {
+return
+}
 p.level += 1
 defer func() {
 if p.debug {
@@ -23,18 +32,14 @@ p.debugOutput += fmt.Sprintln( pad + name + " = `" + strings.ReplaceAll(result, 
 }
 p.level -= 1
 }()
+
 switch n := node.(type) {
-case nil:
 {{- range .Messages }}
 	{{- if not (eq .MessageName "Node") }}
 		case *{{ pascal .MessageName }}:
-		if n == nil {
-		return
-		}
 		return p.print{{ pascal .MessageName }}(n)
 	{{- end }}
 {{- end }}
-
 
 case *Root:
 return p.printNode(n.Node)

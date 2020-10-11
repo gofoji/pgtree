@@ -1,6 +1,9 @@
 package pgtree
 
-import "strings"
+import (
+	"strings"
+	"unicode"
+)
 
 type sqlBuilder struct {
 	opt FormatOptions
@@ -37,15 +40,25 @@ func endsWithSpace(s string) bool {
 	return asciiSpace[i] == 1
 }
 
+func startsWithSpace(s string) bool {
+	l := len(s)
+	if l == 0 {
+		return false
+	}
+	i := s[0]
+	return asciiSpace[i] == 1
+}
+
 func (c sqlBuilder) Join(sep string) string {
-	switch len(c.ss) {
+	lenSS := len(c.ss)
+	switch lenSS {
 	case 0:
 		return ""
 	case 1:
 		return c.ss[0]
 	}
-	n := len(sep) * (len(c.ss) - 1)
-	for i := 0; i < len(c.ss); i++ {
+	n := len(sep) * (lenSS - 1)
+	for i := 0; i < lenSS; i++ {
 		n += len(c.ss[i])
 	}
 
@@ -57,7 +70,7 @@ func (c sqlBuilder) Join(sep string) string {
 		if s == "" {
 			continue
 		}
-		if !endsWithSpace(last) {
+		if !endsWithSpace(last) && !startsWithSpace(s) {
 			b.WriteString(sep)
 		}
 		last = s
@@ -76,17 +89,41 @@ func (c *sqlBuilder) keyword(s string) {
 	}
 	c.Append(strings.ToUpper(s))
 }
+
 func (c *sqlBuilder) keywordIf(s string, b bool) {
 	if b {
 		c.keyword(s)
 	}
 }
 
+func (c *sqlBuilder) keywordIfElse(t, f string, b bool) {
+	if b {
+		c.keyword(t)
+	} else {
+		c.keyword(f)
+	}
+}
+
+func HasUpper(s string) bool {
+	for _, r := range s {
+		if unicode.IsUpper(r) {
+			return true
+		}
+	}
+	return false
+}
+
 func RequiresQuote(s string) bool {
+	if strings.HasPrefix(s, `"`) {
+		return false
+	}
 	if strings.Contains(s, "-") {
 		return true
 	}
-	return false
+	if strings.Contains(s, ".") {
+		return true
+	}
+	return HasUpper(s)
 }
 
 func (c *sqlBuilder) identifier(s ...string) {

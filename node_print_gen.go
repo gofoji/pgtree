@@ -7,9 +7,18 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"unsafe"
 )
 
+// Thanks to zerolog for this utility
+func isNilValue(i interface{}) bool {
+	return (*[2]uintptr)(unsafe.Pointer(&i))[1] == 0
+}
+
 func (p *printer) printNode(node Node) (result string) {
+	if node == nil || isNilValue(node) {
+		return
+	}
 	p.level += 1
 	defer func() {
 		if p.debug {
@@ -1307,18 +1316,8 @@ func (p *printer) printMinMaxExpr(node *MinMaxExpr) string {
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printSqlvalueFunction(node *SqlvalueFunction) string {
-	p.addError(errors.New("SQLValueFunction not implemented"))
-	return "NOT IMPLEMENTED"
-}
-
 func (p *printer) printXmlExpr(node *XmlExpr) string {
 	p.addError(errors.New("XmlExpr not implemented"))
-	return "NOT IMPLEMENTED"
-}
-
-func (p *printer) printNullTest(node *NullTest) string {
-	p.addError(errors.New("NullTest not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
@@ -1472,11 +1471,6 @@ func (p *printer) printTransactionStmt(node *TransactionStmt) string {
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printViewStmt(node *ViewStmt) string {
-	p.addError(errors.New("ViewStmt not implemented"))
-	return "NOT IMPLEMENTED"
-}
-
 func (p *printer) printLoadStmt(node *LoadStmt) string {
 	p.addError(errors.New("LoadStmt not implemented"))
 	return "NOT IMPLEMENTED"
@@ -1499,11 +1493,6 @@ func (p *printer) printDropdbStmt(node *DropdbStmt) string {
 
 func (p *printer) printVacuumStmt(node *VacuumStmt) string {
 	p.addError(errors.New("VacuumStmt not implemented"))
-	return "NOT IMPLEMENTED"
-}
-
-func (p *printer) printExplainStmt(node *ExplainStmt) string {
-	p.addError(errors.New("ExplainStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
@@ -1879,11 +1868,6 @@ func (p *printer) printRangeTableFunc(node *RangeTableFunc) string {
 
 func (p *printer) printRangeTableFuncCol(node *RangeTableFuncCol) string {
 	p.addError(errors.New("RangeTableFuncCol not implemented"))
-	return "NOT IMPLEMENTED"
-}
-
-func (p *printer) printIndexElem(node *IndexElem) string {
-	p.addError(errors.New("IndexElem not implemented"))
 	return "NOT IMPLEMENTED"
 }
 

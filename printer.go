@@ -6,11 +6,12 @@ import (
 )
 
 type FormatOptions struct {
-	pretty       bool
-	Padding      string
-	LowerKeyword bool
-	UpperType    bool
-	SimpleLen    int
+	pretty                 bool
+	OneResultColumnPerLine bool
+	Padding                string
+	LowerKeyword           bool
+	UpperType              bool
+	SimpleLen              int
 }
 type printer struct {
 	FormatOptions
@@ -44,10 +45,11 @@ func Print(root Node) (string, error) {
 
 func PrettyPrint(root Node) (string, error) {
 	opt := FormatOptions{
-		pretty:       true,
-		Padding:      "    ",
-		LowerKeyword: false,
-		SimpleLen:    50,
+		pretty:                 true,
+		OneResultColumnPerLine: true,
+		Padding:                "    ",
+		LowerKeyword:           false,
+		SimpleLen:              50,
 	}
 	p := printer{FormatOptions: opt}
 
@@ -112,21 +114,21 @@ func (p *printer) padLines(s string, i int) string {
 }
 
 func (p *printer) printNodes(list Nodes, sep string) string {
-	result := sqlBuilder{}
+	b := p.builder()
 	for i := range list {
-		result.Append(p.printNode(list[i]))
+		b.Append(p.printNode(list[i]))
 	}
 
-	return result.Join(sep)
+	return b.Join(sep)
 }
 
 func (p *printer) printArr(list Nodes) []string {
-	result := sqlBuilder{}
+	b := p.builder()
 	for i := range list {
-		result.Append(p.printNode(list[i]))
+		b.Append(p.printNode(list[i]))
 	}
 
-	return result.Lines()
+	return b.Lines()
 }
 
 func trims(ss []string) []string {

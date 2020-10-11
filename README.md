@@ -2,9 +2,11 @@
 
 Builds on the excellent work of [libpq_query](https://github.com/lfittl/libpg_query) to use the postgres (v12) source code to parse the SQL.  
 
-This package builds an AST designed to make walking and mutating easier.  Several basic helper functions are also included.  
+This package builds an AST designed to make walking and mutating easier. Several basic helper functions are also
+included.
 
-In addition, it was built with a focus on ease of adding features and not performance.  
+In addition, it was built with a focus on ease of adding features and not performance. The is no intention to optimize
+for zero copy or minimum allocations. Do *NOT* use pgtree in a performance critical process.
 
 ## Why
 
@@ -194,10 +196,106 @@ sql := "SELECT * FROM foo LEFT JOIN bar ON foo.id = bar.id"
 s, _ := pgtree.JSON(sql)
 println(s)
 ```
-Output
+
+Output (pretty printed for readability)
+
 ```json
-[{"RawStmt":{"stmt":{"SelectStmt":{"targetList":[{"ResTarget":{"val":{"ColumnRef":{"fields":[{"A_Star":{}}],"location":7}},"location":7}}],"fromClause":[{"JoinExpr":{"jointype":"JOIN_LEFT","larg":{"RangeVar":{"relname":"foo","inh":true,"relpersistence":"p","location":14}},"rarg":{"RangeVar":{"relname":"bar","inh":true,"relpersistence":"p","location":28}},"quals":{"A_Expr":{"name":[{"String":{"str":"="}}],"lexpr":{"ColumnRef":{"fields":[{"String":{"str":"foo"}},{"String":{"str":"id"}}],"location":35}},"rexpr":{"ColumnRef":{"fields":[{"String":{"str":"bar"}},{"String":{"str":"id"}}],"location":44}},"location":42}}}}]}}}}]
-```
+[
+  {
+    "RawStmt": {
+      "stmt": {
+        "SelectStmt": {
+          "targetList": [
+            {
+              "ResTarget": {
+                "val": {
+                  "ColumnRef": {
+                    "fields": [
+                      {
+                        "A_Star": {}
+                      }
+                    ],
+                    "location": 7
+                  }
+                },
+                "location": 7
+              }
+            }
+          ],
+          "fromClause": [
+            {
+              "JoinExpr": {
+                "jointype": "JOIN_LEFT",
+                "larg": {
+                  "RangeVar": {
+                    "relname": "foo",
+                    "inh": true,
+                    "relpersistence": "p",
+                    "location": 14
+                  }
+                },
+                "rarg": {
+                  "RangeVar": {
+                    "relname": "bar",
+                    "inh": true,
+                    "relpersistence": "p",
+                    "location": 28
+                  }
+                },
+                "quals": {
+                  "A_Expr": {
+                    "name": [
+                      {
+                        "String": {
+                          "str": "="
+                        }
+                      }
+                    ],
+                    "lexpr": {
+                      "ColumnRef": {
+                        "fields": [
+                          {
+                            "String": {
+                              "str": "foo"
+                            }
+                          },
+                          {
+                            "String": {
+                              "str": "id"
+                            }
+                          }
+                        ],
+                        "location": 35
+                      }
+                    },
+                    "rexpr": {
+                      "ColumnRef": {
+                        "fields": [
+                          {
+                            "String": {
+                              "str": "bar"
+                            }
+                          },
+                          {
+                            "String": {
+                              "str": "id"
+                            }
+                          }
+                        ],
+                        "location": 44
+                      }
+                    },
+                    "location": 42
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+]```
 
 ### Notes
 
