@@ -1336,11 +1336,6 @@ func (p *printer) printCoerceToDomainValue(node *CoerceToDomainValue) string {
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printSetToDefault(node *SetToDefault) string {
-	p.addError(errors.New("SetToDefault not implemented"))
-	return "NOT IMPLEMENTED"
-}
-
 func (p *printer) printNextValueExpr(node *NextValueExpr) string {
 	p.addError(errors.New("NextValueExpr not implemented"))
 	return "NOT IMPLEMENTED"
@@ -1538,11 +1533,6 @@ func (p *printer) printAlterRoleStmt(node *AlterRoleStmt) string {
 
 func (p *printer) printDropRoleStmt(node *DropRoleStmt) string {
 	p.addError(errors.New("DropRoleStmt not implemented"))
-	return "NOT IMPLEMENTED"
-}
-
-func (p *printer) printLockStmt(node *LockStmt) string {
-	p.addError(errors.New("LockStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
@@ -1908,11 +1898,6 @@ func (p *printer) printCreateOpClassItem(node *CreateOpClassItem) string {
 
 func (p *printer) printTableLikeClause(node *TableLikeClause) string {
 	p.addError(errors.New("TableLikeClause not implemented"))
-	return "NOT IMPLEMENTED"
-}
-
-func (p *printer) printLockingClause(node *LockingClause) string {
-	p.addError(errors.New("LockingClause not implemented"))
 	return "NOT IMPLEMENTED"
 }
 

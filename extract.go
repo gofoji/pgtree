@@ -109,12 +109,9 @@ func findReference(parent Node) *ColumnRef {
 	return nil
 }
 
-const defaultParamToken = "@"
+const paramToken = "@"
 
-func ExtractParams(node Node, paramToken string) Params {
-	if paramToken == "" {
-		paramToken = defaultParamToken
-	}
+func ExtractParams(node Node) Params {
 	var result Params
 	Walk(node, nil, func(node Node, stack []Node, v Visitor) Visitor {
 		switch n := node.(type) {

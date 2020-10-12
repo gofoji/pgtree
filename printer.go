@@ -108,7 +108,7 @@ func (p *printer) pad(i int) string {
 func (p *printer) padLines(s string, i int) string {
 	ss := strings.Split(s, "\n")
 	for j := range ss {
-		ss[j] = p.indent(ss[j], i)
+		ss[j] = strings.TrimRight(p.indent(ss[j], i), " ")
 	}
 	return strings.Join(ss, "\n")
 }

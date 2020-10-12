@@ -86,7 +86,7 @@ Output
 ```go
 sql := "select * from foo where id = @myParam"
 root, _ := pgtree.Parse(sql)
-params := pgtree.ExtractParams(root, "@")
+params := pgtree.ExtractParams(root)
 fmt.Println(params)
 ```
 Output
@@ -99,7 +99,7 @@ The returned `QueryParam` object includes a reference to the referenced column (
 Building on the above example you can automatically replace all the instances of the named parameters with the place holder syntax `$#`
 
 ```go
-pgtree.ReplaceParams(&root, params, "@")
+pgtree.ReplaceParams(&root, params)
 outSQL, _ := pgtree.Print(root)
 fmt.Println(outSQL)
 ```
@@ -295,7 +295,8 @@ Output (pretty printed for readability)
       }
     }
   }
-]```
+]
+```
 
 ### Notes
 
@@ -304,8 +305,18 @@ Currently this uses the V12 branch of libpg_query which seems to fail for most c
 parse_tree.proto pulled from [libpg_query PR67](https://github.com/lfittl/libpg_query/pull/67)
 
 # TODO
+
 - [ ] Finish moving all node printers to builder with formatter options
 - [ ] review all STMT printers for collapse function
 - [ ] Define additional formatting options
 - [ ] Test automation
+- [ ] Add verbose option to inject long names
+- [ ] Add concise option to convert syntax shorthands. Example:
 
+```sql
+CREATE TABLE table_name AS 
+TABLE table1;
+-- Parser expands to:
+CREATE TABLE table_name AS
+SELECT * FROM table1;
+```

@@ -1,0 +1,3 @@
+CREATE TYPE MOOD AS ENUM ('sad', 'ok', 'happy');
+ALTER TYPE MOOD ADD VALUE 'unknown';
+ALTER TYPE MOOD ADD VALUE IF NOT EXISTS 'unknown';

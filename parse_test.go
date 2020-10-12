@@ -66,6 +66,9 @@ func diff(got, want string) string {
 			result = append(result, g)
 		}
 	}
+	if len(gg) < len(ww) {
+		result = append(result, "<<<<<", ">>>>>", "`"+strings.Join(ww[len(gg):], "\n")+"`", "=====")
+	}
 	return strings.Join(result, "\n")
 }
 
@@ -74,31 +77,41 @@ func FileWithExt(path, ext string) string {
 }
 
 func testParse(sql string) (string, error) {
-	var s2 string
-	var n2 pgtree.Node
+	var prettyConcise string
+	var conciseNode pgtree.Node
 
-	n, err := pgtree.Parse(sql)
+	// We validate the parsing and printing by:
+	// first Parse the input SQL
+	// then Print it (concise)
+	// then Parse the concise (this ensures the generated syntax is valid)
+	// then Pretty Print
+	// then compare to the Pretty Print of the original parse
+	inputNode, err := pgtree.Parse(sql)
 	if err != nil {
 		return "", err
 	}
 
-	s, err := pgtree.PrettyPrint(n)
+	concise, err := pgtree.Print(inputNode)
 	if err != nil {
 		return "", fmt.Errorf("pretty:%w", err)
 	}
 
-	n2, err = pgtree.Parse(s)
+	conciseNode, err = pgtree.Parse(concise)
 	if err != nil {
-		return s, fmt.Errorf("re-parse:%w", err)
+		return "", fmt.Errorf("re-parse:%w", err)
 	}
 
-	s2, err = pgtree.PrettyPrint(n2)
+	prettyConcise, err = pgtree.PrettyPrint(conciseNode)
 	if err != nil {
-		return s, fmt.Errorf("re-pretty:%w", err)
+		return "", fmt.Errorf("re-pretty:%w", err)
+	}
+	prettyInput, err := pgtree.PrettyPrint(inputNode)
+	if err != nil {
+		return "", fmt.Errorf("re-pretty:%w", err)
 	}
 
-	if s != s2 {
-		return s, errors.New("re-parse mismatch")
+	if prettyInput != prettyConcise {
+		return "", errors.New("re-parse mismatch")
 	}
-	return s, nil
+	return prettyConcise, nil
 }
