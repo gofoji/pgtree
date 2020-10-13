@@ -118,6 +118,7 @@ The first parameter is the current `Node` being visited, the `stack` provides th
 The returned value of the `Walk` is the visitor, passing back the input continues the traversal as usual, returning `nil` will stop walking the current branch at that node.  This is used in the example below, as there is no reason to continue walking after finding a `RangeVar`.  You can also return a different visitor func to change the downstream processing in more complex scenarios.
 
 ####Example
+
 ```go
 func ExtractTables(node Node) []TableRef {
 	var result []TableRef

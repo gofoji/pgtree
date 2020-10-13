@@ -1,5 +1,5 @@
 SELECT DISTINCT ON (bar)
-    2.3 AS monkey, NULL, B'101', 1, 2::INT, b.goo::TEXT[], 'aaa', CURRENT_DATABASE(), "CURRENT_USER"(), u.*
+    2.3 AS monkey, NULL, B'101', 1, 2::INT, b.goo::TEXT[], 'aaa', CURRENT_DATABASE(), "CURRENT_USER"(), u.*,count(distinct f1)
   FROM
       UNNEST(ARRAY ['a','b','c','d','e','f']) WITH ORDINALITY          u
       LEFT JOIN b
@@ -13,6 +13,7 @@ SELECT DISTINCT ON (bar)
       LEFT OUTER JOIN (VALUES (1, 'one'), (2, 'two'), (3, 'three')) AS t (num, letter)
                       USING (num)
  WHERE
+       fooey > ALL(select * from foobar) OR
       EXISTS(SELECT * FROM foo2) AND b.x IS NOT NULL AND b.y IS NULL
    OR ((f.sum > 100 OR f.sum = 20 OR f.sum < 1) AND b.bool)
    OR $1 != f."XXX" AND test.foo = ANY ($2::BIGSERIAL[])

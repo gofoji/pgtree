@@ -1436,16 +1436,6 @@ func (p *printer) printDoStmt(node *DoStmt) string {
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printRuleStmt(node *RuleStmt) string {
-	p.addError(errors.New("RuleStmt not implemented"))
-	return "NOT IMPLEMENTED"
-}
-
-func (p *printer) printNotifyStmt(node *NotifyStmt) string {
-	p.addError(errors.New("NotifyStmt not implemented"))
-	return "NOT IMPLEMENTED"
-}
-
 func (p *printer) printListenStmt(node *ListenStmt) string {
 	p.addError(errors.New("ListenStmt not implemented"))
 	return "NOT IMPLEMENTED"
@@ -1568,16 +1558,6 @@ func (p *printer) printAlterRoleSetStmt(node *AlterRoleSetStmt) string {
 
 func (p *printer) printCreateConversionStmt(node *CreateConversionStmt) string {
 	p.addError(errors.New("CreateConversionStmt not implemented"))
-	return "NOT IMPLEMENTED"
-}
-
-func (p *printer) printCreateCastStmt(node *CreateCastStmt) string {
-	p.addError(errors.New("CreateCastStmt not implemented"))
-	return "NOT IMPLEMENTED"
-}
-
-func (p *printer) printCreateOpClassStmt(node *CreateOpClassStmt) string {
-	p.addError(errors.New("CreateOpClassStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
@@ -1766,11 +1746,6 @@ func (p *printer) printAlterPolicyStmt(node *AlterPolicyStmt) string {
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCreateTransformStmt(node *CreateTransformStmt) string {
-	p.addError(errors.New("CreateTransformStmt not implemented"))
-	return "NOT IMPLEMENTED"
-}
-
 func (p *printer) printCreateAmStmt(node *CreateAmStmt) string {
 	p.addError(errors.New("CreateAmStmt not implemented"))
 	return "NOT IMPLEMENTED"
@@ -1831,11 +1806,6 @@ func (p *printer) printCollateClause(node *CollateClause) string {
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printWindowDef(node *WindowDef) string {
-	p.addError(errors.New("WindowDef not implemented"))
-	return "NOT IMPLEMENTED"
-}
-
 func (p *printer) printRangeTableSample(node *RangeTableSample) string {
 	p.addError(errors.New("RangeTableSample not implemented"))
 	return "NOT IMPLEMENTED"
@@ -1891,11 +1861,6 @@ func (p *printer) printAccessPriv(node *AccessPriv) string {
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCreateOpClassItem(node *CreateOpClassItem) string {
-	p.addError(errors.New("CreateOpClassItem not implemented"))
-	return "NOT IMPLEMENTED"
-}
-
 func (p *printer) printTableLikeClause(node *TableLikeClause) string {
 	p.addError(errors.New("TableLikeClause not implemented"))
 	return "NOT IMPLEMENTED"
@@ -1918,11 +1883,6 @@ func (p *printer) printInferClause(node *InferClause) string {
 
 func (p *printer) printOnConflictClause(node *OnConflictClause) string {
 	p.addError(errors.New("OnConflictClause not implemented"))
-	return "NOT IMPLEMENTED"
-}
-
-func (p *printer) printRoleSpec(node *RoleSpec) string {
-	p.addError(errors.New("RoleSpec not implemented"))
 	return "NOT IMPLEMENTED"
 }
 

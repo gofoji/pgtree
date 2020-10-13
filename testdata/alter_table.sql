@@ -7,6 +7,10 @@ ALTER TABLE IF EXISTS ONLY table_name
     ALTER column_name6 TYPE INT4,
     ALTER column_name6 SET DEFAULT 12,
     ALTER column_name7 DROP DEFAULT;
+alter table foo rename to bar;
+alter table foo rename column bar to bar2;
+alter table foobar rename CONSTRAINT con_1 to con_2;
+alter table fooey set schema new_schema;
 
 -- ALTER [ COLUMN ] column_name DROP DEFAULT
 --     ALTER [ COLUMN ] column_name { SET | DROP } NOT NULL

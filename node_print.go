@@ -140,8 +140,16 @@ func (p *printer) printSelectStmtInternal(node *SelectStmt) string {
 		}
 
 		if node.IntoClause != nil {
+			if p.pretty {
+				b.LF()
+			}
 			b.keyword("INTO")
-			b.Append(p.printNode(node.IntoClause))
+			sub := p.printNode(node.IntoClause)
+			if p.pretty {
+				b.LF()
+				sub = p.padLines(sub, 1)
+			}
+			b.Append(sub)
 		}
 	}
 
@@ -229,6 +237,13 @@ func (p *printer) printSelectStmtInternal(node *SelectStmt) string {
 		b.Append(p.printNodes(node.LockingClause, " "))
 	}
 
+	if len(node.WindowClause) > 0 {
+		if p.pretty {
+			b.LF()
+		}
+		b.keyword("WINDOW")
+		b.Append(p.printNodes(node.WindowClause, " "))
+	}
 	return b.Join(" ")
 }
 
@@ -248,14 +263,33 @@ func (p *printer) printAExpr(node *AExpr) string {
 		} else {
 			op = "NOT IN"
 		}
-		return fmt.Sprintf("%s %s (%s)", left, op, right)
+		return fmt.Sprintf("%s %s (%s)", left, p.keyword(op), right)
 	case AEXPR_LIKE:
 		if op == "~~" {
 			op = "LIKE"
 		} else {
 			op = "NOT LIKE"
 		}
-		return fmt.Sprintf("%s %s %s", left, op, right)
+		return fmt.Sprintf("%s %s %s", left, p.keyword(op), right)
+	case AEXPR_ILIKE:
+		if op == "~~*" {
+			op = "ILIKE"
+		} else {
+			op = "NOT ILIKE"
+		}
+		return fmt.Sprintf("%s %s %s", left, p.keyword(op), right)
+	case AEXPR_SIMILAR:
+		fc, ok := node.Rexpr.(*FuncCall)
+		if ok {
+			name := p.printNodes(fc.Funcname, ".")
+			if name == "pg_catalog.similar_escape" && len(fc.Args) == 2 {
+				if p.printNode(fc.Args[1]) == "NULL" {
+					right = p.printNode(fc.Args[0])
+				}
+			}
+		}
+		return fmt.Sprintf("%s %s %s", left, p.keyword("SIMILAR TO"), right)
+
 	case AEXPR_BETWEEN:
 		//name := p.printNode(node.Name)
 		l, ok := node.Rexpr.(*List)
@@ -295,10 +329,6 @@ func (p *printer) printRangeVarInternal(node *RangeVar, ignoreInh bool) string {
 }
 
 func (p *printer) printAlias(node *Alias) string {
-	if node == nil {
-		return ""
-	}
-
 	if len(node.Colnames) > 0 {
 		columns := p.printNodes(node.Colnames, ", ")
 		return fmt.Sprintf("%s(%s)", node.Aliasname, columns)
@@ -372,11 +402,10 @@ func (p *printer) printCreateStmt(node *CreateStmt) string {
 	if node.IfNotExists {
 		b.keyword("IF NOT EXISTS")
 	}
-	b.Append(p.printNode(node.Relation))
+	name := p.printNode(node.Relation)
 
 	if node.OfTypename != nil {
-		b.keyword("OF")
-		b.identifier(p.printTypeName(node.OfTypename))
+		name = name + p.keyword(" OF ") + p.identifier(p.printTypeName(node.OfTypename))
 	}
 
 	sub := p.printSubClause(node.TableElts)
@@ -384,7 +413,7 @@ func (p *printer) printCreateStmt(node *CreateStmt) string {
 		// Empty table definitions are valid
 		sub = "()"
 	}
-	b.Append(sub)
+	b.Append(name + sub)
 
 	if len(node.InhRelations) > 0 {
 		if p.pretty {
@@ -425,6 +454,9 @@ func (p *printer) printDeleteStmt(node *DeleteStmt) string {
 	if u != "" {
 		b.keyword("USING")
 		b.Append(u)
+		if p.pretty {
+			b.LF()
+		}
 	}
 
 	sub := p.printNode(node.WhereClause)
@@ -498,6 +530,11 @@ func (p *printer) printTypeName(node *TypeName) string {
 	if name == "interval" && len(node.Typmods) > 0 {
 		i := getInt32(node.Typmods[0])
 		b.keyword(IntervalModType(i).String())
+		if len(node.Typmods) > 1 {
+			// Precision
+			i := getInt32(node.Typmods[1])
+			b.Append("(" + strconv.Itoa(int(i)) + ")")
+		}
 	}
 
 	return b.Join(" ")
@@ -598,12 +635,12 @@ func (p *printer) printConstraint(node *Constraint) string {
 	}
 
 	b.Append(pre + p.printNode(node.RawExpr) + post)
-	b.Append(p.printSubClauseInline(node.Keys))
-	b.Append(p.printSubClauseInline(node.FkAttrs))
+	b.Append(p.printSubClauseInlineSpace(node.Keys))
+	b.Append(p.printSubClauseInlineSpace(node.FkAttrs))
 
 	if node.Pktable != nil {
 		b.keyword("REFERENCES")
-		b.Append(p.printNode(node.Pktable), p.printSubClauseInline(node.PkAttrs))
+		b.Append(p.printNode(node.Pktable), p.printSubClauseInlineSpace(node.PkAttrs))
 	}
 
 	if node.SkipValidation {
@@ -661,7 +698,7 @@ func (p *printer) printFuncCall(node *FuncCall) string {
 	}
 	result := fmt.Sprintf("%s(%s%s)", name, distinct, args)
 	if node.Over != nil {
-		result += " " + p.printNode(node.Over)
+		result += p.keyword(" OVER ") + p.printNode(node.Over)
 	}
 	return result
 }
@@ -680,7 +717,7 @@ func (p *printer) printCreateSchemaStmt(node *CreateSchemaStmt) string {
 		b.Append(p.printNode(node.Authrole))
 	}
 	if len(node.SchemaElts) > 0 {
-		b.Append(p.printNodes(node.SchemaElts, " "))
+		b.Append(p.printSubClauseCustom("", "", " ", node.SchemaElts, true))
 	}
 	return b.Join(" ")
 }
@@ -725,6 +762,9 @@ func (p *printer) printCoalesceExpr(node *CoalesceExpr) string {
 }
 
 func stripQuote(s string) string {
+	if s == "" {
+		return ""
+	}
 	if s[0] == '"' {
 		return s[1 : len(s)-1]
 	}
@@ -766,118 +806,18 @@ func (p *printer) printCreateEnumStmt(node *CreateEnumStmt) string {
 	return b.Join(" ")
 }
 
-func (e ObjectType) TypeName() string {
-	switch e {
-	case OBJECT_ACCESS_METHOD:
-		return "ACCESS METHOD"
-	case OBJECT_AGGREGATE:
-		return "AGGREGATE"
-	case OBJECT_AMOP:
-		return "AMOP"
-	case OBJECT_AMPROC:
-		return "AMPROC"
-	case OBJECT_ATTRIBUTE:
-		return "ATTRIBUTE"
-	case OBJECT_CAST:
-		return "CAST"
-	case OBJECT_COLUMN:
-		return "COLUMN"
-	case OBJECT_COLLATION:
-		return "COLLATION"
-	case OBJECT_CONVERSION:
-		return "CONVERSION"
-	case OBJECT_DATABASE:
-		return "DATABASE"
-	case OBJECT_DEFAULT:
-		return "DEFAULT"
-	case OBJECT_DEFACL:
-		return "DEFAULT ACL"
-	case OBJECT_DOMAIN:
-		return "DOMAIN"
-	case OBJECT_DOMCONSTRAINT:
-		return "DOMCONSTRAINT"
-	case OBJECT_EVENT_TRIGGER:
-		return "EVENT TRIGGER"
-	case OBJECT_EXTENSION:
-		return "EXTENSION"
-	case OBJECT_FDW:
-		return "FOREIGN DATA WRAPPER"
-	case OBJECT_FOREIGN_SERVER:
-		return "SERVER"
-	case OBJECT_FOREIGN_TABLE:
-		return "FOREIGN TABLE"
-	case OBJECT_FUNCTION:
-		return "FUNCTION"
-	case OBJECT_INDEX:
-		return "INDEX"
-	case OBJECT_LANGUAGE:
-		return "LANGUAGE"
-	case OBJECT_LARGEOBJECT:
-		return "LARGEOBJECT"
-	case OBJECT_MATVIEW:
-		return "MATERIALIZED VIEW"
-	case OBJECT_OPCLASS:
-		return "OPERATOR CLASS"
-	case OBJECT_OPERATOR:
-		return "OPERATOR"
-	case OBJECT_OPFAMILY:
-		return "OPERATOR FAMILY"
-	case OBJECT_POLICY:
-		return "POLICY"
-	case OBJECT_PROCEDURE:
-		return "PROCEDURE"
-	case OBJECT_PUBLICATION:
-		return "PUBLICATION"
-	case OBJECT_PUBLICATION_REL:
-		return "OBJECT_PUBLICATION_REL"
-	case OBJECT_ROLE:
-		return "ROLE"
-	case OBJECT_ROUTINE:
-		return "ROUTINE"
-	case OBJECT_RULE:
-		return "RULE"
-	case OBJECT_SCHEMA:
-		return "SCHEMA"
-	case OBJECT_SEQUENCE:
-		return "SEQUENCE"
-	case OBJECT_SUBSCRIPTION:
-		return "SUBSCRIPTION"
-	case OBJECT_STATISTIC_EXT:
-		return "STATISTIC"
-	case OBJECT_TABCONSTRAINT:
-		return "TABLE CONSTRAINT"
-	case OBJECT_TABLE:
-		return "TABLE"
-	case OBJECT_TABLESPACE:
-		return "TABLESPACE"
-	case OBJECT_TRANSFORM:
-		return "TRANSFORM"
-	case OBJECT_TRIGGER:
-		return "TRIGGER"
-	case OBJECT_TSCONFIGURATION:
-		return "TEXT SEARCH CONFIGURATION"
-	case OBJECT_TSDICTIONARY:
-		return "TEXT SEARCH DICTIONARY"
-	case OBJECT_TSPARSER:
-		return "TEXT SEARCH PARSER"
-	case OBJECT_TSTEMPLATE:
-		return "TEXT SEARCH TEMPLATE"
-	case OBJECT_TYPE:
-		return "TYPE"
-	case OBJECT_USER_MAPPING:
-		return "USER MAPPING"
-	case OBJECT_VIEW:
-		return "VIEW"
-	}
-	return fmt.Sprintf("ObjectType(%d)", e)
-}
-
 func (p *printer) printCommentStmt(node *CommentStmt) string {
 	b := p.builder()
 	b.keyword("COMMENT ON")
-
 	b.Append(node.Objtype.TypeName())
-	b.identifier(strings.Split(p.printNode(node.Object), ",")...)
+	switch n := node.Object.(type) {
+	case *String:
+		b.Append(n.Str)
+	case *TypeName:
+		b.Append(p.printTypeName(n))
+	case *List:
+		b.identifier(p.printArr(n.Items)...)
+	}
 	b.keyword("IS")
 	b.Append(quote(node.Comment))
 	return b.Join(" ")
@@ -908,6 +848,10 @@ func (p *printer) printSubClauseInline(nodes Nodes) string {
 	return p.printSubClauseCustom("(", ")", ",", nodes, false)
 }
 
+func (p *printer) printSubClauseInlineSpace(nodes Nodes) string {
+	return p.printSubClauseCustom("(", ")", ", ", nodes, false)
+}
+
 func (p *printer) printCompositeTypeStmt(node *CompositeTypeStmt) string {
 	b := p.builder()
 	b.keyword("CREATE TYPE")
@@ -919,8 +863,7 @@ func (p *printer) printCompositeTypeStmt(node *CompositeTypeStmt) string {
 
 func (p *printer) printCommonTableExpr(node *CommonTableExpr) string {
 	b := p.builder()
-	b.identifier(node.Ctename)
-	b.Append(p.printSubClauseInline(node.Aliascolnames))
+	b.Append(p.identifier(node.Ctename) + p.printSubClauseInlineSpace(node.Aliascolnames))
 	b.keyword("AS")
 	div := ""
 	if p.pretty {
@@ -946,13 +889,7 @@ func (p *printer) printAlterTableStmt(node *AlterTableStmt) string {
 	}
 	b.keywordIf("IF EXISTS", node.MissingOk)
 	b.Append(p.printRangeVar(node.Relation))
-	sep := ", "
-	if p.pretty {
-		sep = ",\n"
-		b.LF()
-	}
-	b.Append(p.printNodes(node.Cmds, sep))
-
+	b.Append(p.printSubClauseCustom("", "", ",", node.Cmds, true))
 	return b.Join(" ")
 }
 
@@ -978,6 +915,9 @@ var alterTableCommand = map[AlterTableType]CommandOption{
 	AT_DropConstraint:            {"DROP CONSTRAINT", ""},
 	AT_AlterColumnType:           {"ALTER", "TYPE"},
 	AT_AlterColumnGenericOptions: {"ALTER", "OPTIONS"},
+	AT_ChangeOwner:               {"OWNER TO", ""},
+	AT_SetRelOptions:             {"SET", ""},
+	AT_ResetRelOptions:           {"RESET", ""},
 }
 
 func (p *printer) printAlterTableCmd(node *AlterTableCmd) string {
@@ -992,6 +932,9 @@ func (p *printer) printAlterTableCmd(node *AlterTableCmd) string {
 
 	def := p.printNode(node.Def)
 
+	if node.Newowner != nil {
+		b.Append(node.Newowner.Rolename)
+	}
 	if node.Subtype == AT_ColumnDefault && def == "" {
 		c.option = "DROP DEFAULT"
 
@@ -1024,6 +967,8 @@ func (p *printer) printRenameStmt(node *RenameStmt) string {
 		b.Append(p.printNode(node.Relation))
 	case OBJECT_TABLESPACE, OBJECT_RULE, OBJECT_TRIGGER:
 		b.Append(node.Subname)
+		b.keyword("ON")
+		b.Append(p.printRangeVar(node.Relation))
 	}
 
 	b.keyword("RENAME")
@@ -1031,6 +976,7 @@ func (p *printer) printRenameStmt(node *RenameStmt) string {
 	switch node.RenameType {
 	case OBJECT_TABCONSTRAINT, OBJECT_DOMCONSTRAINT:
 		b.keyword("CONSTRAINT")
+		b.Append(node.Subname)
 	case OBJECT_COLUMN:
 		b.Append(node.Subname)
 	}
@@ -1081,12 +1027,11 @@ func (p *printer) printCreateFunctionStmt(node *CreateFunctionStmt) string {
 	b.keywordIf("OR REPLACE", node.Replace)
 	b.keyword("FUNCTION")
 
-	args := p.printSubClauseInline(node.Parameters)
+	args := p.printSubClauseInlineSpace(node.Parameters)
 	if args == "" {
 		args = "()"
 	}
-	b.identifier(p.printArr(node.Funcname)...)
-	b.Append(args)
+	b.Append(p.identifier(p.printArr(node.Funcname)...) + args)
 	b.keyword("RETURNS")
 	b.Append(p.printNode(node.ReturnType))
 	b.Append(p.printNodes(node.Options, " "))
@@ -1161,6 +1106,22 @@ func (p *printer) printDefElem(node *DefElem) string {
 	return p.keyword(arg)
 }
 
+func (p *printer) printBinaryList(nn []Node, sep string, invert bool) string {
+	if len(nn) == 1 {
+		list, ok := nn[0].(*List)
+		if ok {
+			o := p.printArr(list.Items)
+			left := o[0]
+			right := p.identifier(o[1:]...)
+			if invert {
+				return right + " " + sep + " " + left
+			}
+			return left + " " + sep + " " + right
+		}
+	}
+	return ""
+}
+
 func (p *printer) printDropStmt(node *DropStmt) string {
 	b := p.builder()
 	b.keyword("DROP")
@@ -1169,27 +1130,19 @@ func (p *printer) printDropStmt(node *DropStmt) string {
 	b.keywordIf("IF EXISTS", node.MissingOk)
 	switch node.RemoveType {
 	case OBJECT_CAST:
-		b.Append(p.printSubClauseCustom("(", ")", p.keyword(" AS "), node.Objects, false))
+		tt, ok := node.Objects[0].(*List)
+		if ok {
+			b.Append(p.printSubClauseCustom("(", ")", p.keyword(" AS "), tt.Items, false))
+		}
 	case OBJECT_FUNCTION, OBJECT_AGGREGATE, OBJECT_SCHEMA, OBJECT_EXTENSION:
 		b.Append(p.printNodes(node.Objects, ","))
 	case OBJECT_OPFAMILY, OBJECT_OPCLASS:
-		o := p.printArr(node.Objects)
-		if len(o) > 1 {
-			b.identifier(o[1:]...)
-		}
-		b.keyword("USING")
-		b.Append(o[0])
+		b.Append(p.printBinaryList(node.Objects, p.keyword("USING"), true))
 	case OBJECT_TRIGGER, OBJECT_RULE, OBJECT_POLICY:
-		o := p.printArr(node.Objects)
-		b.Append(o[len(o)-1:]...)
-		b.keyword("ON")
-		b.identifier(o[0 : len(o)-1]...)
+		b.Append(p.printBinaryList(node.Objects, p.keyword("ON"), true))
 	case OBJECT_TRANSFORM:
 		b.keyword("FOR")
-		o := p.printArr(node.Objects)
-		b.Append(o[0])
-		b.keyword("LANGUAGE")
-		b.Append(o[1])
+		b.Append(p.printBinaryList(node.Objects, p.keyword("LANGUAGE"), false))
 	default:
 		b.Append(p.printNodes(node.Objects, ", "))
 	}
@@ -1202,7 +1155,7 @@ func (p *printer) printObjectWithArgs(node *ObjectWithArgs) string {
 	b := p.builder()
 	b.identifier(p.printArr(node.Objname)...)
 	if !node.ArgsUnspecified {
-		b.Append(p.printSubClause(node.Objargs))
+		b.Append(p.printSubClauseInlineSpace(node.Objargs))
 	}
 	return b.Join("")
 }
@@ -1211,8 +1164,7 @@ func (p *printer) printInsertStmt(node *InsertStmt) string {
 	b := p.builder()
 	b.Append(p.printNode(node.WithClause))
 	b.keyword("INSERT INTO")
-	b.Append(p.printNode(node.Relation))
-	b.Append(p.printSubClauseInline(node.Cols))
+	b.Append(p.printNode(node.Relation) + p.printSubClauseInlineSpace(node.Cols))
 	b.Append(p.printNode(node.SelectStmt))
 	r := p.printNodes(node.ReturningList, ", ")
 	if r != "" {
@@ -1345,7 +1297,7 @@ func (p *printer) printCreateTableAsStmt(node *CreateTableAsStmt) string {
 	b.Append(node.Relkind.TypeName())
 	b.keywordIf("IF NOT EXISTS", node.IfNotExists)
 	b.identifier(p.printNode(node.Into))
-	b.Append(p.printSubClauseInline(node.Into.ColNames))
+	b.Append(p.printSubClauseInlineSpace(node.Into.ColNames))
 	if p.pretty {
 		b.LF()
 	}
@@ -1419,10 +1371,11 @@ func (p *printer) printCreateExtensionStmt(node *CreateExtensionStmt) string {
 	b.identifier(node.Extname)
 	opts := p.printNodes(node.Options, " ")
 	if opts != "" {
+		opts = p.keyword("WITH ") + opts
 		if p.pretty {
 			b.LF()
+			opts = p.padLines(opts, 1)
 		}
-		b.keyword("WITH")
 		b.Append(opts)
 	}
 	return b.Join(" ")
@@ -1488,8 +1441,7 @@ func (p *printer) printViewStmt(node *ViewStmt) string {
 	b.keywordIf("OR REPLACE", node.Replace)
 	b.Append(p.printNodes(node.Options, " "))
 	b.keyword("VIEW")
-	b.Append(p.printNode(node.View))
-	b.Append(p.printSubClauseInline(node.Aliases))
+	b.Append(p.printNode(node.View) + p.printSubClauseInlineSpace(node.Aliases))
 	b.keyword("AS")
 	if p.pretty {
 		b.LF()
@@ -1512,42 +1464,6 @@ func (p *printer) printViewStmt(node *ViewStmt) string {
 	return b.Join(" ")
 }
 
-func (e SQLValueFunctionOp) Op() string {
-	switch e {
-	case SVFOP_CURRENT_DATE:
-		return "current_date"
-	case SVFOP_CURRENT_TIME:
-		return "current_time"
-	case SVFOP_CURRENT_TIME_N:
-		return "current_time"
-	case SVFOP_CURRENT_TIMESTAMP:
-		return "current_timestamp"
-	case SVFOP_CURRENT_TIMESTAMP_N:
-		return "current_timestamp"
-	case SVFOP_LOCALTIME:
-		return "localtime"
-	case SVFOP_LOCALTIME_N:
-		return "localtime"
-	case SVFOP_LOCALTIMESTAMP:
-		return "localtimestamp"
-	case SVFOP_LOCALTIMESTAMP_N:
-		return "localtimestamp"
-	case SVFOP_CURRENT_ROLE:
-		return "current_role"
-	case SVFOP_CURRENT_USER:
-		return "current_user"
-	case SVFOP_USER:
-		return "user"
-	case SVFOP_SESSION_USER:
-		return "session_user"
-	case SVFOP_CURRENT_CATALOG:
-		return "current_catalog"
-	case SVFOP_CURRENT_SCHEMA:
-		return "current_schema"
-	}
-	return fmt.Sprintf("SQLValueFunctionOp(%d)", e)
-}
-
 func (p *printer) printSqlvalueFunction(node *SqlvalueFunction) string {
 	return node.Op.Op()
 }
@@ -1568,24 +1484,8 @@ func (p *printer) printRangeFunction(node *RangeFunction) string {
 		b.keyword("AS")
 		b.Append(p.printAlias(node.Alias))
 	}
-	b.Append(p.printSubClauseInline(node.Coldeflist))
+	b.Append(p.printSubClauseInlineSpace(node.Coldeflist))
 	return b.Join(" ")
-}
-
-func (e LockClauseStrength) Keyword() string {
-	switch e {
-	case LCS_NONE:
-		return ""
-	case LCS_FORKEYSHARE:
-		return "KEY SHARE"
-	case LCS_FORSHARE:
-		return "SHARE"
-	case LCS_FORNOKEYUPDATE:
-		return "NO KEY UPDATE"
-	case LCS_FORUPDATE:
-		return "UPDATE"
-	}
-	return fmt.Sprintf("LockClauseStrength(%d)", e)
 }
 
 func (p *printer) printLockingClause(node *LockingClause) string {
@@ -1599,41 +1499,6 @@ func (p *printer) printLockingClause(node *LockingClause) string {
 	return b.Join(" ")
 }
 
-type LockMode int8
-
-const (
-	LOCKMODE_AccessShare          LockMode = 1
-	LOCKMODE_RowShare             LockMode = 2
-	LOCKMODE_RowExclusive         LockMode = 3
-	LOCKMODE_ShareUpdateExclusive LockMode = 4
-	LOCKMODE_Share                LockMode = 5
-	LOCKMODE_ShareRowExclusive    LockMode = 6
-	LOCKMODE_Exclusive            LockMode = 7
-	LOCKMODE_AccessExclusive      LockMode = 8
-)
-
-func (e LockMode) Keyword() string {
-	switch e {
-	case LOCKMODE_AccessShare:
-		return "IN ACCESS SHARE MODE"
-	case LOCKMODE_RowShare:
-		return "IN ROW SHARE MODE"
-	case LOCKMODE_RowExclusive:
-		return "IN ROW EXCLUSIVE MODE"
-	case LOCKMODE_ShareUpdateExclusive:
-		return "IN SHARE UPDATE EXCLUSIVE MODE"
-	case LOCKMODE_Share:
-		return "IN SHARE MODE"
-	case LOCKMODE_ShareRowExclusive:
-		return "IN SHARE ROW EXCLUSIVE MODE"
-	case LOCKMODE_Exclusive:
-		return "IN EXCLUSIVE MODE"
-	case LOCKMODE_AccessExclusive:
-		return "IN ACCESS EXCLUSIVE MODE"
-	}
-	return fmt.Sprintf("LockMode(%d)", e)
-}
-
 func (p *printer) printLockStmt(node *LockStmt) string {
 	b := p.builder()
 	b.keyword("LOCK")
@@ -1645,4 +1510,138 @@ func (p *printer) printLockStmt(node *LockStmt) string {
 
 func (p *printer) printSetToDefault(node *SetToDefault) string {
 	return "DEFAULT"
+}
+
+func (p *printer) printCreateCastStmt(node *CreateCastStmt) string {
+	b := p.builder()
+	b.keyword("CREATE CAST")
+	b.Append("(" + p.printTypeName(node.Sourcetype) + " AS " + p.printTypeName(node.Targettype) + ")")
+	switch node.Context {
+	case COERCION_IMPLICIT:
+		b.keyword("WITHOUT FUNCTION AS IMPLICIT")
+	case COERCION_ASSIGNMENT:
+		b.keyword("WITH FUNCTION")
+		b.Append(p.printNode(node.Func))
+		b.keyword("AS ASSIGNMENT")
+	case COERCION_EXPLICIT:
+		b.keyword("WITH INOUT")
+	}
+	return b.Join(" ")
+}
+
+func (p *printer) printCreateOpClassStmt(node *CreateOpClassStmt) string {
+	b := p.builder()
+	b.keyword("CREATE OPERATOR CLASS")
+	b.Append(p.printNodes(node.Opclassname, ", "))
+	b.keywordIf("DEFAULT", node.IsDefault)
+	b.keyword("FOR TYPE")
+	b.Append(p.printTypeName(node.Datatype))
+	b.keyword("USING")
+	b.Append(node.Amname)
+	b.keyword("AS")
+	b.Append(p.printSubClauseCustom("", "", ", ", node.Items, true))
+	return b.Join(" ")
+}
+
+func (p *printer) printCreateOpClassItem(node *CreateOpClassItem) string {
+	b := p.builder()
+	switch node.Itemtype {
+	case 1:
+		b.keyword("OPERATOR")
+	case 2:
+		b.keyword("FUNCTION")
+	}
+	b.Append(strconv.Itoa(int(node.Number)))
+	b.Append(p.printObjectWithArgs(node.Name))
+	return b.Join(" ")
+}
+
+func (p *printer) printWindowDef(node *WindowDef) string {
+	b := p.builder()
+	if node.Name != "" {
+		b.identifier(node.Name)
+	}
+	if len(node.PartitionClause) > 0 {
+		if node.Name != "" {
+			b.keyword("AS")
+		}
+		b.keyword("(PARTITION BY")
+		b.Append(p.printNodes(node.PartitionClause, ", "))
+		if len(node.OrderClause) > 0 {
+			b.keyword("ORDER BY")
+			b.Append(p.printNodes(node.OrderClause, ", "))
+		}
+		b.AddToLast(")")
+	} else if node.Name == "" {
+		b.Append("()")
+	}
+
+	return b.Join(" ")
+}
+
+func (p *printer) printRoleSpec(node *RoleSpec) string {
+	return node.Rolename
+}
+
+func (e CmdType) Keyword() string {
+	switch e {
+	case CMD_SELECT:
+		return "SELECT"
+	case CMD_UPDATE:
+		return "UPDATE"
+	case CMD_INSERT:
+		return "INSERT"
+	case CMD_DELETE:
+		return "DELETE"
+	}
+	return fmt.Sprintf("CmdType(%d)", e)
+}
+
+func (p *printer) printRuleStmt(node *RuleStmt) string {
+	b := p.builder()
+	b.keyword("CREATE RULE")
+	b.identifier(node.Rulename)
+	b.keyword("AS")
+	b.keyword("ON")
+	b.keyword(node.Event.Keyword())
+	b.keyword("TO")
+	b.identifier(p.printRangeVar(node.Relation))
+
+	if node.Instead {
+		b.keyword("DO INSTEAD")
+		b.Append(p.printNodes(node.Actions, ", "))
+	} else {
+		b.keyword("DO ALSO NOTIFY")
+		b.Append(p.printNodes(node.Actions, ", "))
+	}
+
+	return b.Join(" ")
+}
+
+func (p *printer) printNotifyStmt(node *NotifyStmt) string {
+	return node.Conditionname
+}
+
+func (p *printer) printCreateTransformStmt(node *CreateTransformStmt) string {
+	b := p.builder()
+	b.keyword("CREATE TRANSFORM FOR")
+	b.identifier(p.printTypeName(node.TypeName))
+	b.keyword("LANGUAGE")
+	b.identifier(node.Lang)
+	b.Append("(")
+	if p.pretty {
+		b.LF()
+	}
+	b.keyword("FROM SQL WITH FUNCTION")
+	b.Append(p.printObjectWithArgs(node.Fromsql) + ", ")
+	if p.pretty {
+		b.LF()
+	}
+	b.keyword("TO SQL WITH FUNCTION")
+	b.Append(p.printObjectWithArgs(node.Tosql))
+	if p.pretty {
+		b.LF()
+	}
+	b.Append(")")
+	return b.Join(" ")
 }

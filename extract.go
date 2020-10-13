@@ -43,13 +43,6 @@ func (t TableRef) String() string {
 	return "`" + s + "`"
 }
 
-func getString(s *string) string {
-	if s == nil {
-		return ""
-	}
-	return *s
-}
-
 func ExtractTables(node Node) []TableRef {
 	var result []TableRef
 
@@ -76,22 +69,37 @@ func ExtractTables(node Node) []TableRef {
 
 type QueryParam struct {
 	Name      string
+	Type      string
 	Reference *ColumnRef
 }
 
 func (p QueryParam) String() string {
-	if p.Reference != nil {
-		return fmt.Sprintf("`%s = %s`", p.Name, ExtractString(p.Reference.Fields, "."))
+	name := p.Name
+	if p.Type != "" {
+		name += "::" + p.Type
 	}
-	return p.Name
+	if p.Reference != nil {
+		return fmt.Sprintf("`%s = %s`", name, ExtractString(p.Reference.Fields, "."))
+	}
+	return name
 }
 
-func extractParamName(node *AExpr) string {
+func extractParamNameAndType(node *AExpr) (string, string) {
 	switch n := node.Rexpr.(type) {
 	case *ColumnRef:
-		return ExtractString(n.Fields, "??")
+		return ExtractString(n.Fields, "??"), ""
+	case *TypeCast:
+		t, err := Print(n.TypeName)
+		if err != nil {
+			return "", ""
+		}
+		name, err := Print(n.Arg)
+		if err != nil {
+			return "", ""
+		}
+		return name, t
 	}
-	return ""
+	return "", ""
 }
 
 func findReference(parent Node) *ColumnRef {
@@ -117,11 +125,15 @@ func ExtractParams(node Node) Params {
 		switch n := node.(type) {
 		case *AExpr:
 			if ExtractString(n.Name, "") == paramToken {
-				p := QueryParam{
-					Name:      extractParamName(n),
-					Reference: findReference(stack[len(stack)-1]),
+				name, t := extractParamNameAndType(n)
+				if name != "" {
+					p := QueryParam{
+						Name:      name,
+						Type:      t,
+						Reference: findReference(stack[len(stack)-1]),
+					}
+					result = append(result, &p)
 				}
-				result = append(result, &p)
 				return nil
 			}
 		}

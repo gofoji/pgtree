@@ -1,11 +1,11 @@
 package pgtree
 
-func ReplaceParams(root *Node, params Params, paramToken string) {
+func ReplaceParams(root *Node, params Params) {
 	mutate(root, nil, func(node *Node, stack []*Node, v MutateFunc) MutateFunc {
 		switch n := (*node).(type) {
 		case *AExpr:
 			if ExtractString(n.Name, "") == paramToken {
-				name := extractParamName(n)
+				name, _ := extractParamNameAndType(n)
 				i := params.IndexOf(name)
 				if i < 0 {
 					return nil

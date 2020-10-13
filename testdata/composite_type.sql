@@ -1,0 +1,1 @@
+CREATE TYPE point_type AS (    x integer,    y integer);

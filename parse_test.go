@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -51,6 +52,28 @@ func TestParseAndPretty(t *testing.T) {
 			}
 		})
 	}
+
+	ff, _ = filepath.Glob("temp/sql/*.sql")
+	for _, test := range ff {
+		t.Run(test, func(t *testing.T) {
+			b, err := ioutil.ReadFile(test)
+			if err != nil {
+				t.Errorf("ReadFile error = %v", err)
+				return
+			}
+
+			got, err := testParse(string(b))
+			if err != nil {
+				if got == "" {
+					t.Errorf("Parse error = %v", err)
+					return
+				}
+				t.Errorf("Error: %v\ngot:\n`%v`", err, got)
+				return
+			}
+		})
+	}
+
 }
 
 func diff(got, want string) string {
@@ -59,9 +82,9 @@ func diff(got, want string) string {
 	ww := strings.Split(want, "\n")
 	for i, g := range gg {
 		if i >= len(ww) {
-			result = append(result, "<<<<<", "`"+g+"`", ">>>>>", "=====")
+			result = append(result, "<<<<<"+strconv.Itoa(i), "`"+g+"`", ">>>>>", "=====")
 		} else if ww[i] != g {
-			result = append(result, "<<<<<", "`"+g+"`", ">>>>>", "`"+ww[i]+"`", "=====")
+			result = append(result, "<<<<<"+strconv.Itoa(i), "`"+g+"`", ">>>>>", "`"+ww[i]+"`", "=====")
 		} else {
 			result = append(result, g)
 		}
@@ -113,5 +136,5 @@ func testParse(sql string) (string, error) {
 	if prettyInput != prettyConcise {
 		return "", errors.New("re-parse mismatch")
 	}
-	return prettyConcise, nil
+	return prettyInput, nil
 }

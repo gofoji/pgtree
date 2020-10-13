@@ -1,3 +1,1 @@
-CREATE TABLE empty_table
-    (
-    );
+CREATE TABLE empty_table();

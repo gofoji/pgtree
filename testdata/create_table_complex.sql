@@ -20,7 +20,7 @@ CREATE UNLOGGED TABLE IF NOT EXISTS complex_table
         next_int INTEGER DEFAULT NEXTVAL('some_serial'),
         default_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         c CIRCLE,
-        vector INT2[][],
+        vector INT2[3][],
         len INTERVAL HOUR TO MINUTE,
 
         UNIQUE (some_varchar) WITH (FILLFACTOR =70),
@@ -28,7 +28,9 @@ CREATE UNLOGGED TABLE IF NOT EXISTS complex_table
             UNIQUE (no_null_varchar),
         CONSTRAINT con1
             CHECK (no_null_int > 100 AND some_varchar <> ''),
-        EXCLUDE USING gist (c WITH &&)
+        EXCLUDE USING gist (c WITH &&),
+        FOREIGN KEY (b, c) REFERENCES other_table (c1, c2) NOT VALID,
+        CONSTRAINT unique_package_id UNIQUE USING INDEX package_tmp_id_idx
     )
 INHERITS (parent_table)
 WITH (FILLFACTOR = 70)

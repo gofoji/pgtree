@@ -7,3 +7,10 @@ SELECT
  WHERE
       a IN (1, 2)
    OR b ~~ '%@%'
+OR a not in (1,5)
+or x like '%a%'
+or y not like 'asdf%'
+or y ilike 'asdf%'
+or y not ilike 'aaaa'
+or y SIMILAR TO '1222'
+or z = ?;
