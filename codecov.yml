@@ -1,0 +1,2 @@
+ignore:
+  - "**/*_gen.go"         # Don't calculate coverage on generate files
