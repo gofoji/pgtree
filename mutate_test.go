@@ -23,11 +23,24 @@ func TestReplaceParams(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			root, _ := pgtree.Parse(test.sql)
 			params := pgtree.ExtractParams(root)
-			pgtree.ReplaceParams(&root, params)
+			err := pgtree.ReplaceParams(&root, params)
+			if err != nil {
+				t.Errorf("Get Error = `%v`", err)
+				return
+			}
 			got, _ := pgtree.Print(root)
 			if got != test.want {
 				t.Errorf("ReplaceParams() = %v, want %v", got, test.want)
 			}
 		})
 	}
+
+	t.Run("invalid map", func(t *testing.T) {
+		root, _ := pgtree.Parse(tests[0].sql)
+		err := pgtree.ReplaceParams(&root, pgtree.Params{})
+		if err != pgtree.ErrInvalidParam {
+			t.Errorf("Invalid Error, get `%v`, want `%v`", err, pgtree.ErrInvalidParam)
+		}
+	})
+
 }

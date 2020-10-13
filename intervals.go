@@ -63,5 +63,6 @@ func (i IntervalModType) String() string {
 	case Minute | Second:
 		return "minute to second"
 	}
+
 	return ""
 }

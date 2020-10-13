@@ -1,0 +1,29 @@
+run:
+  deadline: 1m
+  skip-dirs:
+    - temp
+  skip-files:
+    - ".*_gen.go$"
+  tests: false
+  sort-results: true
+linters:
+  enable-all: true
+  disable:
+    - dupl
+    - goconst
+    - wsl
+    - gochecknoglobals
+    - exhaustive
+    - funlen
+    - nestif
+    - gocognit
+    - gocyclo
+
+linters-settings:
+  gocritic:
+    disabled-checks:
+      - singleCaseSwitch
+issues:
+  exclude:
+    - don't use underscores in Go names; const (.*) should be (.*)
+    - ST1003:.*

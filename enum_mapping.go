@@ -105,6 +105,7 @@ func (e ObjectType) TypeName() string {
 	case OBJECT_VIEW:
 		return "VIEW"
 	}
+
 	return fmt.Sprintf("ObjectType(%d)", e)
 }
 
@@ -141,6 +142,7 @@ func (e SQLValueFunctionOp) Op() string {
 	case SVFOP_CURRENT_SCHEMA:
 		return "current_schema"
 	}
+
 	return fmt.Sprintf("SQLValueFunctionOp(%d)", e)
 }
 
@@ -157,6 +159,7 @@ func (e LockClauseStrength) Keyword() string {
 	case LCS_FORUPDATE:
 		return "UPDATE"
 	}
+
 	return fmt.Sprintf("LockClauseStrength(%d)", e)
 }
 
@@ -192,5 +195,6 @@ func (e LockMode) Keyword() string {
 	case LOCKMODE_AccessExclusive:
 		return "IN ACCESS EXCLUSIVE MODE"
 	}
+
 	return fmt.Sprintf("LockMode(%d)", e)
 }

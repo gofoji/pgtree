@@ -12,12 +12,14 @@ type sqlBuilder struct {
 
 func filterEmpty(ss []string) []string {
 	result := make([]string, 0, len(ss))
+
 	for _, s := range ss {
 		s = strings.TrimRight(s, " ")
 		if s != "" {
 			result = append(result, s)
 		}
 	}
+
 	return result
 }
 
@@ -38,6 +40,7 @@ var asciiSpace = [256]uint8{'\t': 1, '\n': 1, '\v': 1, '\f': 1, '\r': 1, ' ': 1}
 func endsWithSpace(s string) bool {
 	l := len(s)
 	i := s[l-1]
+
 	return asciiSpace[i] == 1
 }
 
@@ -53,22 +56,28 @@ func (c sqlBuilder) Join(sep string) string {
 	case 1:
 		return c.ss[0]
 	}
+
 	n := len(sep) * (lenSS - 1)
+
 	for i := 0; i < lenSS; i++ {
 		n += len(c.ss[i])
 	}
 
 	var b strings.Builder
+
 	b.Grow(n)
 	b.WriteString(c.ss[0])
 	last := c.ss[0]
+
 	for _, s := range c.ss[1:] {
 		if !endsWithSpace(last) && !startsWithSpace(s) {
 			b.WriteString(sep)
 		}
+
 		last = s
 		b.WriteString(s)
 	}
+
 	return b.String()
 }
 
@@ -80,6 +89,7 @@ func (c *sqlBuilder) keyword(s string) {
 	if c.opt.LowerKeyword {
 		c.Append(strings.ToLower(s))
 	}
+
 	c.Append(strings.ToUpper(s))
 }
 
@@ -103,6 +113,7 @@ func HasUpper(s string) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -110,21 +121,26 @@ func RequiresQuote(s string) bool {
 	if strings.HasPrefix(s, `"`) {
 		return false
 	}
+
 	if strings.Contains(s, "-") {
 		return true
 	}
+
 	if strings.Contains(s, ".") {
 		return true
 	}
+
 	return HasUpper(s)
 }
 
 func (c *sqlBuilder) identifier(s ...string) {
 	var ss []string
+
 	for _, n := range trims(s) {
 		if n == "" {
 			continue
 		}
+
 		if IsKeyword(n) || RequiresQuote(n) {
 			ss = append(ss, doubleQuote(n))
 		} else {

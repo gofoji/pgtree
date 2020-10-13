@@ -11,12 +11,14 @@ func ExtractString(list []Node, sep string) string {
 
 func ExtractStrings(list []Node) []string {
 	var result []string
+
 	for _, n := range list {
 		s, ok := n.(*String)
 		if ok {
 			result = append(result, s.Str)
 		}
 	}
+
 	return result
 }
 
@@ -30,16 +32,21 @@ type TableRef struct {
 
 func (t TableRef) String() string {
 	s := ""
+
 	if t.Catalog != "" {
 		s += t.Catalog + "."
 	}
+
 	if t.Schema != "" {
 		s += t.Schema + "."
 	}
+
 	s += t.Table
+
 	if t.Alias != "" {
 		s += " " + t.Alias
 	}
+
 	return "`" + s + "`"
 }
 
@@ -55,12 +62,16 @@ func ExtractTables(node Node) []TableRef {
 				Table:   n.Relname,
 				Ref:     n,
 			}
+
 			if n.Alias != nil {
 				t.Alias = n.Alias.Aliasname
 			}
+
 			result = append(result, t)
+
 			return nil
 		}
+
 		return v
 	})
 
@@ -75,12 +86,15 @@ type QueryParam struct {
 
 func (p QueryParam) String() string {
 	name := p.Name
+
 	if p.Type != "" {
 		name += "::" + p.Type
 	}
+
 	if p.Reference != nil {
 		return fmt.Sprintf("`%s = %s`", name, ExtractString(p.Reference.Fields, "."))
 	}
+
 	return name
 }
 
@@ -93,12 +107,15 @@ func extractParamNameAndType(node *AExpr) (string, string) {
 		if err != nil {
 			return "", ""
 		}
+
 		name, err := Print(n.Arg)
 		if err != nil {
 			return "", ""
 		}
+
 		return name, t
 	}
+
 	return "", ""
 }
 
@@ -109,11 +126,13 @@ func findReference(parent Node) *ColumnRef {
 		if ok {
 			return r
 		}
+
 		r, ok = p.Rexpr.(*ColumnRef)
 		if ok {
 			return r
 		}
 	}
+
 	return nil
 }
 
@@ -121,6 +140,7 @@ const paramToken = "@"
 
 func ExtractParams(node Node) Params {
 	var result Params
+
 	Walk(node, nil, func(node Node, stack []Node, v Visitor) Visitor {
 		switch n := node.(type) {
 		case *AExpr:
@@ -134,9 +154,11 @@ func ExtractParams(node Node) Params {
 					}
 					result = append(result, &p)
 				}
+
 				return nil
 			}
 		}
+
 		return v
 	})
 
@@ -151,5 +173,6 @@ func (pp Params) IndexOf(name string) int {
 			return i
 		}
 	}
+
 	return -1
 }

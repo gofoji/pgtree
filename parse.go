@@ -17,6 +17,7 @@ func Parse(sql string) (Node, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return result, nil
 }
 
