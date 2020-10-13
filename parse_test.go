@@ -82,15 +82,15 @@ func diff(got, want string) string {
 	ww := strings.Split(want, "\n")
 	for i, g := range gg {
 		if i >= len(ww) {
-			result = append(result, "<<<<<"+strconv.Itoa(i), "`"+g+"`", ">>>>>", "=====")
+			result = append(result, "<<<<<got"+strconv.Itoa(i), "`"+g+"`", ">>>>>", "=====")
 		} else if ww[i] != g {
-			result = append(result, "<<<<<"+strconv.Itoa(i), "`"+g+"`", ">>>>>", "`"+ww[i]+"`", "=====")
+			result = append(result, "<<<<<got"+strconv.Itoa(i), "`"+g+"`", ">>>>>", "`"+ww[i]+"`", "=====")
 		} else {
 			result = append(result, g)
 		}
 	}
 	if len(gg) < len(ww) {
-		result = append(result, "<<<<<", ">>>>>", "`"+strings.Join(ww[len(gg):], "\n")+"`", "=====")
+		result = append(result, "<<<<<got", ">>>>>", "`"+strings.Join(ww[len(gg):], "\n")+"`", "=====")
 	}
 	return strings.Join(result, "\n")
 }

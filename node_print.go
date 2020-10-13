@@ -2,7 +2,6 @@ package pgtree
 
 import (
 	"fmt"
-	"reflect"
 	"strconv"
 	"strings"
 )
@@ -661,9 +660,9 @@ func (p *printer) mapTypeName(name, args string) string {
 		return "timestamp with time zone"
 	case keywordInterval:
 		return keywordInterval
-	default:
-		p.addError(ErrPrinter.Wrap("Unknown data type: " + name))
 	}
+
+	p.addError(ErrPrinter.Wrap("Unknown data type: " + name))
 
 	return "**UNKNOWN TYPE**"
 }
@@ -849,11 +848,7 @@ func (p *printer) printCoalesceExpr(node *CoalesceExpr) string {
 }
 
 func stripQuote(s string) string {
-	if s == "" {
-		return ""
-	}
-
-	if s[0] == '"' {
+	if len(s) > 1 && s[0] == '"' {
 		return s[1 : len(s)-1]
 	}
 
@@ -888,8 +883,6 @@ func (p *printer) printCreateEnumStmt(node *CreateEnumStmt) string {
 		s, ok := n.(*String)
 		if ok {
 			vals = append(vals, s.Str)
-		} else {
-			p.addError(ErrPrinter.Wrap("invalid enum value type: " + reflect.TypeOf(n).Name()))
 		}
 	}
 	b.Append("(" + strings.Join(quoted(vals), ", ") + ")")
@@ -1216,11 +1209,7 @@ func (p *printer) printDefElem(node *DefElem) string {
 
 		return p.keyword("oids")
 	case "strict":
-		if arg == "1" {
-			return p.keyword("STRICT")
-		}
-
-		return ""
+		return p.keyword("STRICT")
 	}
 
 	return p.keyword(arg)
@@ -1363,8 +1352,6 @@ func (p *printer) printUpdateTargets(list Nodes) string {
 			} else {
 				b.Append(p.identifier(node.Name) + " = " + p.printNode(node.Val))
 			}
-		} else { // Can this ever hit?
-			b.Append(p.printNode(n))
 		}
 	}
 
@@ -1553,20 +1540,11 @@ func (p *printer) printTruncateStmt(node *TruncateStmt) string {
 }
 
 func (p *printer) printMultiAssignRef(node *MultiAssignRef) string {
-	if node.Ncolumns > 1 {
-		return "(" + p.printNode(node.Source) + ")"
-	}
-
-	return p.printNode(node.Source)
+	return "(" + p.printNode(node.Source) + ")"
 }
 
 func (p *printer) printRowExpr(node *RowExpr) string {
-	switch node.RowFormat {
-	case COERCE_IMPLICIT_CAST:
-		return p.printNodes(node.Args, ", ")
-	}
-
-	return p.printSubClauseInline(node.Args)
+	return p.printNodes(node.Args, ", ")
 }
 
 func (p *printer) printExplainStmt(node *ExplainStmt) string {
@@ -1756,21 +1734,6 @@ func (p *printer) printWindowDef(node *WindowDef) string {
 
 func (p *printer) printRoleSpec(node *RoleSpec) string {
 	return node.Rolename
-}
-
-func (e CmdType) Keyword() string {
-	switch e {
-	case CMD_SELECT:
-		return "SELECT"
-	case CMD_UPDATE:
-		return "UPDATE"
-	case CMD_INSERT:
-		return "INSERT"
-	case CMD_DELETE:
-		return "DELETE"
-	}
-
-	return fmt.Sprintf("CmdType(%d)", e)
 }
 
 func (p *printer) printRuleStmt(node *RuleStmt) string {

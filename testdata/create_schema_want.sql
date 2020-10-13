@@ -1,4 +1,4 @@
-CREATE SCHEMA foo;
+CREATE SCHEMA IF NOT EXISTS foo;
 CREATE SCHEMA AUTHORIZATION joe;
 CREATE SCHEMA hollywood
     CREATE TABLE films(
@@ -15,3 +15,4 @@ CREATE SCHEMA hollywood
     WHERE
         awards IS NOT NULL
 ;
+DROP SCHEMA boohoo;

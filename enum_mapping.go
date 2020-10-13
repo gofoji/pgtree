@@ -198,3 +198,18 @@ func (e LockMode) Keyword() string {
 
 	return fmt.Sprintf("LockMode(%d)", e)
 }
+
+func (e CmdType) Keyword() string {
+	switch e {
+	case CMD_SELECT:
+		return "SELECT"
+	case CMD_UPDATE:
+		return "UPDATE"
+	case CMD_INSERT:
+		return "INSERT"
+	case CMD_DELETE:
+		return "DELETE"
+	}
+
+	return fmt.Sprintf("CmdType(%d)", e)
+}

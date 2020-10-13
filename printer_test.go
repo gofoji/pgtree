@@ -30,3 +30,17 @@ func TestDebug(t *testing.T) {
 		})
 	}
 }
+
+func TestErrors(t *testing.T) {
+	const wantError = "CreatePublicationStmt not implemented"
+	root, _ := pgtree.Parse("CREATE PUBLICATION mypublication FOR TABLE users, departments;")
+	_, err := pgtree.Print(root)
+	if err == nil || wantError != err.Error() {
+		t.Errorf("Err = %v, %v", err, wantError)
+	}
+	_, err = pgtree.PrettyPrint(root)
+	if err == nil || wantError != err.Error() {
+		t.Errorf("Err = %v, %v", err, wantError)
+	}
+
+}
