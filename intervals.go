@@ -1,9 +1,10 @@
 package pgtree
 
-type IntervalModType uint32
+type intervalModType uint32
 
 const (
-	Empty IntervalModType = 1 << iota
+	// All available interval mods according to the spec.
+	Empty intervalModType = 1 << iota
 	Month
 	Year
 	Day
@@ -34,7 +35,7 @@ const (
 	DTZMod
 )
 
-func (i IntervalModType) String() string {
+func (i intervalModType) String() string {
 	switch i {
 	case Month:
 		return "month"

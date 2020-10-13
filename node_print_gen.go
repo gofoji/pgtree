@@ -28,7 +28,8 @@ func (p *printer) printNode(node Node) (result string) {
 			if t.Kind() == reflect.Ptr {
 				name = t.Elem().Name()
 			}
-			p.debugOutput += fmt.Sprintln(pad + name + " = `" + strings.ReplaceAll(result, "\n", " \\n ") + "`")
+			debugLine := fmt.Sprintln(pad + name + " = `" + strings.ReplaceAll(result, "\n", " \\n ") + "`")
+			p.debugOutput = append([]string{debugLine}, p.debugOutput...)
 		}
 		p.level -= 1
 	}()

@@ -115,3 +115,46 @@ var SetOpUnionKeyword = map[SetOperation]string{
 	SETOP_INTERSECT: "INTERSECT",
 	SETOP_EXCEPT:    "EXCEPT",
 }
+
+var ConstrTypeKeyword = map[ConstrType]string{
+	CONSTR_NULL:      "NULL",
+	CONSTR_NOTNULL:   "NOT NULL",
+	CONSTR_DEFAULT:   "DEFAULT",
+	CONSTR_CHECK:     "CHECK",
+	CONSTR_PRIMARY:   "PRIMARY KEY",
+	CONSTR_UNIQUE:    "UNIQUE",
+	CONSTR_EXCLUSION: "EXCLUDE",
+	CONSTR_FOREIGN:   "FOREIGN KEY",
+}
+
+type commandOption struct {
+	command string
+	option  string
+}
+
+var alterTableCommand = map[AlterTableType]commandOption{
+	AT_AddColumn:                 {"ADD", ""},
+	AT_ColumnDefault:             {"ALTER", "SET DEFAULT"},
+	AT_DropNotNull:               {"ALTER", "DROP NOT NULL"},
+	AT_SetNotNull:                {"ALTER", "SET NOT NULL"},
+	AT_SetStatistics:             {"ALTER", "SET STATISTICS"},
+	AT_SetOptions:                {"ALTER", "SET"},
+	AT_ResetOptions:              {"ALTER", "RESET"},
+	AT_SetStorage:                {"ALTER", "SET STORAGE"},
+	AT_DropColumn:                {"DROP", ""},
+	AT_AddIndex:                  {"ADD INDEX", ""},
+	AT_AddConstraint:             {"ADD", ""},
+	AT_AlterConstraint:           {"ALTER CONSTRAINT", ""},
+	AT_ValidateConstraint:        {"VALIDATE CONSTRAINT", ""},
+	AT_DropConstraint:            {"DROP CONSTRAINT", ""},
+	AT_AlterColumnType:           {"ALTER", "TYPE"},
+	AT_AlterColumnGenericOptions: {"ALTER", "OPTIONS"},
+	AT_ChangeOwner:               {"OWNER TO", ""},
+	AT_SetRelOptions:             {"SET", ""},
+	AT_ResetRelOptions:           {"RESET", ""},
+}
+
+const (
+	operatorItemType = 1
+	functionItemType = 2
+)

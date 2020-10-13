@@ -19,9 +19,11 @@ func TestDebug(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			root, _ := pgtree.Parse(test.sql)
-			got, err := pgtree.Debug(root)
-			if err != nil && test.err != err.Error() {
-				t.Errorf("Err = %v, want %v", err, test.err)
+			got, _, err := pgtree.Debug(root)
+			if err != nil {
+				if test.err != err.Error() {
+					t.Errorf("Err = %v, want %v", err, test.err)
+				}
 				return
 			}
 			if got != test.want {

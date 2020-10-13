@@ -1,7 +1,5 @@
 package pgtree
 
-// Source: reserved https://www.postgresql.org/docs/current/sql-keywords-appendix.html
-
 var keywords = map[string]interface{}{
 	"all":               nil,
 	"analyse":           nil,
@@ -76,4 +74,12 @@ var keywords = map[string]interface{}{
 	"using":             nil,
 	"when":              nil,
 	"where":             nil,
+}
+
+// IsKeyword returns true if `s` is a reserved keyword in Postgres
+// Source: reserved https://www.postgresql.org/docs/current/sql-keywords-appendix.html
+func IsKeyword(s string) bool {
+	_, ok := keywords[s]
+
+	return ok
 }

@@ -1,6 +1,7 @@
 package pgtree_test
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/gofoji/pgtree"
@@ -38,8 +39,8 @@ func TestReplaceParams(t *testing.T) {
 	t.Run("invalid map", func(t *testing.T) {
 		root, _ := pgtree.Parse(tests[0].sql)
 		err := pgtree.ReplaceParams(&root, pgtree.Params{})
-		if err != pgtree.ErrInvalidParam {
-			t.Errorf("Invalid Error, get `%v`, want `%v`", err, pgtree.ErrInvalidParam)
+		if !errors.Is(err, pgtree.ErrInvalidParam) {
+			t.Errorf("Invalid Error, got `%v`, want `%v`", err, pgtree.ErrInvalidParam)
 		}
 	})
 

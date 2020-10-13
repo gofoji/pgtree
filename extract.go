@@ -5,11 +5,12 @@ import (
 	"strings"
 )
 
+// ExtractString is a simple utility to join the output of all String nodes by the sep.
 func ExtractString(list []Node, sep string) string {
-	return strings.Join(ExtractStrings(list), sep)
+	return strings.Join(extractStrings(list), sep)
 }
 
-func ExtractStrings(list []Node) []string {
+func extractStrings(list []Node) []string {
 	var result []string
 
 	for _, n := range list {
@@ -22,6 +23,7 @@ func ExtractStrings(list []Node) []string {
 	return result
 }
 
+// TableRef includes all information for describing tables discovered in a SQL statement.
 type TableRef struct {
 	Catalog string
 	Schema  string
@@ -50,6 +52,7 @@ func (t TableRef) String() string {
 	return "`" + s + "`"
 }
 
+// ExtractTables returns all tables identified in the SQL.
 func ExtractTables(node Node) []TableRef {
 	var result []TableRef
 
@@ -78,6 +81,7 @@ func ExtractTables(node Node) []TableRef {
 	return result
 }
 
+// QueryParam defines a param parsed from the SQL.
 type QueryParam struct {
 	Name      string
 	Type      string
@@ -138,6 +142,19 @@ func findReference(parent Node) *ColumnRef {
 
 const paramToken = "@"
 
+// ExtractParams finds all unique named params in the SQL.
+//
+// Example Usage:
+//
+//    sql := "select * from foo where id = @myParam"
+//    root, _ := pgtree.Parse(sql)
+//    params := pgtree.ExtractParams(root)
+//    fmt.Println(params)
+//
+// Output
+//
+//    [`myparam = id`]
+//
 func ExtractParams(node Node) Params {
 	var result Params
 
@@ -165,8 +182,10 @@ func ExtractParams(node Node) Params {
 	return result
 }
 
+// Params is an []*QueryParam, it is typed to provide a helper for looking up by name.
 type Params []*QueryParam
 
+// IndexOf returns the index of Param matching the name, otherwise -1 if not found.
 func (pp Params) IndexOf(name string) int {
 	for i, p := range pp {
 		if p.Name == name {

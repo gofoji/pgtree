@@ -23,13 +23,14 @@ func filterEmpty(ss []string) []string {
 	return result
 }
 
-func (c *sqlBuilder) Append(ss ...string) {
+func (c *sqlBuilder) append(ss ...string) {
 	c.ss = append(c.ss, filterEmpty(ss)...)
 }
 
-func (c *sqlBuilder) AppendPadded(s string) {
+func (c *sqlBuilder) appendPadded(s string) {
 	if !c.opt.pretty {
-		c.Append(s)
+		c.append(s)
+
 		return
 	}
 	ss := strings.Split(s, "\n")
@@ -41,7 +42,7 @@ func (c *sqlBuilder) AppendPadded(s string) {
 	}
 }
 
-func (c *sqlBuilder) AddToLast(s string) {
+func (c *sqlBuilder) addToLast(s string) {
 	c.ss[len(c.ss)-1] = c.ss[len(c.ss)-1] + s
 }
 
@@ -67,7 +68,7 @@ func startsWithSpace(s string) bool {
 	return len(s) > 0 && asciiSpace[s[0]] == 1
 }
 
-func (c sqlBuilder) Join(sep string) string {
+func (c sqlBuilder) join(sep string) string {
 	lenSS := len(c.ss)
 	switch lenSS {
 	case 0:
@@ -100,16 +101,16 @@ func (c sqlBuilder) Join(sep string) string {
 	return b.String()
 }
 
-func (c sqlBuilder) Lines() []string {
+func (c sqlBuilder) lines() []string {
 	return c.ss
 }
 
 func (c *sqlBuilder) keyword(s string) {
 	if c.opt.LowerKeyword {
-		c.Append(strings.ToLower(s))
+		c.append(strings.ToLower(s))
 	}
 
-	c.Append(strings.ToUpper(s))
+	c.append(strings.ToUpper(s))
 }
 
 func (c *sqlBuilder) keywordIf(s string, b bool) {
@@ -126,7 +127,7 @@ func (c *sqlBuilder) keywordIfElse(t, f string, b bool) {
 	}
 }
 
-func HasUpper(s string) bool {
+func hasUpper(s string) bool {
 	for _, r := range s {
 		if unicode.IsUpper(r) {
 			return true
@@ -136,7 +137,7 @@ func HasUpper(s string) bool {
 	return false
 }
 
-func RequiresQuote(s string) bool {
+func requiresQuote(s string) bool {
 	if strings.HasPrefix(s, `"`) {
 		return false
 	}
@@ -149,7 +150,7 @@ func RequiresQuote(s string) bool {
 		return true
 	}
 
-	return HasUpper(s)
+	return hasUpper(s)
 }
 
 func (c *sqlBuilder) identifier(s ...string) {
@@ -160,12 +161,12 @@ func (c *sqlBuilder) identifier(s ...string) {
 			continue
 		}
 
-		if IsKeyword(n) || RequiresQuote(n) {
+		if IsKeyword(n) || requiresQuote(n) {
 			ss = append(ss, doubleQuote(n))
 		} else {
 			ss = append(ss, n)
 		}
 	}
 
-	c.Append(strings.Join(ss, "."))
+	c.append(strings.Join(ss, "."))
 }

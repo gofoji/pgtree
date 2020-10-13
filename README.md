@@ -310,10 +310,7 @@ parse_tree.proto pulled from [libpg_query PR67](https://github.com/lfittl/libpg_
 
 # TODO
 
-- [ ] Finish moving all node printers to builder with formatter options
-- [ ] review all STMT printers for collapse function
 - [ ] Define additional formatting options
-- [ ] Test automation
 - [ ] Add verbose option to inject long names
 - [ ] Add concise option to convert syntax shorthands. Example:
 
@@ -325,3 +322,4 @@ CREATE TABLE table_name AS
 SELECT * FROM table1;
 ```
 - [ ] Godocs
+- [ ] Move generated code to internal package

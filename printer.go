@@ -1,118 +1,84 @@
 package pgtree
 
 import (
-	"fmt"
 	"strings"
 )
 
+// FormatOptions controls the formatting of the printer.
 type FormatOptions struct {
-	pretty                 bool
-	OneResultColumnPerLine bool
-	LowerKeyword           bool
-	UpperType              bool
-	SimpleLen              int
-	Padding                string
+	pretty                 bool   // When enabled
+	OneResultColumnPerLine bool   // Forces each result item of a select statement to a new line
+	LowerKeyword           bool   // If true it forces all keywords to lowercase.  Default is to force all to uppercase
+	UpperType              bool   // If true it forces all types to uppercase.  Default is to force all to lower
+	SimpleLen              int    // Statements shorter than SimpleLen will automatically have pretty printing disabled
+	Padding                string // Used for indentation when Pretty printing
 }
 
 const (
-	DefaultSimpleLen = 50
-	DefaultPadding   = "    "
+	defaultSimpleLen = 50
+	defaultPadding   = "    "
 )
 
 type printer struct {
 	FormatOptions
 	debug       bool
 	level       int
-	debugOutput string
+	debugOutput []string
 	errs        []error
 }
 
-type printerError string
-
-func (err printerError) Error() string {
-	return string(err)
-}
-
-func (err printerError) Wrap(s string) error {
-	return fmt.Errorf("%s%w", s, err)
-}
-
-const (
-	ErrPrinter = printerError("")
-)
-
-type Errors struct {
-	errs []error
-}
-
-func (p Errors) Error() string {
-	result := make([]string, len(p.errs))
-	for i, e := range p.errs {
-		result[i] = e.Error()
-	}
-
-	return strings.Join(result, "\n")
-}
-
+// Print renders the Node with minimal spacing.
 func Print(root Node) (string, error) {
 	p := printer{}
 	result := p.printNode(root)
 
 	if len(p.errs) > 0 {
-		return "", Errors{p.errs}
+		return "", printErrors{p.errs}
 	}
 
 	return result, nil
 }
 
+// PrettyPrint renders the Node with indented formatting.
 func PrettyPrint(root Node) (string, error) {
 	opt := FormatOptions{
 		pretty:                 true,
 		OneResultColumnPerLine: true,
-		Padding:                DefaultPadding,
-		SimpleLen:              DefaultSimpleLen,
+		Padding:                defaultPadding,
+		SimpleLen:              defaultSimpleLen,
 	}
 	p := printer{FormatOptions: opt}
-
 	result := p.printNode(root)
 
 	if len(p.errs) > 0 {
-		return "", Errors{p.errs}
+		return "", printErrors{p.errs}
 	}
 
 	return result, nil
 }
 
-func Debug(root Node) (string, error) {
+// Debug renders the Node with indented formatting and dumps.
+// the second param is an indented trace of the call graph with results.  Very useful for
+// defining new formatting rules or adding support for new Nodes.
+func Debug(root Node) (string, []string, error) {
 	opt := FormatOptions{
 		pretty:                 true,
 		OneResultColumnPerLine: true,
-		Padding:                DefaultPadding,
-		SimpleLen:              DefaultSimpleLen,
+		Padding:                defaultPadding,
+		SimpleLen:              defaultSimpleLen,
 	}
 	p := printer{FormatOptions: opt, debug: true}
-
 	result := p.printNode(root)
-	if p.debug {
-		ss := strings.Split(p.debugOutput, "\n")
-		l := len(ss) - 1
-		for i := range ss {
-			fmt.Println(ss[l-i])
-		}
-	}
+
 	if len(p.errs) > 0 {
-		return "", Errors{p.errs}
+		return result, p.debugOutput, printErrors{p.errs}
 	}
 
-	return result, nil
+	return result, p.debugOutput, nil
 }
 
 func (p *printer) addError(err error) {
 	p.errs = append(p.errs, err)
-}
-
-func (p *printer) indent(s string, i int) string {
-	return p.pad(i) + s
 }
 
 func (p *printer) pad(i int) string {
@@ -126,7 +92,7 @@ func (p *printer) pad(i int) string {
 func (p *printer) padLines(s string) string {
 	ss := strings.Split(s, "\n")
 	for j := range ss {
-		ss[j] = strings.TrimRight(p.indent(ss[j], 1), " ")
+		ss[j] = strings.TrimRight(p.pad(1)+ss[j], " ")
 	}
 
 	return strings.Join(ss, "\n")
@@ -135,19 +101,19 @@ func (p *printer) padLines(s string) string {
 func (p *printer) printNodes(list Nodes, sep string) string {
 	b := p.builder()
 	for i := range list {
-		b.Append(p.printNode(list[i]))
+		b.append(p.printNode(list[i]))
 	}
 
-	return b.Join(sep)
+	return b.join(sep)
 }
 
 func (p *printer) printArr(list Nodes) []string {
 	b := p.builder()
 	for i := range list {
-		b.Append(p.printNode(list[i]))
+		b.append(p.printNode(list[i]))
 	}
 
-	return b.Lines()
+	return b.lines()
 }
 
 func trims(ss []string) []string {
@@ -159,17 +125,11 @@ func trims(ss []string) []string {
 	return r
 }
 
-func IsKeyword(s string) bool {
-	_, ok := keywords[s]
-
-	return ok
-}
-
 func (p *printer) identifier(names ...string) string {
-	b := sqlBuilder{}
+	b := p.builder()
 	b.identifier(names...)
 
-	return b.Join(".")
+	return b.join(".")
 }
 
 func (p *printer) keyword(s string) string {
