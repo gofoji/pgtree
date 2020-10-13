@@ -128,15 +128,11 @@ func (p *printer) printSelectStmtInternal(node *SelectStmt) string {
 			b.LF()
 		}
 
-		columns := p.printArr(node.TargetList)
-
+		sep := ", "
 		if p.pretty && p.OneResultColumnPerLine {
-			columnsStr := strings.Join(columns, ",\n")
-			b.Append(p.padLines(columnsStr))
-		} else {
-			b.Append(strings.Join(columns, ", "))
+			sep = ",\n"
 		}
-		b.LF()
+		b.AppendPadded(strings.Join(p.printArr(node.TargetList), sep))
 
 		if node.IntoClause != nil {
 			b.keyword("INTO")
@@ -147,7 +143,7 @@ func (p *printer) printSelectStmtInternal(node *SelectStmt) string {
 
 	if len(node.FromClause) > 0 {
 		b.keyword("FROM")
-		b.Append(p.printSubClauseCustom("", "", ", ", node.FromClause, true))
+		b.Append(p.printCSV(node.FromClause))
 	}
 
 	if node.WhereClause != nil {
@@ -390,13 +386,15 @@ func (p *printer) printCreateStmt(node *CreateStmt) string {
 		name = name + p.keyword(" OF ") + p.identifier(p.printTypeName(node.OfTypename))
 	}
 
+	b.Append(name)
+
 	sub := p.printSubClause(node.TableElts)
 	if sub == "" {
 		// Empty table definitions are valid
 		sub = "()"
 	}
 
-	b.Append(name + sub)
+	b.AddToLast(sub)
 
 	if len(node.InhRelations) > 0 {
 		b.LF()
@@ -424,7 +422,6 @@ func (p *printer) printDeleteStmt(node *DeleteStmt) string {
 	b := p.builder()
 	b.Append(p.printNode(node.WithClause))
 	b.keyword("DELETE FROM")
-
 	b.Append(p.printNode(node.Relation))
 	b.LF()
 
@@ -438,16 +435,12 @@ func (p *printer) printDeleteStmt(node *DeleteStmt) string {
 	sub := p.printNode(node.WhereClause)
 	if sub != "" {
 		b.keyword("WHERE")
-		if p.pretty {
-			b.LF()
-			sub = p.padLines(sub)
-		}
-		b.Append(sub)
+		b.LF()
+		b.AppendPadded(sub)
 	}
 
 	r := p.printNodes(node.ReturningList, ", ")
 	if r != "" {
-		b.LF()
 		b.keyword("RETURNING")
 		b.Append(r)
 	}
@@ -711,7 +704,7 @@ func (p *printer) printCreateSchemaStmt(node *CreateSchemaStmt) string {
 	}
 
 	if len(node.SchemaElts) > 0 {
-		b.Append(p.printSubClauseCustom("", "", " ", node.SchemaElts, true))
+		b.Append(p.printSpaced(node.SchemaElts))
 	}
 
 	return b.Join(" ")
@@ -721,19 +714,11 @@ func (p *printer) printCaseExpr(node *CaseExpr) string {
 	b := p.builder()
 	b.keyword("CASE")
 	b.Append(p.printNode(node.Arg))
-	whens := p.printSubClauseCustom("", "", " ", node.Args, true)
+	whens := p.printSpaced(node.Args)
 	b.Append(whens)
 	sub := p.printNode(node.Defresult)
 	if sub != "" {
-		sub = p.keyword("ELSE ") + sub
-
-		if p.pretty {
-			sub = p.padLines(sub)
-		}
-
-		b.Append(sub)
-
-		b.LF()
+		b.AppendPadded(p.keyword("ELSE ") + sub)
 	}
 
 	b.Append("END")
@@ -845,6 +830,14 @@ func (p *printer) printSubClause(nodes Nodes) string {
 	return p.printSubClauseCustom("(", ")", ",", nodes, true)
 }
 
+func (p *printer) printCSV(nodes Nodes) string {
+	return p.printSubClauseCustom("", "", ",", nodes, true)
+}
+
+func (p *printer) printSpaced(nodes Nodes) string {
+	return p.printSubClauseCustom("", "", " ", nodes, true)
+}
+
 func (p *printer) printSubClauseInline(nodes Nodes) string {
 	return p.printSubClauseCustom("(", ")", ",", nodes, false)
 }
@@ -888,7 +881,7 @@ func (p *printer) printAlterTableStmt(node *AlterTableStmt) string {
 
 	b.keywordIf("IF EXISTS", node.MissingOk)
 	b.Append(p.printRangeVar(node.Relation))
-	b.Append(p.printSubClauseCustom("", "", ",", node.Cmds, true))
+	b.Append(p.printCSV(node.Cmds))
 
 	return b.Join(" ")
 }
@@ -923,24 +916,24 @@ var alterTableCommand = map[AlterTableType]CommandOption{
 func (p *printer) printAlterTableCmd(node *AlterTableCmd) string {
 	b := p.builder()
 
-	c, ok := alterTableCommand[node.Subtype]
-	if ok {
+	c := alterTableCommand[node.Subtype]
+	if c.command != "" {
 		b.keyword(c.command)
 	}
+
 	b.keywordIf("IF EXISTS", node.MissingOk)
 	b.Append(p.identifier(node.Name))
-
-	def := p.printNode(node.Def)
 
 	if node.Newowner != nil {
 		b.Append(node.Newowner.Rolename)
 	}
 
+	def := p.printNode(node.Def)
 	if node.Subtype == AT_ColumnDefault && def == "" {
 		c.option = "DROP DEFAULT"
 	}
 
-	if ok && c.option != "" {
+	if c.option != "" {
 		b.keyword(c.option)
 	}
 
@@ -1033,13 +1026,14 @@ func (p *printer) printCreateFunctionStmt(node *CreateFunctionStmt) string {
 	b.keyword("CREATE")
 	b.keywordIf("OR REPLACE", node.Replace)
 	b.keyword("FUNCTION")
+	b.identifier(p.printArr(node.Funcname)...)
 
 	args := p.printSubClauseInlineSpace(node.Parameters)
 	if args == "" {
 		args = "()"
 	}
 
-	b.Append(p.identifier(p.printArr(node.Funcname)...) + args)
+	b.AddToLast(args)
 	b.keyword("RETURNS")
 	b.Append(p.printNode(node.ReturnType))
 	b.Append(p.printNodes(node.Options, " "))
@@ -1140,10 +1134,8 @@ func (p *printer) printDropStmt(node *DropStmt) string {
 
 	switch node.RemoveType {
 	case OBJECT_CAST:
-		tt, ok := node.Objects[0].(*List)
-		if ok {
-			b.Append(p.printSubClauseCustom("(", ")", p.keyword(" AS "), tt.Items, false))
-		}
+		tt := node.Objects[0].(*List)
+		b.Append(p.printSubClauseCustom("(", ")", p.keyword(" AS "), tt.Items, false))
 	case OBJECT_FUNCTION, OBJECT_AGGREGATE, OBJECT_SCHEMA, OBJECT_EXTENSION:
 		b.Append(p.printNodes(node.Objects, ","))
 	case OBJECT_OPFAMILY, OBJECT_OPCLASS:
@@ -1264,30 +1256,20 @@ func (p *printer) printUpdateStmt(node *UpdateStmt) string {
 	b.Append(p.printNode(node.WithClause))
 	b.keyword("UPDATE")
 	b.Append(p.printNode(node.Relation))
-	if len(node.TargetList) > 0 {
-		b.LF()
-		b.keyword("SET")
-		b.LF()
-		targets := p.printUpdateTargets(node.TargetList)
-		if p.pretty {
-			targets = p.padLines(targets)
-		}
-		b.Append(targets)
-	}
+	b.LF()
+	b.keyword("SET")
+	b.LF()
+	b.AppendPadded(p.printUpdateTargets(node.TargetList))
+
 	w := p.printNode(node.WhereClause)
 	if w != "" {
-		b.LF()
 		b.keyword("WHERE")
 		b.LF()
-		if p.pretty {
-			w = p.padLines(w)
-		}
-		b.Append(w)
+		b.AppendPadded(w)
 	}
 
 	r := p.printNodes(node.ReturningList, ", ")
 	if r != "" {
-		b.LF()
 		b.keyword("RETURNING")
 		b.Append(r)
 	}
@@ -1303,14 +1285,12 @@ func (p *printer) printCreateTableAsStmt(node *CreateTableAsStmt) string {
 	b.keywordIf("IF NOT EXISTS", node.IfNotExists)
 	b.identifier(p.printNode(node.Into))
 	b.Append(p.printSubClauseInlineSpace(node.Into.ColNames))
-
 	b.LF()
 
 	opts := p.printSubClauseInline(node.Into.Options)
 	if opts != "" {
 		b.keyword("WITH")
 		b.Append(opts)
-
 		b.LF()
 	}
 
@@ -1329,19 +1309,15 @@ func (p *printer) printCreateTableAsStmt(node *CreateTableAsStmt) string {
 	if node.Into.TableSpaceName != "" {
 		b.keyword("TABLESPACE")
 		b.Append(node.Into.TableSpaceName)
-
 		b.LF()
 	}
 
 	b.keyword("AS")
-
 	b.LF()
-
 	b.Append(p.printNode(node.Query))
 
 	if node.Into.SkipData {
 		b.LF()
-
 		b.keyword("WITH NO DATA")
 	}
 
@@ -1536,7 +1512,7 @@ func (p *printer) printCreateOpClassStmt(node *CreateOpClassStmt) string {
 	b.keyword("USING")
 	b.Append(node.Amname)
 	b.keyword("AS")
-	b.Append(p.printSubClauseCustom("", "", ", ", node.Items, true))
+	b.Append(p.printCSV(node.Items))
 
 	return b.Join(" ")
 }
@@ -1554,6 +1530,7 @@ func (p *printer) printCreateOpClassItem(node *CreateOpClassItem) string {
 	case FunctionItemType:
 		b.keyword("FUNCTION")
 	}
+
 	b.Append(strconv.Itoa(int(node.Number)))
 	b.Append(p.printObjectWithArgs(node.Name))
 
