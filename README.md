@@ -308,6 +308,10 @@ Currently this uses the V12 branch of libpg_query which seems to fail for most c
 
 parse_tree.proto pulled from [libpg_query PR67](https://github.com/lfittl/libpg_query/pull/67)
 
+# Coverage
+
+pgtree uses the rather large proto file noted above to autogenerate json parsers and object hierarchies, and the visitor and walk core loop.  A large chunk of the generated code is unreachable by the output of the postgres parser.  As of the time of this writing the coverage of hand written code is 88% (1287/1448) versus 16% when including all the generated code.
+
 # TODO
 
 - [ ] Finish moving all node printers to builder with formatter options
