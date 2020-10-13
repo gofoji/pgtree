@@ -1,6 +1,7 @@
-# pgtree [![Build Status](https://travis-ci.org/gofoji/pgtree.svg?branch=master)](https://travis-ci.org/gofoji/pgtree) [![Coverage Status](https://coveralls.io/repos/github/gofoji/pgtree/badge.svg?branch=master)](https://coveralls.io/github/gofoji/pgtree?branch=master) [![PkgGoDev](https://pkg.go.dev/badge/github.com/gofoji/pgtree)](https://pkg.go.dev/github.com/gofoji/pgtree) [![Report card](https://goreportcard.com/badge/github.com/gofoji/pgtree)](https://goreportcard.com/report/github.com/gofoji/pgtree)
+# pgtree [![Build Status](https://travis-ci.org/gofoji/pgtree.svg?branch=master)](https://travis-ci.org/gofoji/pgtree) [![codecov](https://codecov.io/gh/gofoji/pgtree/branch/master/graph/badge.svg)](https://codecov.io/gh/gofoji/pgtree) [![PkgGoDev](https://pkg.go.dev/badge/github.com/gofoji/pgtree)](https://pkg.go.dev/github.com/gofoji/pgtree) [![Report card](https://goreportcard.com/badge/github.com/gofoji/pgtree)](https://goreportcard.com/report/github.com/gofoji/pgtree)
 [![forthebadge](https://forthebadge.com/images/badges/made-with-go.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
+
 
 Builds on the excellent work of [libpq_query](https://github.com/lfittl/libpg_query) to use the postgres (v12) source code to parse the SQL.  
 
