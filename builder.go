@@ -27,25 +27,44 @@ func (c *sqlBuilder) Append(ss ...string) {
 	c.ss = append(c.ss, filterEmpty(ss)...)
 }
 
+func (c *sqlBuilder) AppendPadded(s string) {
+	if !c.opt.pretty {
+		c.Append(s)
+		return
+	}
+	ss := strings.Split(s, "\n")
+	for j := range ss {
+		if len(ss[j]) == 0 {
+			continue
+		}
+		c.ss = append(c.ss, strings.TrimRight(c.opt.Padding+ss[j]+"\n", " "))
+	}
+}
+
 func (c *sqlBuilder) AddToLast(s string) {
 	c.ss[len(c.ss)-1] = c.ss[len(c.ss)-1] + s
 }
 
 func (c *sqlBuilder) LF() {
-	c.ss = append(c.ss, "\n")
+	if c.opt.pretty {
+		c.ss = append(c.ss, "\n")
+	}
 }
 
 var asciiSpace = [256]uint8{'\t': 1, '\n': 1, '\v': 1, '\f': 1, '\r': 1, ' ': 1}
 
 func endsWithSpace(s string) bool {
 	l := len(s)
+	if l == 0 {
+		return false
+	}
 	i := s[l-1]
 
 	return asciiSpace[i] == 1
 }
 
 func startsWithSpace(s string) bool {
-	return asciiSpace[s[0]] == 1
+	return len(s) > 0 && asciiSpace[s[0]] == 1
 }
 
 func (c sqlBuilder) Join(sep string) string {

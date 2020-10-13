@@ -7,7 +7,8 @@ FROM
         foo
     WHERE
         id > 12345
-    LIMIT 100) q;
+    LIMIT 100
+    ) q;
 SELECT * FROM mytable FOR UPDATE NOWAIT;
 SELECT * FROM mytable FOR NO KEY UPDATE;
 SELECT * FROM mytable FOR SHARE;

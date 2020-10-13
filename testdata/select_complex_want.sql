@@ -18,8 +18,7 @@ FROM
     FULL JOIN x ON x.y = b.y
     NATURAL JOIN z
     CROSS JOIN asdf
-    LEFT JOIN (
-    VALUES
+    LEFT JOIN (VALUES
         (1, 'one'),
         (2, 'two'),
         (3, 'three')) t(num, letter) USING (num)

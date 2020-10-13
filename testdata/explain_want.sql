@@ -2,7 +2,8 @@ EXPLAIN (ANALYZE,VERBOSE)
 SELECT
     *
 FROM
-    tenk1 t1, tenk2 t2
+    tenk1 t1,
+    tenk2 t2
 WHERE
     t1.unique1 < 100
     AND t1.unique2 = t2.unique2;

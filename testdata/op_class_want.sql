@@ -10,6 +10,5 @@ CREATE OPERATOR CLASS gist__int_ops DEFAULT FOR TYPE _int4 USING gist AS
     FUNCTION 4 g_int_decompress(internal),
     FUNCTION 5 g_int_penalty(internal, internal, internal),
     FUNCTION 6 g_int_picksplit(internal, internal),
-    FUNCTION 7 g_int_same(_int4, _int4, internal)
-;
+    FUNCTION 7 g_int_same(_int4, _int4, internal);
 DROP OPERATOR CLASS widget_ops USING btree;

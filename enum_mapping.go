@@ -109,3 +109,9 @@ var CmdTypeKeyword = map[CmdType]string{
 	CMD_INSERT: "INSERT",
 	CMD_DELETE: "DELETE",
 }
+
+var SetOpUnionKeyword = map[SetOperation]string{
+	SETOP_UNION:     "UNION",
+	SETOP_INTERSECT: "INTERSECT",
+	SETOP_EXCEPT:    "EXCEPT",
+}

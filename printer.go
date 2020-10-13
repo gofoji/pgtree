@@ -85,9 +85,10 @@ func PrettyPrint(root Node) (string, error) {
 
 func Debug(root Node) (string, error) {
 	opt := FormatOptions{
-		pretty:    true,
-		Padding:   DefaultPadding,
-		SimpleLen: DefaultSimpleLen,
+		pretty:                 true,
+		OneResultColumnPerLine: true,
+		Padding:                DefaultPadding,
+		SimpleLen:              DefaultSimpleLen,
 	}
 	p := printer{FormatOptions: opt, debug: true}
 

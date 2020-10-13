@@ -13,4 +13,5 @@ WHERE
     FROM
         table_b
     WHERE
-        name = 'foo');
+        name = 'foo'
+    );
