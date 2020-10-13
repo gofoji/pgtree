@@ -2,37 +2,28 @@
 
 package pgtree
 
-import (
-"fmt"
-"reflect"
-"strings"
-)
-
 type Visitor func(node Node, stack []Node, v Visitor) Visitor
 
 func WalkList(list Nodes, stack []Node, v Visitor) {
-for _, n := range list {
-Walk(n, stack, v)
-}
+	for _, n := range list {
+		Walk(n, stack, v)
+	}
 }
 
 func Walk(node Node, stack []Node, v Visitor) {
-if node == nil {
-return
-}
-if v = v(node, stack, v); v == nil {
-return
-}
-stack = append(stack, node)
-switch n := node.(type) {
-case nil:
-return
-{{- range .Messages }}
-	{{- if not (eq .MessageName "Node") }}
-		case *{{ pascal .MessageName }}:
-		if n == nil {
+	if node == nil || isNilValue(node) {
 		return
-		}
+	}
+
+	if v = v(node, stack, v); v == nil {
+		return
+	}
+
+	stack = append(stack, node)
+	switch n := node.(type) {
+{{- range .Messages }}
+	{{- if and (not (eq .MessageName "Node")) ($.HasMessage .) }}
+		case *{{ pascal .MessageName }}:
 		{{- range .Fields }}
 			{{- if $.IsMessage .Type }}
 				{{- if .IsRepeated }}
@@ -44,43 +35,37 @@ return
 		{{- end }}
 	{{- end }}
 {{- end }}
-case *Root:
-Walk(n.Node, stack, v)
-case Nodes:
-for _, n2 := range n {
-Walk(n2, stack, v)
-}
-default:
-fmt.Printf("!%s%s\n", strings.Repeat("  ", len(stack)), reflect.TypeOf(node).Name())
-}
+	case *Root:
+		Walk(n.Node, stack, v)
+	case Nodes:
+		WalkList(n, stack, v)
+	}
 }
 
 type MutateFunc func(node *Node, stack []*Node, visitor MutateFunc) MutateFunc
 
 func mutateList(list Nodes, stack []*Node, v MutateFunc) {
-for i := range list {
-mutate(&list[i], stack, v)
-}
+	for i := range list {
+		mutate(&list[i], stack, v)
+	}
 }
 
 func mutate(node *Node, stack []*Node, v MutateFunc) {
-var nodeWrapper Node
-if node == nil {
-return
-}
-if v = v(node, stack, v); v == nil {
-return
-}
-stack = append(stack, node)
-switch n := (*node).(type) {
-case nil:
-return
+	var nodeWrapper Node
+	if node == nil || isNilValue(*node) {
+		return
+	}
+
+	if v = v(node, stack, v); v == nil {
+		return
+	}
+
+	stack = append(stack, node)
+
+	switch n := (*node).(type) {
 {{- range .Messages }}
 	{{- if not (eq .MessageName "Node") }}
 		case *{{ pascal .MessageName }}:
-		if n == nil {
-		return
-		}
 		{{- range .Fields }}
 			{{- if $.IsMessage .Type }}
 				{{- if .IsRepeated }}
@@ -97,11 +82,9 @@ return
 		{{- end }}
 	{{- end }}
 {{- end }}
-case *Root:
-mutate(&n.Node, stack, v)
-case Nodes:
-mutateList(n, stack, v)
-default:
-fmt.Printf("!!mutate missing type:%s\n", reflect.TypeOf(node).Name())
-}
+	case *Root:
+		mutate(&n.Node, stack, v)
+	case Nodes:
+		mutateList(n, stack, v)
+	}
 }

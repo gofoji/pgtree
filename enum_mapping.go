@@ -1,215 +1,111 @@
 package pgtree
 
-import "fmt"
-
-func (e ObjectType) TypeName() string {
-	switch e {
-	case OBJECT_ACCESS_METHOD:
-		return "ACCESS METHOD"
-	case OBJECT_AGGREGATE:
-		return "AGGREGATE"
-	case OBJECT_AMOP:
-		return "AMOP"
-	case OBJECT_AMPROC:
-		return "AMPROC"
-	case OBJECT_ATTRIBUTE:
-		return "ATTRIBUTE"
-	case OBJECT_CAST:
-		return "CAST"
-	case OBJECT_COLUMN:
-		return "COLUMN"
-	case OBJECT_COLLATION:
-		return "COLLATION"
-	case OBJECT_CONVERSION:
-		return "CONVERSION"
-	case OBJECT_DATABASE:
-		return "DATABASE"
-	case OBJECT_DEFAULT:
-		return "DEFAULT"
-	case OBJECT_DEFACL:
-		return "DEFAULT ACL"
-	case OBJECT_DOMAIN:
-		return "DOMAIN"
-	case OBJECT_DOMCONSTRAINT:
-		return "DOMCONSTRAINT"
-	case OBJECT_EVENT_TRIGGER:
-		return "EVENT TRIGGER"
-	case OBJECT_EXTENSION:
-		return "EXTENSION"
-	case OBJECT_FDW:
-		return "FOREIGN DATA WRAPPER"
-	case OBJECT_FOREIGN_SERVER:
-		return "SERVER"
-	case OBJECT_FOREIGN_TABLE:
-		return "FOREIGN TABLE"
-	case OBJECT_FUNCTION:
-		return "FUNCTION"
-	case OBJECT_INDEX:
-		return "INDEX"
-	case OBJECT_LANGUAGE:
-		return "LANGUAGE"
-	case OBJECT_LARGEOBJECT:
-		return "LARGEOBJECT"
-	case OBJECT_MATVIEW:
-		return "MATERIALIZED VIEW"
-	case OBJECT_OPCLASS:
-		return "OPERATOR CLASS"
-	case OBJECT_OPERATOR:
-		return "OPERATOR"
-	case OBJECT_OPFAMILY:
-		return "OPERATOR FAMILY"
-	case OBJECT_POLICY:
-		return "POLICY"
-	case OBJECT_PROCEDURE:
-		return "PROCEDURE"
-	case OBJECT_PUBLICATION:
-		return "PUBLICATION"
-	case OBJECT_PUBLICATION_REL:
-		return "OBJECT_PUBLICATION_REL"
-	case OBJECT_ROLE:
-		return "ROLE"
-	case OBJECT_ROUTINE:
-		return "ROUTINE"
-	case OBJECT_RULE:
-		return "RULE"
-	case OBJECT_SCHEMA:
-		return "SCHEMA"
-	case OBJECT_SEQUENCE:
-		return "SEQUENCE"
-	case OBJECT_SUBSCRIPTION:
-		return "SUBSCRIPTION"
-	case OBJECT_STATISTIC_EXT:
-		return "STATISTIC"
-	case OBJECT_TABCONSTRAINT:
-		return "TABLE CONSTRAINT"
-	case OBJECT_TABLE:
-		return "TABLE"
-	case OBJECT_TABLESPACE:
-		return "TABLESPACE"
-	case OBJECT_TRANSFORM:
-		return "TRANSFORM"
-	case OBJECT_TRIGGER:
-		return "TRIGGER"
-	case OBJECT_TSCONFIGURATION:
-		return "TEXT SEARCH CONFIGURATION"
-	case OBJECT_TSDICTIONARY:
-		return "TEXT SEARCH DICTIONARY"
-	case OBJECT_TSPARSER:
-		return "TEXT SEARCH PARSER"
-	case OBJECT_TSTEMPLATE:
-		return "TEXT SEARCH TEMPLATE"
-	case OBJECT_TYPE:
-		return "TYPE"
-	case OBJECT_USER_MAPPING:
-		return "USER MAPPING"
-	case OBJECT_VIEW:
-		return "VIEW"
-	}
-
-	return fmt.Sprintf("ObjectType(%d)", e)
+var ObjectTypeTypeName = map[ObjectType]string{
+	OBJECT_ACCESS_METHOD:   "ACCESS METHOD",
+	OBJECT_AGGREGATE:       "AGGREGATE",
+	OBJECT_AMOP:            "AMOP",
+	OBJECT_AMPROC:          "AMPROC",
+	OBJECT_ATTRIBUTE:       "ATTRIBUTE",
+	OBJECT_CAST:            "CAST",
+	OBJECT_COLUMN:          "COLUMN",
+	OBJECT_COLLATION:       "COLLATION",
+	OBJECT_CONVERSION:      "CONVERSION",
+	OBJECT_DATABASE:        "DATABASE",
+	OBJECT_DEFAULT:         "DEFAULT",
+	OBJECT_DEFACL:          "DEFAULT ACL",
+	OBJECT_DOMAIN:          "DOMAIN",
+	OBJECT_DOMCONSTRAINT:   "DOMCONSTRAINT",
+	OBJECT_EVENT_TRIGGER:   "EVENT TRIGGER",
+	OBJECT_EXTENSION:       "EXTENSION",
+	OBJECT_FDW:             "FOREIGN DATA WRAPPER",
+	OBJECT_FOREIGN_SERVER:  "SERVER",
+	OBJECT_FOREIGN_TABLE:   "FOREIGN TABLE",
+	OBJECT_FUNCTION:        "FUNCTION",
+	OBJECT_INDEX:           "INDEX",
+	OBJECT_LANGUAGE:        "LANGUAGE",
+	OBJECT_LARGEOBJECT:     "LARGEOBJECT",
+	OBJECT_MATVIEW:         "MATERIALIZED VIEW",
+	OBJECT_OPCLASS:         "OPERATOR CLASS",
+	OBJECT_OPERATOR:        "OPERATOR",
+	OBJECT_OPFAMILY:        "OPERATOR FAMILY",
+	OBJECT_POLICY:          "POLICY",
+	OBJECT_PROCEDURE:       "PROCEDURE",
+	OBJECT_PUBLICATION:     "PUBLICATION",
+	OBJECT_PUBLICATION_REL: "OBJECT_PUBLICATION_REL",
+	OBJECT_ROLE:            "ROLE",
+	OBJECT_ROUTINE:         "ROUTINE",
+	OBJECT_RULE:            "RULE",
+	OBJECT_SCHEMA:          "SCHEMA",
+	OBJECT_SEQUENCE:        "SEQUENCE",
+	OBJECT_SUBSCRIPTION:    "SUBSCRIPTION",
+	OBJECT_STATISTIC_EXT:   "STATISTIC",
+	OBJECT_TABCONSTRAINT:   "TABLE CONSTRAINT",
+	OBJECT_TABLE:           "TABLE",
+	OBJECT_TABLESPACE:      "TABLESPACE",
+	OBJECT_TRANSFORM:       "TRANSFORM",
+	OBJECT_TRIGGER:         "TRIGGER",
+	OBJECT_TSCONFIGURATION: "TEXT SEARCH CONFIGURATION",
+	OBJECT_TSDICTIONARY:    "TEXT SEARCH DICTIONARY",
+	OBJECT_TSPARSER:        "TEXT SEARCH PARSER",
+	OBJECT_TSTEMPLATE:      "TEXT SEARCH TEMPLATE",
+	OBJECT_TYPE:            "TYPE",
+	OBJECT_USER_MAPPING:    "USER MAPPING",
+	OBJECT_VIEW:            "VIEW",
 }
 
-func (e SQLValueFunctionOp) Op() string {
-	switch e {
-	case SVFOP_CURRENT_DATE:
-		return "current_date"
-	case SVFOP_CURRENT_TIME:
-		return "current_time"
-	case SVFOP_CURRENT_TIME_N:
-		return "current_time"
-	case SVFOP_CURRENT_TIMESTAMP:
-		return "current_timestamp"
-	case SVFOP_CURRENT_TIMESTAMP_N:
-		return "current_timestamp"
-	case SVFOP_LOCALTIME:
-		return "localtime"
-	case SVFOP_LOCALTIME_N:
-		return "localtime"
-	case SVFOP_LOCALTIMESTAMP:
-		return "localtimestamp"
-	case SVFOP_LOCALTIMESTAMP_N:
-		return "localtimestamp"
-	case SVFOP_CURRENT_ROLE:
-		return "current_role"
-	case SVFOP_CURRENT_USER:
-		return "current_user"
-	case SVFOP_USER:
-		return "user"
-	case SVFOP_SESSION_USER:
-		return "session_user"
-	case SVFOP_CURRENT_CATALOG:
-		return "current_catalog"
-	case SVFOP_CURRENT_SCHEMA:
-		return "current_schema"
-	}
-
-	return fmt.Sprintf("SQLValueFunctionOp(%d)", e)
+var SQLValueFunctionOpLabel = map[SQLValueFunctionOp]string{
+	SVFOP_CURRENT_DATE:        "current_date",
+	SVFOP_CURRENT_TIME:        "current_time",
+	SVFOP_CURRENT_TIME_N:      "current_time",
+	SVFOP_CURRENT_TIMESTAMP:   "current_timestamp",
+	SVFOP_CURRENT_TIMESTAMP_N: "current_timestamp",
+	SVFOP_LOCALTIME:           "localtime",
+	SVFOP_LOCALTIME_N:         "localtime",
+	SVFOP_LOCALTIMESTAMP:      "localtimestamp",
+	SVFOP_LOCALTIMESTAMP_N:    "localtimestamp",
+	SVFOP_CURRENT_ROLE:        "current_role",
+	SVFOP_CURRENT_USER:        "current_user",
+	SVFOP_USER:                "user",
+	SVFOP_SESSION_USER:        "session_user",
+	SVFOP_CURRENT_CATALOG:     "current_catalog",
+	SVFOP_CURRENT_SCHEMA:      "current_schema",
 }
 
-func (e LockClauseStrength) Keyword() string {
-	switch e {
-	case LCS_NONE:
-		return ""
-	case LCS_FORKEYSHARE:
-		return "KEY SHARE"
-	case LCS_FORSHARE:
-		return "SHARE"
-	case LCS_FORNOKEYUPDATE:
-		return "NO KEY UPDATE"
-	case LCS_FORUPDATE:
-		return "UPDATE"
-	}
-
-	return fmt.Sprintf("LockClauseStrength(%d)", e)
+var LockClauseStrengthKeyword = map[LockClauseStrength]string{
+	LCS_NONE:           "",
+	LCS_FORKEYSHARE:    "KEY SHARE",
+	LCS_FORSHARE:       "SHARE",
+	LCS_FORNOKEYUPDATE: "NO KEY UPDATE",
+	LCS_FORUPDATE:      "UPDATE",
 }
 
 type LockMode int8
 
 const (
-	LOCKMODE_AccessShare          LockMode = 1
-	LOCKMODE_RowShare             LockMode = 2
-	LOCKMODE_RowExclusive         LockMode = 3
-	LOCKMODE_ShareUpdateExclusive LockMode = 4
-	LOCKMODE_Share                LockMode = 5
-	LOCKMODE_ShareRowExclusive    LockMode = 6
-	LOCKMODE_Exclusive            LockMode = 7
-	LOCKMODE_AccessExclusive      LockMode = 8
+	LockModeAccessShare          LockMode = 1
+	LockModeRowShare             LockMode = 2
+	LockModeRowExclusive         LockMode = 3
+	LockModeShareUpdateExclusive LockMode = 4
+	LockModeShare                LockMode = 5
+	LockModeShareRowExclusive    LockMode = 6
+	LockModeExclusive            LockMode = 7
+	LockModeAccessExclusive      LockMode = 8
 )
 
-func (e LockMode) Keyword() string {
-	switch e {
-	case LOCKMODE_AccessShare:
-		return "IN ACCESS SHARE MODE"
-	case LOCKMODE_RowShare:
-		return "IN ROW SHARE MODE"
-	case LOCKMODE_RowExclusive:
-		return "IN ROW EXCLUSIVE MODE"
-	case LOCKMODE_ShareUpdateExclusive:
-		return "IN SHARE UPDATE EXCLUSIVE MODE"
-	case LOCKMODE_Share:
-		return "IN SHARE MODE"
-	case LOCKMODE_ShareRowExclusive:
-		return "IN SHARE ROW EXCLUSIVE MODE"
-	case LOCKMODE_Exclusive:
-		return "IN EXCLUSIVE MODE"
-	case LOCKMODE_AccessExclusive:
-		return "IN ACCESS EXCLUSIVE MODE"
-	}
-
-	return fmt.Sprintf("LockMode(%d)", e)
+var LockModeKeyword = map[LockMode]string{
+	LockModeAccessShare:          "IN ACCESS SHARE MODE",
+	LockModeRowShare:             "IN ROW SHARE MODE",
+	LockModeRowExclusive:         "IN ROW EXCLUSIVE MODE",
+	LockModeShareUpdateExclusive: "IN SHARE UPDATE EXCLUSIVE MODE",
+	LockModeShare:                "IN SHARE MODE",
+	LockModeShareRowExclusive:    "IN SHARE ROW EXCLUSIVE MODE",
+	LockModeExclusive:            "IN EXCLUSIVE MODE",
+	LockModeAccessExclusive:      "IN ACCESS EXCLUSIVE MODE",
 }
 
-func (e CmdType) Keyword() string {
-	switch e {
-	case CMD_SELECT:
-		return "SELECT"
-	case CMD_UPDATE:
-		return "UPDATE"
-	case CMD_INSERT:
-		return "INSERT"
-	case CMD_DELETE:
-		return "DELETE"
-	}
-
-	return fmt.Sprintf("CmdType(%d)", e)
+var CmdTypeKeyword = map[CmdType]string{
+	CMD_SELECT: "SELECT",
+	CMD_UPDATE: "UPDATE",
+	CMD_INSERT: "INSERT",
+	CMD_DELETE: "DELETE",
 }

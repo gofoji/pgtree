@@ -9,16 +9,13 @@ import (
 )
 
 func UnmarshalNodeJSON(input []byte) (node Node, err error) {
-	if input == nil || string(input) == "null" {
-		return
-	}
-
 	if strings.HasPrefix(string(input), "[") {
 		var list Nodes
 		list, err = UnmarshalNodeArrayJSON(input)
 		if err != nil {
 			return
 		}
+
 		node = list
 		return
 	}
@@ -32,8 +29,6 @@ func UnmarshalNodeJSON(input []byte) (node Node, err error) {
 
 	for nodeType, jsonText := range nodeMap {
 		switch nodeType {
-		case "Node":
-			return UnmarshalNodeJSON(jsonText)
 
 		case "Integer":
 			var outNode Integer
@@ -1844,24 +1839,11 @@ func UnmarshalNodeJSON(input []byte) (node Node, err error) {
 			node = &outNode
 		default:
 			err = fmt.Errorf("Could not unmarshal node of type %s and content %s", nodeType, jsonText)
+
 			return
 		}
 	}
 
-	return
-}
-
-func UnmarshalNodePtrJSON(input []byte) (nodePtr *Node, err error) {
-	if input == nil {
-		return
-	}
-
-	node, err := UnmarshalNodeJSON(input)
-	if err != nil {
-		return
-	}
-
-	nodePtr = &node
 	return
 }
 
@@ -1886,39 +1868,6 @@ func UnmarshalNodeArrayJSON(input []byte) (nodes Nodes, err error) {
 	return
 }
 
-func UnmarshalNodeArrayArrayJSON(input []byte) (nodeLists []Nodes, err error) {
-	var items []json.RawMessage
-
-	err = json.Unmarshal(input, &items)
-	if err != nil {
-		return
-	}
-
-	for _, itemJSON := range items {
-		var nodeList Nodes
-		nodeList, err = UnmarshalNodeArrayJSON(itemJSON)
-		if err != nil {
-			return
-		}
-
-		nodeLists = append(nodeLists, nodeList)
-	}
-
-	return
-}
-
-func (node *Integer) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["ival"] = node.Ival
-
-	return json.Marshal(map[string]interface{}{
-		"Integer": fields,
-	})
-}
-
 func (node *Integer) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -1935,18 +1884,6 @@ func (node *Integer) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *Float) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["str"] = node.Str
-
-	return json.Marshal(map[string]interface{}{
-		"Float": fields,
-	})
 }
 
 func (node *Float) UnmarshalJSON(input []byte) (err error) {
@@ -1967,18 +1904,6 @@ func (node *Float) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *String) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["str"] = node.Str
-
-	return json.Marshal(map[string]interface{}{
-		"String": fields,
-	})
-}
-
 func (node *String) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -1995,18 +1920,6 @@ func (node *String) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *BitString) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["str"] = node.Str
-
-	return json.Marshal(map[string]interface{}{
-		"BitString": fields,
-	})
 }
 
 func (node *BitString) UnmarshalJSON(input []byte) (err error) {
@@ -2027,17 +1940,6 @@ func (node *BitString) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *Null) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-
-	return json.Marshal(map[string]interface{}{
-		"Null": fields,
-	})
-}
-
 func (node *Null) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -2047,20 +1949,6 @@ func (node *Null) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *List) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Items != nil {
-		fields["items"] = node.Items
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"List": fields,
-	})
 }
 
 func (node *List) UnmarshalJSON(input []byte) (err error) {
@@ -2081,20 +1969,6 @@ func (node *List) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *OidList) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Items != nil {
-		fields["items"] = node.Items
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"OidList": fields,
-	})
-}
-
 func (node *OidList) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -2113,20 +1987,6 @@ func (node *OidList) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *IntList) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Items != nil {
-		fields["items"] = node.Items
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"IntList": fields,
-	})
-}
-
 func (node *IntList) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -2143,21 +2003,6 @@ func (node *IntList) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *Alias) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["aliasname"] = node.Aliasname
-	if node.Colnames != nil {
-		fields["colnames"] = node.Colnames
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"Alias": fields,
-	})
 }
 
 func (node *Alias) UnmarshalJSON(input []byte) (err error) {
@@ -2183,26 +2028,6 @@ func (node *Alias) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *RangeVar) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["catalogname"] = node.Catalogname
-	fields["schemaname"] = node.Schemaname
-	fields["relname"] = node.Relname
-	fields["inh"] = node.Inh
-	fields["relpersistence"] = node.Relpersistence
-	if node.Alias != nil {
-		fields["alias"] = node.Alias
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"RangeVar": fields,
-	})
 }
 
 func (node *RangeVar) UnmarshalJSON(input []byte) (err error) {
@@ -2263,49 +2088,6 @@ func (node *RangeVar) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *TableFunc) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.NsUris != nil {
-		fields["ns_uris"] = node.NsUris
-	}
-	if node.NsNames != nil {
-		fields["ns_names"] = node.NsNames
-	}
-	if node.Docexpr != nil {
-		fields["docexpr"] = node.Docexpr
-	}
-	if node.Rowexpr != nil {
-		fields["rowexpr"] = node.Rowexpr
-	}
-	if node.Colnames != nil {
-		fields["colnames"] = node.Colnames
-	}
-	if node.Coltypes != nil {
-		fields["coltypes"] = node.Coltypes
-	}
-	if node.Coltypmods != nil {
-		fields["coltypmods"] = node.Coltypmods
-	}
-	if node.Colcollations != nil {
-		fields["colcollations"] = node.Colcollations
-	}
-	if node.Colexprs != nil {
-		fields["colexprs"] = node.Colexprs
-	}
-	if node.Coldefexprs != nil {
-		fields["coldefexprs"] = node.Coldefexprs
-	}
-	fields["ordinalitycol"] = node.Ordinalitycol
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"TableFunc": fields,
-	})
 }
 
 func (node *TableFunc) UnmarshalJSON(input []byte) (err error) {
@@ -2403,17 +2185,6 @@ func (node *TableFunc) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *Expr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-
-	return json.Marshal(map[string]interface{}{
-		"Expr": fields,
-	})
-}
-
 func (node *Expr) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -2423,39 +2194,6 @@ func (node *Expr) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *Var) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Varno != nil {
-		fields["varno"] = node.Varno
-	}
-	fields["varattno"] = node.Varattno
-	if node.Vartype != nil {
-		fields["vartype"] = node.Vartype
-	}
-	fields["vartypmod"] = node.Vartypmod
-	if node.Varcollid != nil {
-		fields["varcollid"] = node.Varcollid
-	}
-	if node.Varlevelsup != nil {
-		fields["varlevelsup"] = node.Varlevelsup
-	}
-	if node.Varnoold != nil {
-		fields["varnoold"] = node.Varnoold
-	}
-	fields["varoattno"] = node.Varoattno
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"Var": fields,
-	})
 }
 
 func (node *Var) UnmarshalJSON(input []byte) (err error) {
@@ -2539,30 +2277,6 @@ func (node *Var) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *Param) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	fields["paramkind"] = node.Paramkind
-	fields["paramid"] = node.Paramid
-	if node.Paramtype != nil {
-		fields["paramtype"] = node.Paramtype
-	}
-	fields["paramtypmod"] = node.Paramtypmod
-	if node.Paramcollid != nil {
-		fields["paramcollid"] = node.Paramcollid
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"Param": fields,
-	})
-}
-
 func (node *Param) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -2621,61 +2335,6 @@ func (node *Param) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *Aggref) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Aggfnoid != nil {
-		fields["aggfnoid"] = node.Aggfnoid
-	}
-	if node.Aggtype != nil {
-		fields["aggtype"] = node.Aggtype
-	}
-	if node.Aggcollid != nil {
-		fields["aggcollid"] = node.Aggcollid
-	}
-	if node.Inputcollid != nil {
-		fields["inputcollid"] = node.Inputcollid
-	}
-	if node.Aggtranstype != nil {
-		fields["aggtranstype"] = node.Aggtranstype
-	}
-	if node.Aggargtypes != nil {
-		fields["aggargtypes"] = node.Aggargtypes
-	}
-	if node.Aggdirectargs != nil {
-		fields["aggdirectargs"] = node.Aggdirectargs
-	}
-	if node.Args != nil {
-		fields["args"] = node.Args
-	}
-	if node.Aggorder != nil {
-		fields["aggorder"] = node.Aggorder
-	}
-	if node.Aggdistinct != nil {
-		fields["aggdistinct"] = node.Aggdistinct
-	}
-	if node.Aggfilter != nil {
-		fields["aggfilter"] = node.Aggfilter
-	}
-	fields["aggstar"] = node.Aggstar
-	fields["aggvariadic"] = node.Aggvariadic
-	fields["aggkind"] = node.Aggkind
-	if node.Agglevelsup != nil {
-		fields["agglevelsup"] = node.Agglevelsup
-	}
-	fields["aggsplit"] = node.Aggsplit
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"Aggref": fields,
-	})
 }
 
 func (node *Aggref) UnmarshalJSON(input []byte) (err error) {
@@ -2815,33 +2474,6 @@ func (node *Aggref) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *GroupingFunc) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Args != nil {
-		fields["args"] = node.Args
-	}
-	if node.Refs != nil {
-		fields["refs"] = node.Refs
-	}
-	if node.Cols != nil {
-		fields["cols"] = node.Cols
-	}
-	if node.Agglevelsup != nil {
-		fields["agglevelsup"] = node.Agglevelsup
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"GroupingFunc": fields,
-	})
-}
-
 func (node *GroupingFunc) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -2893,44 +2525,6 @@ func (node *GroupingFunc) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *WindowFunc) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Winfnoid != nil {
-		fields["winfnoid"] = node.Winfnoid
-	}
-	if node.Wintype != nil {
-		fields["wintype"] = node.Wintype
-	}
-	if node.Wincollid != nil {
-		fields["wincollid"] = node.Wincollid
-	}
-	if node.Inputcollid != nil {
-		fields["inputcollid"] = node.Inputcollid
-	}
-	if node.Args != nil {
-		fields["args"] = node.Args
-	}
-	if node.Aggfilter != nil {
-		fields["aggfilter"] = node.Aggfilter
-	}
-	if node.Winref != nil {
-		fields["winref"] = node.Winref
-	}
-	fields["winstar"] = node.Winstar
-	fields["winagg"] = node.Winagg
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"WindowFunc": fields,
-	})
 }
 
 func (node *WindowFunc) UnmarshalJSON(input []byte) (err error) {
@@ -3021,42 +2615,6 @@ func (node *WindowFunc) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *SubscriptingRef) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Refcontainertype != nil {
-		fields["refcontainertype"] = node.Refcontainertype
-	}
-	if node.Refelemtype != nil {
-		fields["refelemtype"] = node.Refelemtype
-	}
-	fields["reftypmod"] = node.Reftypmod
-	if node.Refcollid != nil {
-		fields["refcollid"] = node.Refcollid
-	}
-	if node.Refupperindexpr != nil {
-		fields["refupperindexpr"] = node.Refupperindexpr
-	}
-	if node.Reflowerindexpr != nil {
-		fields["reflowerindexpr"] = node.Reflowerindexpr
-	}
-	if node.Refexpr != nil {
-		fields["refexpr"] = node.Refexpr
-	}
-	if node.Refassgnexpr != nil {
-		fields["refassgnexpr"] = node.Refassgnexpr
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"SubscriptingRef": fields,
-	})
-}
-
 func (node *SubscriptingRef) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -3129,39 +2687,6 @@ func (node *SubscriptingRef) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *FuncExpr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Funcid != nil {
-		fields["funcid"] = node.Funcid
-	}
-	if node.Funcresulttype != nil {
-		fields["funcresulttype"] = node.Funcresulttype
-	}
-	fields["funcretset"] = node.Funcretset
-	fields["funcvariadic"] = node.Funcvariadic
-	fields["funcformat"] = node.Funcformat
-	if node.Funccollid != nil {
-		fields["funccollid"] = node.Funccollid
-	}
-	if node.Inputcollid != nil {
-		fields["inputcollid"] = node.Inputcollid
-	}
-	if node.Args != nil {
-		fields["args"] = node.Args
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"FuncExpr": fields,
-	})
 }
 
 func (node *FuncExpr) UnmarshalJSON(input []byte) (err error) {
@@ -3245,26 +2770,6 @@ func (node *FuncExpr) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *NamedArgExpr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Arg != nil {
-		fields["arg"] = node.Arg
-	}
-	fields["name"] = node.Name
-	fields["argnumber"] = node.Argnumber
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"NamedArgExpr": fields,
-	})
-}
-
 func (node *NamedArgExpr) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -3309,40 +2814,6 @@ func (node *NamedArgExpr) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *OpExpr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Opno != nil {
-		fields["opno"] = node.Opno
-	}
-	if node.Opfuncid != nil {
-		fields["opfuncid"] = node.Opfuncid
-	}
-	if node.Opresulttype != nil {
-		fields["opresulttype"] = node.Opresulttype
-	}
-	fields["opretset"] = node.Opretset
-	if node.Opcollid != nil {
-		fields["opcollid"] = node.Opcollid
-	}
-	if node.Inputcollid != nil {
-		fields["inputcollid"] = node.Inputcollid
-	}
-	if node.Args != nil {
-		fields["args"] = node.Args
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"OpExpr": fields,
-	})
 }
 
 func (node *OpExpr) UnmarshalJSON(input []byte) (err error) {
@@ -3419,40 +2890,6 @@ func (node *OpExpr) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *DistinctExpr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Opno != nil {
-		fields["opno"] = node.Opno
-	}
-	if node.Opfuncid != nil {
-		fields["opfuncid"] = node.Opfuncid
-	}
-	if node.Opresulttype != nil {
-		fields["opresulttype"] = node.Opresulttype
-	}
-	fields["opretset"] = node.Opretset
-	if node.Opcollid != nil {
-		fields["opcollid"] = node.Opcollid
-	}
-	if node.Inputcollid != nil {
-		fields["inputcollid"] = node.Inputcollid
-	}
-	if node.Args != nil {
-		fields["args"] = node.Args
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"DistinctExpr": fields,
-	})
-}
-
 func (node *DistinctExpr) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -3525,40 +2962,6 @@ func (node *DistinctExpr) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *NullIfExpr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Opno != nil {
-		fields["opno"] = node.Opno
-	}
-	if node.Opfuncid != nil {
-		fields["opfuncid"] = node.Opfuncid
-	}
-	if node.Opresulttype != nil {
-		fields["opresulttype"] = node.Opresulttype
-	}
-	fields["opretset"] = node.Opretset
-	if node.Opcollid != nil {
-		fields["opcollid"] = node.Opcollid
-	}
-	if node.Inputcollid != nil {
-		fields["inputcollid"] = node.Inputcollid
-	}
-	if node.Args != nil {
-		fields["args"] = node.Args
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"NullIfExpr": fields,
-	})
 }
 
 func (node *NullIfExpr) UnmarshalJSON(input []byte) (err error) {
@@ -3635,34 +3038,6 @@ func (node *NullIfExpr) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *ScalarArrayOpExpr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Opno != nil {
-		fields["opno"] = node.Opno
-	}
-	if node.Opfuncid != nil {
-		fields["opfuncid"] = node.Opfuncid
-	}
-	fields["useOr"] = node.UseOr
-	if node.Inputcollid != nil {
-		fields["inputcollid"] = node.Inputcollid
-	}
-	if node.Args != nil {
-		fields["args"] = node.Args
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"ScalarArrayOpExpr": fields,
-	})
-}
-
 func (node *ScalarArrayOpExpr) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -3723,25 +3098,6 @@ func (node *ScalarArrayOpExpr) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *BoolExpr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	fields["boolop"] = node.Boolop
-	if node.Args != nil {
-		fields["args"] = node.Args
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"BoolExpr": fields,
-	})
-}
-
 func (node *BoolExpr) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -3779,32 +3135,6 @@ func (node *BoolExpr) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *SubLink) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	fields["subLinkType"] = node.SubLinkType
-	fields["subLinkId"] = node.SubLinkID
-	if node.Testexpr != nil {
-		fields["testexpr"] = node.Testexpr
-	}
-	if node.OperName != nil {
-		fields["operName"] = node.OperName
-	}
-	if node.Subselect != nil {
-		fields["subselect"] = node.Subselect
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"SubLink": fields,
-	})
 }
 
 func (node *SubLink) UnmarshalJSON(input []byte) (err error) {
@@ -3865,50 +3195,6 @@ func (node *SubLink) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *SubPlan) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	fields["subLinkType"] = node.SubLinkType
-	if node.Testexpr != nil {
-		fields["testexpr"] = node.Testexpr
-	}
-	if node.ParamIds != nil {
-		fields["paramIds"] = node.ParamIds
-	}
-	fields["plan_id"] = node.PlanID
-	fields["plan_name"] = node.PlanName
-	if node.FirstColType != nil {
-		fields["firstColType"] = node.FirstColType
-	}
-	fields["firstColTypmod"] = node.FirstColTypmod
-	if node.FirstColCollation != nil {
-		fields["firstColCollation"] = node.FirstColCollation
-	}
-	fields["useHashTable"] = node.UseHashTable
-	fields["unknownEqFalse"] = node.UnknownEqFalse
-	fields["parallel_safe"] = node.ParallelSafe
-	if node.SetParam != nil {
-		fields["setParam"] = node.SetParam
-	}
-	if node.ParParam != nil {
-		fields["parParam"] = node.ParParam
-	}
-	if node.Args != nil {
-		fields["args"] = node.Args
-	}
-	fields["startup_cost"] = node.StartupCost
-	fields["per_call_cost"] = node.PerCallCost
-
-	return json.Marshal(map[string]interface{}{
-		"SubPlan": fields,
-	})
 }
 
 func (node *SubPlan) UnmarshalJSON(input []byte) (err error) {
@@ -4041,23 +3327,6 @@ func (node *SubPlan) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *AlternativeSubPlan) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Subplans != nil {
-		fields["subplans"] = node.Subplans
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"AlternativeSubPlan": fields,
-	})
-}
-
 func (node *AlternativeSubPlan) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -4081,31 +3350,6 @@ func (node *AlternativeSubPlan) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *FieldSelect) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Arg != nil {
-		fields["arg"] = node.Arg
-	}
-	fields["fieldnum"] = node.Fieldnum
-	if node.Resulttype != nil {
-		fields["resulttype"] = node.Resulttype
-	}
-	fields["resulttypmod"] = node.Resulttypmod
-	if node.Resultcollid != nil {
-		fields["resultcollid"] = node.Resultcollid
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"FieldSelect": fields,
-	})
 }
 
 func (node *FieldSelect) UnmarshalJSON(input []byte) (err error) {
@@ -4161,32 +3405,6 @@ func (node *FieldSelect) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *FieldStore) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Arg != nil {
-		fields["arg"] = node.Arg
-	}
-	if node.Newvals != nil {
-		fields["newvals"] = node.Newvals
-	}
-	if node.Fieldnums != nil {
-		fields["fieldnums"] = node.Fieldnums
-	}
-	if node.Resulttype != nil {
-		fields["resulttype"] = node.Resulttype
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"FieldStore": fields,
-	})
-}
-
 func (node *FieldStore) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -4231,32 +3449,6 @@ func (node *FieldStore) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *RelabelType) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Arg != nil {
-		fields["arg"] = node.Arg
-	}
-	if node.Resulttype != nil {
-		fields["resulttype"] = node.Resulttype
-	}
-	fields["resulttypmod"] = node.Resulttypmod
-	if node.Resultcollid != nil {
-		fields["resultcollid"] = node.Resultcollid
-	}
-	fields["relabelformat"] = node.Relabelformat
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"RelabelType": fields,
-	})
 }
 
 func (node *RelabelType) UnmarshalJSON(input []byte) (err error) {
@@ -4319,31 +3511,6 @@ func (node *RelabelType) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *CoerceViaIo) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Arg != nil {
-		fields["arg"] = node.Arg
-	}
-	if node.Resulttype != nil {
-		fields["resulttype"] = node.Resulttype
-	}
-	if node.Resultcollid != nil {
-		fields["resultcollid"] = node.Resultcollid
-	}
-	fields["coerceformat"] = node.Coerceformat
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"CoerceViaIO": fields,
-	})
-}
-
 func (node *CoerceViaIo) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -4395,35 +3562,6 @@ func (node *CoerceViaIo) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *ArrayCoerceExpr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Arg != nil {
-		fields["arg"] = node.Arg
-	}
-	if node.Elemexpr != nil {
-		fields["elemexpr"] = node.Elemexpr
-	}
-	if node.Resulttype != nil {
-		fields["resulttype"] = node.Resulttype
-	}
-	fields["resulttypmod"] = node.Resulttypmod
-	if node.Resultcollid != nil {
-		fields["resultcollid"] = node.Resultcollid
-	}
-	fields["coerceformat"] = node.Coerceformat
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"ArrayCoerceExpr": fields,
-	})
 }
 
 func (node *ArrayCoerceExpr) UnmarshalJSON(input []byte) (err error) {
@@ -4493,28 +3631,6 @@ func (node *ArrayCoerceExpr) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *ConvertRowtypeExpr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Arg != nil {
-		fields["arg"] = node.Arg
-	}
-	if node.Resulttype != nil {
-		fields["resulttype"] = node.Resulttype
-	}
-	fields["convertformat"] = node.Convertformat
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"ConvertRowtypeExpr": fields,
-	})
-}
-
 func (node *ConvertRowtypeExpr) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -4561,27 +3677,6 @@ func (node *ConvertRowtypeExpr) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *CollateExpr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Arg != nil {
-		fields["arg"] = node.Arg
-	}
-	if node.CollOid != nil {
-		fields["collOid"] = node.CollOid
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"CollateExpr": fields,
-	})
-}
-
 func (node *CollateExpr) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -4619,36 +3714,6 @@ func (node *CollateExpr) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *CaseExpr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Casetype != nil {
-		fields["casetype"] = node.Casetype
-	}
-	if node.Casecollid != nil {
-		fields["casecollid"] = node.Casecollid
-	}
-	if node.Arg != nil {
-		fields["arg"] = node.Arg
-	}
-	if node.Args != nil {
-		fields["args"] = node.Args
-	}
-	if node.Defresult != nil {
-		fields["defresult"] = node.Defresult
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"CaseExpr": fields,
-	})
 }
 
 func (node *CaseExpr) UnmarshalJSON(input []byte) (err error) {
@@ -4711,27 +3776,6 @@ func (node *CaseExpr) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *CaseWhen) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Expr != nil {
-		fields["expr"] = node.Expr
-	}
-	if node.Result != nil {
-		fields["result"] = node.Result
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"CaseWhen": fields,
-	})
-}
-
 func (node *CaseWhen) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -4771,27 +3815,6 @@ func (node *CaseWhen) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *CaseTestExpr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.TypeID != nil {
-		fields["typeId"] = node.TypeID
-	}
-	fields["typeMod"] = node.TypeMod
-	if node.Collation != nil {
-		fields["collation"] = node.Collation
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"CaseTestExpr": fields,
-	})
-}
-
 func (node *CaseTestExpr) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -4829,34 +3852,6 @@ func (node *CaseTestExpr) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *ArrayExpr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.ArrayTypeid != nil {
-		fields["array_typeid"] = node.ArrayTypeid
-	}
-	if node.ArrayCollid != nil {
-		fields["array_collid"] = node.ArrayCollid
-	}
-	if node.ElementTypeid != nil {
-		fields["element_typeid"] = node.ElementTypeid
-	}
-	if node.Elements != nil {
-		fields["elements"] = node.Elements
-	}
-	fields["multidims"] = node.Multidims
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"ArrayExpr": fields,
-	})
 }
 
 func (node *ArrayExpr) UnmarshalJSON(input []byte) (err error) {
@@ -4919,31 +3914,6 @@ func (node *ArrayExpr) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *RowExpr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Args != nil {
-		fields["args"] = node.Args
-	}
-	if node.RowTypeid != nil {
-		fields["row_typeid"] = node.RowTypeid
-	}
-	fields["row_format"] = node.RowFormat
-	if node.Colnames != nil {
-		fields["colnames"] = node.Colnames
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"RowExpr": fields,
-	})
-}
-
 func (node *RowExpr) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -4995,36 +3965,6 @@ func (node *RowExpr) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *RowCompareExpr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	fields["rctype"] = node.Rctype
-	if node.Opnos != nil {
-		fields["opnos"] = node.Opnos
-	}
-	if node.Opfamilies != nil {
-		fields["opfamilies"] = node.Opfamilies
-	}
-	if node.Inputcollids != nil {
-		fields["inputcollids"] = node.Inputcollids
-	}
-	if node.Largs != nil {
-		fields["largs"] = node.Largs
-	}
-	if node.Rargs != nil {
-		fields["rargs"] = node.Rargs
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"RowCompareExpr": fields,
-	})
 }
 
 func (node *RowCompareExpr) UnmarshalJSON(input []byte) (err error) {
@@ -5087,30 +4027,6 @@ func (node *RowCompareExpr) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *CoalesceExpr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Coalescetype != nil {
-		fields["coalescetype"] = node.Coalescetype
-	}
-	if node.Coalescecollid != nil {
-		fields["coalescecollid"] = node.Coalescecollid
-	}
-	if node.Args != nil {
-		fields["args"] = node.Args
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"CoalesceExpr": fields,
-	})
-}
-
 func (node *CoalesceExpr) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -5155,34 +4071,6 @@ func (node *CoalesceExpr) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *MinMaxExpr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Minmaxtype != nil {
-		fields["minmaxtype"] = node.Minmaxtype
-	}
-	if node.Minmaxcollid != nil {
-		fields["minmaxcollid"] = node.Minmaxcollid
-	}
-	if node.Inputcollid != nil {
-		fields["inputcollid"] = node.Inputcollid
-	}
-	fields["op"] = node.Op
-	if node.Args != nil {
-		fields["args"] = node.Args
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"MinMaxExpr": fields,
-	})
 }
 
 func (node *MinMaxExpr) UnmarshalJSON(input []byte) (err error) {
@@ -5245,26 +4133,6 @@ func (node *MinMaxExpr) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *SqlvalueFunction) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	fields["op"] = node.Op
-	if node.Type != nil {
-		fields["type"] = node.Type
-	}
-	fields["typmod"] = node.Typmod
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"SQLValueFunction": fields,
-	})
-}
-
 func (node *SqlvalueFunction) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -5309,37 +4177,6 @@ func (node *SqlvalueFunction) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *XmlExpr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	fields["op"] = node.Op
-	fields["name"] = node.Name
-	if node.NamedArgs != nil {
-		fields["named_args"] = node.NamedArgs
-	}
-	if node.ArgNames != nil {
-		fields["arg_names"] = node.ArgNames
-	}
-	if node.Args != nil {
-		fields["args"] = node.Args
-	}
-	fields["xmloption"] = node.Xmloption
-	if node.Type != nil {
-		fields["type"] = node.Type
-	}
-	fields["typmod"] = node.Typmod
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"XmlExpr": fields,
-	})
 }
 
 func (node *XmlExpr) UnmarshalJSON(input []byte) (err error) {
@@ -5423,26 +4260,6 @@ func (node *XmlExpr) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *NullTest) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Arg != nil {
-		fields["arg"] = node.Arg
-	}
-	fields["nulltesttype"] = node.Nulltesttype
-	fields["argisrow"] = node.Argisrow
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"NullTest": fields,
-	})
-}
-
 func (node *NullTest) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -5489,25 +4306,6 @@ func (node *NullTest) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *BooleanTest) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Arg != nil {
-		fields["arg"] = node.Arg
-	}
-	fields["booltesttype"] = node.Booltesttype
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"BooleanTest": fields,
-	})
-}
-
 func (node *BooleanTest) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -5545,32 +4343,6 @@ func (node *BooleanTest) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *CoerceToDomain) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Arg != nil {
-		fields["arg"] = node.Arg
-	}
-	if node.Resulttype != nil {
-		fields["resulttype"] = node.Resulttype
-	}
-	fields["resulttypmod"] = node.Resulttypmod
-	if node.Resultcollid != nil {
-		fields["resultcollid"] = node.Resultcollid
-	}
-	fields["coercionformat"] = node.Coercionformat
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"CoerceToDomain": fields,
-	})
 }
 
 func (node *CoerceToDomain) UnmarshalJSON(input []byte) (err error) {
@@ -5633,28 +4405,6 @@ func (node *CoerceToDomain) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *CoerceToDomainValue) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.TypeID != nil {
-		fields["typeId"] = node.TypeID
-	}
-	fields["typeMod"] = node.TypeMod
-	if node.Collation != nil {
-		fields["collation"] = node.Collation
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"CoerceToDomainValue": fields,
-	})
-}
-
 func (node *CoerceToDomainValue) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -5699,28 +4449,6 @@ func (node *CoerceToDomainValue) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *SetToDefault) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.TypeID != nil {
-		fields["typeId"] = node.TypeID
-	}
-	fields["typeMod"] = node.TypeMod
-	if node.Collation != nil {
-		fields["collation"] = node.Collation
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"SetToDefault": fields,
-	})
 }
 
 func (node *SetToDefault) UnmarshalJSON(input []byte) (err error) {
@@ -5769,25 +4497,6 @@ func (node *SetToDefault) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *CurrentOfExpr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Cvarno != nil {
-		fields["cvarno"] = node.Cvarno
-	}
-	fields["cursor_name"] = node.CursorName
-	fields["cursor_param"] = node.CursorParam
-
-	return json.Marshal(map[string]interface{}{
-		"CurrentOfExpr": fields,
-	})
-}
-
 func (node *CurrentOfExpr) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -5827,26 +4536,6 @@ func (node *CurrentOfExpr) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *NextValueExpr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Seqid != nil {
-		fields["seqid"] = node.Seqid
-	}
-	if node.TypeID != nil {
-		fields["typeId"] = node.TypeID
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"NextValueExpr": fields,
-	})
-}
-
 func (node *NextValueExpr) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -5877,29 +4566,6 @@ func (node *NextValueExpr) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *InferenceElem) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Expr != nil {
-		fields["expr"] = node.Expr
-	}
-	if node.Infercollid != nil {
-		fields["infercollid"] = node.Infercollid
-	}
-	if node.Inferopclass != nil {
-		fields["inferopclass"] = node.Inferopclass
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"InferenceElem": fields,
-	})
 }
 
 func (node *InferenceElem) UnmarshalJSON(input []byte) (err error) {
@@ -5939,33 +4605,6 @@ func (node *InferenceElem) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *TargetEntry) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Xpr != nil {
-		fields["xpr"] = node.Xpr
-	}
-	if node.Expr != nil {
-		fields["expr"] = node.Expr
-	}
-	fields["resno"] = node.Resno
-	fields["resname"] = node.Resname
-	if node.Ressortgroupref != nil {
-		fields["ressortgroupref"] = node.Ressortgroupref
-	}
-	if node.Resorigtbl != nil {
-		fields["resorigtbl"] = node.Resorigtbl
-	}
-	fields["resorigcol"] = node.Resorigcol
-	fields["resjunk"] = node.Resjunk
-
-	return json.Marshal(map[string]interface{}{
-		"TargetEntry": fields,
-	})
 }
 
 func (node *TargetEntry) UnmarshalJSON(input []byte) (err error) {
@@ -6035,18 +4674,6 @@ func (node *TargetEntry) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *RangeTblRef) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["rtindex"] = node.Rtindex
-
-	return json.Marshal(map[string]interface{}{
-		"RangeTblRef": fields,
-	})
-}
-
 func (node *RangeTblRef) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -6063,35 +4690,6 @@ func (node *RangeTblRef) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *JoinExpr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["jointype"] = node.Jointype
-	fields["isNatural"] = node.IsNatural
-	if node.Larg != nil {
-		fields["larg"] = node.Larg
-	}
-	if node.Rarg != nil {
-		fields["rarg"] = node.Rarg
-	}
-	if node.UsingClause != nil {
-		fields["usingClause"] = node.UsingClause
-	}
-	if node.Quals != nil {
-		fields["quals"] = node.Quals
-	}
-	if node.Alias != nil {
-		fields["alias"] = node.Alias
-	}
-	fields["rtindex"] = node.Rtindex
-
-	return json.Marshal(map[string]interface{}{
-		"JoinExpr": fields,
-	})
 }
 
 func (node *JoinExpr) UnmarshalJSON(input []byte) (err error) {
@@ -6161,23 +4759,6 @@ func (node *JoinExpr) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *FromExpr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Fromlist != nil {
-		fields["fromlist"] = node.Fromlist
-	}
-	if node.Quals != nil {
-		fields["quals"] = node.Quals
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"FromExpr": fields,
-	})
-}
-
 func (node *FromExpr) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -6201,37 +4782,6 @@ func (node *FromExpr) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *OnConflictExpr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["action"] = node.Action
-	if node.ArbiterElems != nil {
-		fields["arbiterElems"] = node.ArbiterElems
-	}
-	if node.ArbiterWhere != nil {
-		fields["arbiterWhere"] = node.ArbiterWhere
-	}
-	if node.Constraint != nil {
-		fields["constraint"] = node.Constraint
-	}
-	if node.OnConflictSet != nil {
-		fields["onConflictSet"] = node.OnConflictSet
-	}
-	if node.OnConflictWhere != nil {
-		fields["onConflictWhere"] = node.OnConflictWhere
-	}
-	fields["exclRelIndex"] = node.ExclRelIndex
-	if node.ExclRelTlist != nil {
-		fields["exclRelTlist"] = node.ExclRelTlist
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"OnConflictExpr": fields,
-	})
 }
 
 func (node *OnConflictExpr) UnmarshalJSON(input []byte) (err error) {
@@ -6301,33 +4851,6 @@ func (node *OnConflictExpr) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *IntoClause) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Rel != nil {
-		fields["rel"] = node.Rel
-	}
-	if node.ColNames != nil {
-		fields["colNames"] = node.ColNames
-	}
-	fields["accessMethod"] = node.AccessMethod
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-	fields["onCommit"] = node.OnCommit
-	fields["tableSpaceName"] = node.TableSpaceName
-	if node.ViewQuery != nil {
-		fields["viewQuery"] = node.ViewQuery
-	}
-	fields["skipData"] = node.SkipData
-
-	return json.Marshal(map[string]interface{}{
-		"IntoClause": fields,
-	})
-}
-
 func (node *IntoClause) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -6395,22 +4918,6 @@ func (node *IntoClause) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *RawStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Stmt != nil {
-		fields["stmt"] = node.Stmt
-	}
-	fields["stmt_location"] = node.StmtLocation
-	fields["stmt_len"] = node.StmtLen
-
-	return json.Marshal(map[string]interface{}{
-		"RawStmt": fields,
-	})
-}
-
 func (node *RawStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -6441,90 +4948,6 @@ func (node *RawStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *Query) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["commandType"] = node.CommandType
-	fields["querySource"] = node.QuerySource
-	fields["canSetTag"] = node.CanSetTag
-	if node.UtilityStmt != nil {
-		fields["utilityStmt"] = node.UtilityStmt
-	}
-	fields["resultRelation"] = node.ResultRelation
-	fields["hasAggs"] = node.HasAggs
-	fields["hasWindowFuncs"] = node.HasWindowFuncs
-	fields["hasTargetSRFs"] = node.HasTargetSrFs
-	fields["hasSubLinks"] = node.HasSubLinks
-	fields["hasDistinctOn"] = node.HasDistinctOn
-	fields["hasRecursive"] = node.HasRecursive
-	fields["hasModifyingCTE"] = node.HasModifyingCte
-	fields["hasForUpdate"] = node.HasForUpdate
-	fields["hasRowSecurity"] = node.HasRowSecurity
-	if node.CteList != nil {
-		fields["cteList"] = node.CteList
-	}
-	if node.Rtable != nil {
-		fields["rtable"] = node.Rtable
-	}
-	if node.Jointree != nil {
-		fields["jointree"] = node.Jointree
-	}
-	if node.TargetList != nil {
-		fields["targetList"] = node.TargetList
-	}
-	fields["override"] = node.Override
-	if node.OnConflict != nil {
-		fields["onConflict"] = node.OnConflict
-	}
-	if node.ReturningList != nil {
-		fields["returningList"] = node.ReturningList
-	}
-	if node.GroupClause != nil {
-		fields["groupClause"] = node.GroupClause
-	}
-	if node.GroupingSets != nil {
-		fields["groupingSets"] = node.GroupingSets
-	}
-	if node.HavingQual != nil {
-		fields["havingQual"] = node.HavingQual
-	}
-	if node.WindowClause != nil {
-		fields["windowClause"] = node.WindowClause
-	}
-	if node.DistinctClause != nil {
-		fields["distinctClause"] = node.DistinctClause
-	}
-	if node.SortClause != nil {
-		fields["sortClause"] = node.SortClause
-	}
-	if node.LimitOffset != nil {
-		fields["limitOffset"] = node.LimitOffset
-	}
-	if node.LimitCount != nil {
-		fields["limitCount"] = node.LimitCount
-	}
-	if node.RowMarks != nil {
-		fields["rowMarks"] = node.RowMarks
-	}
-	if node.SetOperations != nil {
-		fields["setOperations"] = node.SetOperations
-	}
-	if node.ConstraintDeps != nil {
-		fields["constraintDeps"] = node.ConstraintDeps
-	}
-	if node.WithCheckOptions != nil {
-		fields["withCheckOptions"] = node.WithCheckOptions
-	}
-	fields["stmt_location"] = node.StmtLocation
-	fields["stmt_len"] = node.StmtLen
-
-	return json.Marshal(map[string]interface{}{
-		"Query": fields,
-	})
 }
 
 func (node *Query) UnmarshalJSON(input []byte) (err error) {
@@ -6783,36 +5206,6 @@ func (node *Query) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *InsertStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Relation != nil {
-		fields["relation"] = node.Relation
-	}
-	if node.Cols != nil {
-		fields["cols"] = node.Cols
-	}
-	if node.SelectStmt != nil {
-		fields["selectStmt"] = node.SelectStmt
-	}
-	if node.OnConflictClause != nil {
-		fields["onConflictClause"] = node.OnConflictClause
-	}
-	if node.ReturningList != nil {
-		fields["returningList"] = node.ReturningList
-	}
-	if node.WithClause != nil {
-		fields["withClause"] = node.WithClause
-	}
-	fields["override"] = node.Override
-
-	return json.Marshal(map[string]interface{}{
-		"InsertStmt": fields,
-	})
-}
-
 func (node *InsertStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -6873,32 +5266,6 @@ func (node *InsertStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *DeleteStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Relation != nil {
-		fields["relation"] = node.Relation
-	}
-	if node.UsingClause != nil {
-		fields["usingClause"] = node.UsingClause
-	}
-	if node.WhereClause != nil {
-		fields["whereClause"] = node.WhereClause
-	}
-	if node.ReturningList != nil {
-		fields["returningList"] = node.ReturningList
-	}
-	if node.WithClause != nil {
-		fields["withClause"] = node.WithClause
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"DeleteStmt": fields,
-	})
-}
-
 func (node *DeleteStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -6943,35 +5310,6 @@ func (node *DeleteStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *UpdateStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Relation != nil {
-		fields["relation"] = node.Relation
-	}
-	if node.TargetList != nil {
-		fields["targetList"] = node.TargetList
-	}
-	if node.WhereClause != nil {
-		fields["whereClause"] = node.WhereClause
-	}
-	if node.FromClause != nil {
-		fields["fromClause"] = node.FromClause
-	}
-	if node.ReturningList != nil {
-		fields["returningList"] = node.ReturningList
-	}
-	if node.WithClause != nil {
-		fields["withClause"] = node.WithClause
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"UpdateStmt": fields,
-	})
 }
 
 func (node *UpdateStmt) UnmarshalJSON(input []byte) (err error) {
@@ -7025,67 +5363,6 @@ func (node *UpdateStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *SelectStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.DistinctClause != nil {
-		fields["distinctClause"] = node.DistinctClause
-	}
-	if node.IntoClause != nil {
-		fields["intoClause"] = node.IntoClause
-	}
-	if node.TargetList != nil {
-		fields["targetList"] = node.TargetList
-	}
-	if node.FromClause != nil {
-		fields["fromClause"] = node.FromClause
-	}
-	if node.WhereClause != nil {
-		fields["whereClause"] = node.WhereClause
-	}
-	if node.GroupClause != nil {
-		fields["groupClause"] = node.GroupClause
-	}
-	if node.HavingClause != nil {
-		fields["havingClause"] = node.HavingClause
-	}
-	if node.WindowClause != nil {
-		fields["windowClause"] = node.WindowClause
-	}
-	if node.ValuesLists != nil {
-		fields["valuesLists"] = node.ValuesLists
-	}
-	if node.SortClause != nil {
-		fields["sortClause"] = node.SortClause
-	}
-	if node.LimitOffset != nil {
-		fields["limitOffset"] = node.LimitOffset
-	}
-	if node.LimitCount != nil {
-		fields["limitCount"] = node.LimitCount
-	}
-	if node.LockingClause != nil {
-		fields["lockingClause"] = node.LockingClause
-	}
-	if node.WithClause != nil {
-		fields["withClause"] = node.WithClause
-	}
-	fields["op"] = node.Op
-	fields["all"] = node.All
-	if node.Larg != nil {
-		fields["larg"] = node.Larg
-	}
-	if node.Rarg != nil {
-		fields["rarg"] = node.Rarg
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"SelectStmt": fields,
-	})
 }
 
 func (node *SelectStmt) UnmarshalJSON(input []byte) (err error) {
@@ -7225,25 +5502,6 @@ func (node *SelectStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *AlterTableStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Relation != nil {
-		fields["relation"] = node.Relation
-	}
-	if node.Cmds != nil {
-		fields["cmds"] = node.Cmds
-	}
-	fields["relkind"] = node.Relkind
-	fields["missing_ok"] = node.MissingOk
-
-	return json.Marshal(map[string]interface{}{
-		"AlterTableStmt": fields,
-	})
-}
-
 func (node *AlterTableStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -7281,28 +5539,6 @@ func (node *AlterTableStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *AlterTableCmd) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["subtype"] = node.Subtype
-	fields["name"] = node.Name
-	fields["num"] = node.Num
-	if node.Newowner != nil {
-		fields["newowner"] = node.Newowner
-	}
-	if node.Def != nil {
-		fields["def"] = node.Def
-	}
-	fields["behavior"] = node.Behavior
-	fields["missing_ok"] = node.MissingOk
-
-	return json.Marshal(map[string]interface{}{
-		"AlterTableCmd": fields,
-	})
 }
 
 func (node *AlterTableCmd) UnmarshalJSON(input []byte) (err error) {
@@ -7365,27 +5601,6 @@ func (node *AlterTableCmd) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *AlterDomainStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["subtype"] = node.Subtype
-	if node.TypeName != nil {
-		fields["typeName"] = node.TypeName
-	}
-	fields["name"] = node.Name
-	if node.Def != nil {
-		fields["def"] = node.Def
-	}
-	fields["behavior"] = node.Behavior
-	fields["missing_ok"] = node.MissingOk
-
-	return json.Marshal(map[string]interface{}{
-		"AlterDomainStmt": fields,
-	})
-}
-
 func (node *AlterDomainStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -7437,37 +5652,6 @@ func (node *AlterDomainStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *SetOperationStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["op"] = node.Op
-	fields["all"] = node.All
-	if node.Larg != nil {
-		fields["larg"] = node.Larg
-	}
-	if node.Rarg != nil {
-		fields["rarg"] = node.Rarg
-	}
-	if node.ColTypes != nil {
-		fields["colTypes"] = node.ColTypes
-	}
-	if node.ColTypmods != nil {
-		fields["colTypmods"] = node.ColTypmods
-	}
-	if node.ColCollations != nil {
-		fields["colCollations"] = node.ColCollations
-	}
-	if node.GroupClauses != nil {
-		fields["groupClauses"] = node.GroupClauses
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"SetOperationStmt": fields,
-	})
 }
 
 func (node *SetOperationStmt) UnmarshalJSON(input []byte) (err error) {
@@ -7537,31 +5721,6 @@ func (node *SetOperationStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *GrantStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["is_grant"] = node.IsGrant
-	fields["targtype"] = node.Targtype
-	fields["objtype"] = node.Objtype
-	if node.Objects != nil {
-		fields["objects"] = node.Objects
-	}
-	if node.Privileges != nil {
-		fields["privileges"] = node.Privileges
-	}
-	if node.Grantees != nil {
-		fields["grantees"] = node.Grantees
-	}
-	fields["grant_option"] = node.GrantOption
-	fields["behavior"] = node.Behavior
-
-	return json.Marshal(map[string]interface{}{
-		"GrantStmt": fields,
-	})
-}
-
 func (node *GrantStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -7629,29 +5788,6 @@ func (node *GrantStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *GrantRoleStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.GrantedRoles != nil {
-		fields["granted_roles"] = node.GrantedRoles
-	}
-	if node.GranteeRoles != nil {
-		fields["grantee_roles"] = node.GranteeRoles
-	}
-	fields["is_grant"] = node.IsGrant
-	fields["admin_opt"] = node.AdminOpt
-	if node.Grantor != nil {
-		fields["grantor"] = node.Grantor
-	}
-	fields["behavior"] = node.Behavior
-
-	return json.Marshal(map[string]interface{}{
-		"GrantRoleStmt": fields,
-	})
-}
-
 func (node *GrantRoleStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -7705,23 +5841,6 @@ func (node *GrantRoleStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *AlterDefaultPrivilegesStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-	if node.Action != nil {
-		fields["action"] = node.Action
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"AlterDefaultPrivilegesStmt": fields,
-	})
-}
-
 func (node *AlterDefaultPrivilegesStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -7747,18 +5866,6 @@ func (node *AlterDefaultPrivilegesStmt) UnmarshalJSON(input []byte) (err error) 
 	return
 }
 
-func (node *ClosePortalStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["portalname"] = node.Portalname
-
-	return json.Marshal(map[string]interface{}{
-		"ClosePortalStmt": fields,
-	})
-}
-
 func (node *ClosePortalStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -7775,22 +5882,6 @@ func (node *ClosePortalStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *ClusterStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Relation != nil {
-		fields["relation"] = node.Relation
-	}
-	fields["indexname"] = node.Indexname
-	fields["options"] = node.Options
-
-	return json.Marshal(map[string]interface{}{
-		"ClusterStmt": fields,
-	})
 }
 
 func (node *ClusterStmt) UnmarshalJSON(input []byte) (err error) {
@@ -7823,35 +5914,6 @@ func (node *ClusterStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *CopyStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Relation != nil {
-		fields["relation"] = node.Relation
-	}
-	if node.Query != nil {
-		fields["query"] = node.Query
-	}
-	if node.Attlist != nil {
-		fields["attlist"] = node.Attlist
-	}
-	fields["is_from"] = node.IsFrom
-	fields["is_program"] = node.IsProgram
-	fields["filename"] = node.Filename
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-	if node.WhereClause != nil {
-		fields["whereClause"] = node.WhereClause
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"CopyStmt": fields,
-	})
 }
 
 func (node *CopyStmt) UnmarshalJSON(input []byte) (err error) {
@@ -7919,45 +5981,6 @@ func (node *CopyStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *CreateStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Relation != nil {
-		fields["relation"] = node.Relation
-	}
-	if node.TableElts != nil {
-		fields["tableElts"] = node.TableElts
-	}
-	if node.InhRelations != nil {
-		fields["inhRelations"] = node.InhRelations
-	}
-	if node.Partbound != nil {
-		fields["partbound"] = node.Partbound
-	}
-	if node.Partspec != nil {
-		fields["partspec"] = node.Partspec
-	}
-	if node.OfTypename != nil {
-		fields["ofTypename"] = node.OfTypename
-	}
-	if node.Constraints != nil {
-		fields["constraints"] = node.Constraints
-	}
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-	fields["oncommit"] = node.Oncommit
-	fields["tablespacename"] = node.Tablespacename
-	fields["accessMethod"] = node.AccessMethod
-	fields["if_not_exists"] = node.IfNotExists
-
-	return json.Marshal(map[string]interface{}{
-		"CreateStmt": fields,
-	})
 }
 
 func (node *CreateStmt) UnmarshalJSON(input []byte) (err error) {
@@ -8055,30 +6078,6 @@ func (node *CreateStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *DefineStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["kind"] = node.Kind
-	fields["oldstyle"] = node.Oldstyle
-	if node.Defnames != nil {
-		fields["defnames"] = node.Defnames
-	}
-	if node.Args != nil {
-		fields["args"] = node.Args
-	}
-	if node.Definition != nil {
-		fields["definition"] = node.Definition
-	}
-	fields["if_not_exists"] = node.IfNotExists
-	fields["replace"] = node.Replace
-
-	return json.Marshal(map[string]interface{}{
-		"DefineStmt": fields,
-	})
-}
-
 func (node *DefineStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -8139,24 +6138,6 @@ func (node *DefineStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *DropStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Objects != nil {
-		fields["objects"] = node.Objects
-	}
-	fields["removeType"] = node.RemoveType
-	fields["behavior"] = node.Behavior
-	fields["missing_ok"] = node.MissingOk
-	fields["concurrent"] = node.Concurrent
-
-	return json.Marshal(map[string]interface{}{
-		"DropStmt": fields,
-	})
-}
-
 func (node *DropStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -8203,22 +6184,6 @@ func (node *DropStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *TruncateStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Relations != nil {
-		fields["relations"] = node.Relations
-	}
-	fields["restart_seqs"] = node.RestartSeqs
-	fields["behavior"] = node.Behavior
-
-	return json.Marshal(map[string]interface{}{
-		"TruncateStmt": fields,
-	})
-}
-
 func (node *TruncateStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -8251,22 +6216,6 @@ func (node *TruncateStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *CommentStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["objtype"] = node.Objtype
-	if node.Object != nil {
-		fields["object"] = node.Object
-	}
-	fields["comment"] = node.Comment
-
-	return json.Marshal(map[string]interface{}{
-		"CommentStmt": fields,
-	})
-}
-
 func (node *CommentStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -8297,23 +6246,6 @@ func (node *CommentStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *FetchStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["direction"] = node.Direction
-	if node.HowMany != nil {
-		fields["howMany"] = node.HowMany
-	}
-	fields["portalname"] = node.Portalname
-	fields["ismove"] = node.Ismove
-
-	return json.Marshal(map[string]interface{}{
-		"FetchStmt": fields,
-	})
 }
 
 func (node *FetchStmt) UnmarshalJSON(input []byte) (err error) {
@@ -8353,54 +6285,6 @@ func (node *FetchStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *IndexStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["idxname"] = node.Idxname
-	if node.Relation != nil {
-		fields["relation"] = node.Relation
-	}
-	fields["accessMethod"] = node.AccessMethod
-	fields["tableSpace"] = node.TableSpace
-	if node.IndexParams != nil {
-		fields["indexParams"] = node.IndexParams
-	}
-	if node.IndexIncludingParams != nil {
-		fields["indexIncludingParams"] = node.IndexIncludingParams
-	}
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-	if node.WhereClause != nil {
-		fields["whereClause"] = node.WhereClause
-	}
-	if node.ExcludeOpNames != nil {
-		fields["excludeOpNames"] = node.ExcludeOpNames
-	}
-	fields["idxcomment"] = node.Idxcomment
-	if node.IndexOid != nil {
-		fields["indexOid"] = node.IndexOid
-	}
-	if node.OldNode != nil {
-		fields["oldNode"] = node.OldNode
-	}
-	fields["unique"] = node.Unique
-	fields["primary"] = node.Primary
-	fields["isconstraint"] = node.Isconstraint
-	fields["deferrable"] = node.Deferrable
-	fields["initdeferred"] = node.Initdeferred
-	fields["transformed"] = node.Transformed
-	fields["concurrent"] = node.Concurrent
-	fields["if_not_exists"] = node.IfNotExists
-	fields["reset_default_tblspc"] = node.ResetDefaultTblspc
-
-	return json.Marshal(map[string]interface{}{
-		"IndexStmt": fields,
-	})
 }
 
 func (node *IndexStmt) UnmarshalJSON(input []byte) (err error) {
@@ -8561,31 +6445,6 @@ func (node *IndexStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *CreateFunctionStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["is_procedure"] = node.IsProcedure
-	fields["replace"] = node.Replace
-	if node.Funcname != nil {
-		fields["funcname"] = node.Funcname
-	}
-	if node.Parameters != nil {
-		fields["parameters"] = node.Parameters
-	}
-	if node.ReturnType != nil {
-		fields["returnType"] = node.ReturnType
-	}
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"CreateFunctionStmt": fields,
-	})
-}
-
 func (node *CreateFunctionStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -8639,24 +6498,6 @@ func (node *CreateFunctionStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *AlterFunctionStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["objtype"] = node.Objtype
-	if node.Func != nil {
-		fields["func"] = node.Func
-	}
-	if node.Actions != nil {
-		fields["actions"] = node.Actions
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"AlterFunctionStmt": fields,
-	})
-}
-
 func (node *AlterFunctionStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -8689,20 +6530,6 @@ func (node *AlterFunctionStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *DoStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Args != nil {
-		fields["args"] = node.Args
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"DoStmt": fields,
-	})
-}
-
 func (node *DoStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -8719,29 +6546,6 @@ func (node *DoStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *RenameStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["renameType"] = node.RenameType
-	fields["relationType"] = node.RelationType
-	if node.Relation != nil {
-		fields["relation"] = node.Relation
-	}
-	if node.Object != nil {
-		fields["object"] = node.Object
-	}
-	fields["subname"] = node.Subname
-	fields["newname"] = node.Newname
-	fields["behavior"] = node.Behavior
-	fields["missing_ok"] = node.MissingOk
-
-	return json.Marshal(map[string]interface{}{
-		"RenameStmt": fields,
-	})
 }
 
 func (node *RenameStmt) UnmarshalJSON(input []byte) (err error) {
@@ -8811,30 +6615,6 @@ func (node *RenameStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *RuleStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Relation != nil {
-		fields["relation"] = node.Relation
-	}
-	fields["rulename"] = node.Rulename
-	if node.WhereClause != nil {
-		fields["whereClause"] = node.WhereClause
-	}
-	fields["event"] = node.Event
-	fields["instead"] = node.Instead
-	if node.Actions != nil {
-		fields["actions"] = node.Actions
-	}
-	fields["replace"] = node.Replace
-
-	return json.Marshal(map[string]interface{}{
-		"RuleStmt": fields,
-	})
-}
-
 func (node *RuleStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -8895,19 +6675,6 @@ func (node *RuleStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *NotifyStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["conditionname"] = node.Conditionname
-	fields["payload"] = node.Payload
-
-	return json.Marshal(map[string]interface{}{
-		"NotifyStmt": fields,
-	})
-}
-
 func (node *NotifyStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -8933,18 +6700,6 @@ func (node *NotifyStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *ListenStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["conditionname"] = node.Conditionname
-
-	return json.Marshal(map[string]interface{}{
-		"ListenStmt": fields,
-	})
-}
-
 func (node *ListenStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -8963,18 +6718,6 @@ func (node *ListenStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *UnlistenStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["conditionname"] = node.Conditionname
-
-	return json.Marshal(map[string]interface{}{
-		"UnlistenStmt": fields,
-	})
-}
-
 func (node *UnlistenStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -8991,24 +6734,6 @@ func (node *UnlistenStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *TransactionStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["kind"] = node.Kind
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-	fields["savepoint_name"] = node.SavepointName
-	fields["gid"] = node.Gid
-	fields["chain"] = node.Chain
-
-	return json.Marshal(map[string]interface{}{
-		"TransactionStmt": fields,
-	})
 }
 
 func (node *TransactionStmt) UnmarshalJSON(input []byte) (err error) {
@@ -9055,31 +6780,6 @@ func (node *TransactionStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *ViewStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.View != nil {
-		fields["view"] = node.View
-	}
-	if node.Aliases != nil {
-		fields["aliases"] = node.Aliases
-	}
-	if node.Query != nil {
-		fields["query"] = node.Query
-	}
-	fields["replace"] = node.Replace
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-	fields["withCheckOption"] = node.WithCheckOption
-
-	return json.Marshal(map[string]interface{}{
-		"ViewStmt": fields,
-	})
 }
 
 func (node *ViewStmt) UnmarshalJSON(input []byte) (err error) {
@@ -9135,18 +6835,6 @@ func (node *ViewStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *LoadStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["filename"] = node.Filename
-
-	return json.Marshal(map[string]interface{}{
-		"LoadStmt": fields,
-	})
-}
-
 func (node *LoadStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -9163,29 +6851,6 @@ func (node *LoadStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *CreateDomainStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Domainname != nil {
-		fields["domainname"] = node.Domainname
-	}
-	if node.TypeName != nil {
-		fields["typeName"] = node.TypeName
-	}
-	if node.CollClause != nil {
-		fields["collClause"] = node.CollClause
-	}
-	if node.Constraints != nil {
-		fields["constraints"] = node.Constraints
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"CreateDomainStmt": fields,
-	})
 }
 
 func (node *CreateDomainStmt) UnmarshalJSON(input []byte) (err error) {
@@ -9227,21 +6892,6 @@ func (node *CreateDomainStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *CreatedbStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["dbname"] = node.Dbname
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"CreatedbStmt": fields,
-	})
-}
-
 func (node *CreatedbStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -9267,19 +6917,6 @@ func (node *CreatedbStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *DropdbStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["dbname"] = node.Dbname
-	fields["missing_ok"] = node.MissingOk
-
-	return json.Marshal(map[string]interface{}{
-		"DropdbStmt": fields,
-	})
-}
-
 func (node *DropdbStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -9303,24 +6940,6 @@ func (node *DropdbStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *VacuumStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-	if node.Rels != nil {
-		fields["rels"] = node.Rels
-	}
-	fields["is_vacuumcmd"] = node.IsVacuumcmd
-
-	return json.Marshal(map[string]interface{}{
-		"VacuumStmt": fields,
-	})
 }
 
 func (node *VacuumStmt) UnmarshalJSON(input []byte) (err error) {
@@ -9355,23 +6974,6 @@ func (node *VacuumStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *ExplainStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Query != nil {
-		fields["query"] = node.Query
-	}
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"ExplainStmt": fields,
-	})
-}
-
 func (node *ExplainStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -9395,26 +6997,6 @@ func (node *ExplainStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *CreateTableAsStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Query != nil {
-		fields["query"] = node.Query
-	}
-	if node.Into != nil {
-		fields["into"] = node.Into
-	}
-	fields["relkind"] = node.Relkind
-	fields["is_select_into"] = node.IsSelectInto
-	fields["if_not_exists"] = node.IfNotExists
-
-	return json.Marshal(map[string]interface{}{
-		"CreateTableAsStmt": fields,
-	})
 }
 
 func (node *CreateTableAsStmt) UnmarshalJSON(input []byte) (err error) {
@@ -9463,28 +7045,6 @@ func (node *CreateTableAsStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *CreateSeqStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Sequence != nil {
-		fields["sequence"] = node.Sequence
-	}
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-	if node.OwnerID != nil {
-		fields["ownerId"] = node.OwnerID
-	}
-	fields["for_identity"] = node.ForIdentity
-	fields["if_not_exists"] = node.IfNotExists
-
-	return json.Marshal(map[string]interface{}{
-		"CreateSeqStmt": fields,
-	})
-}
-
 func (node *CreateSeqStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -9531,25 +7091,6 @@ func (node *CreateSeqStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *AlterSeqStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Sequence != nil {
-		fields["sequence"] = node.Sequence
-	}
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-	fields["for_identity"] = node.ForIdentity
-	fields["missing_ok"] = node.MissingOk
-
-	return json.Marshal(map[string]interface{}{
-		"AlterSeqStmt": fields,
-	})
-}
-
 func (node *AlterSeqStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -9587,23 +7128,6 @@ func (node *AlterSeqStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *VariableSetStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["kind"] = node.Kind
-	fields["name"] = node.Name
-	if node.Args != nil {
-		fields["args"] = node.Args
-	}
-	fields["is_local"] = node.IsLocal
-
-	return json.Marshal(map[string]interface{}{
-		"VariableSetStmt": fields,
-	})
 }
 
 func (node *VariableSetStmt) UnmarshalJSON(input []byte) (err error) {
@@ -9645,18 +7169,6 @@ func (node *VariableSetStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *VariableShowStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["name"] = node.Name
-
-	return json.Marshal(map[string]interface{}{
-		"VariableShowStmt": fields,
-	})
-}
-
 func (node *VariableShowStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -9675,18 +7187,6 @@ func (node *VariableShowStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *DiscardStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["target"] = node.Target
-
-	return json.Marshal(map[string]interface{}{
-		"DiscardStmt": fields,
-	})
-}
-
 func (node *DiscardStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -9703,45 +7203,6 @@ func (node *DiscardStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *CreateTrigStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["trigname"] = node.Trigname
-	if node.Relation != nil {
-		fields["relation"] = node.Relation
-	}
-	if node.Funcname != nil {
-		fields["funcname"] = node.Funcname
-	}
-	if node.Args != nil {
-		fields["args"] = node.Args
-	}
-	fields["row"] = node.Row
-	fields["timing"] = node.Timing
-	fields["events"] = node.Events
-	if node.Columns != nil {
-		fields["columns"] = node.Columns
-	}
-	if node.WhenClause != nil {
-		fields["whenClause"] = node.WhenClause
-	}
-	fields["isconstraint"] = node.Isconstraint
-	if node.TransitionRels != nil {
-		fields["transitionRels"] = node.TransitionRels
-	}
-	fields["deferrable"] = node.Deferrable
-	fields["initdeferred"] = node.Initdeferred
-	if node.Constrrel != nil {
-		fields["constrrel"] = node.Constrrel
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"CreateTrigStmt": fields,
-	})
 }
 
 func (node *CreateTrigStmt) UnmarshalJSON(input []byte) (err error) {
@@ -9853,29 +7314,6 @@ func (node *CreateTrigStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *CreatePlangStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["replace"] = node.Replace
-	fields["plname"] = node.Plname
-	if node.Plhandler != nil {
-		fields["plhandler"] = node.Plhandler
-	}
-	if node.Plinline != nil {
-		fields["plinline"] = node.Plinline
-	}
-	if node.Plvalidator != nil {
-		fields["plvalidator"] = node.Plvalidator
-	}
-	fields["pltrusted"] = node.Pltrusted
-
-	return json.Marshal(map[string]interface{}{
-		"CreatePLangStmt": fields,
-	})
-}
-
 func (node *CreatePlangStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -9929,22 +7367,6 @@ func (node *CreatePlangStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *CreateRoleStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["stmt_type"] = node.StmtType
-	fields["role"] = node.Role
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"CreateRoleStmt": fields,
-	})
-}
-
 func (node *CreateRoleStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -9975,24 +7397,6 @@ func (node *CreateRoleStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *AlterRoleStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Role != nil {
-		fields["role"] = node.Role
-	}
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-	fields["action"] = node.Action
-
-	return json.Marshal(map[string]interface{}{
-		"AlterRoleStmt": fields,
-	})
 }
 
 func (node *AlterRoleStmt) UnmarshalJSON(input []byte) (err error) {
@@ -10027,21 +7431,6 @@ func (node *AlterRoleStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *DropRoleStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Roles != nil {
-		fields["roles"] = node.Roles
-	}
-	fields["missing_ok"] = node.MissingOk
-
-	return json.Marshal(map[string]interface{}{
-		"DropRoleStmt": fields,
-	})
-}
-
 func (node *DropRoleStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -10065,22 +7454,6 @@ func (node *DropRoleStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *LockStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Relations != nil {
-		fields["relations"] = node.Relations
-	}
-	fields["mode"] = node.Mode
-	fields["nowait"] = node.Nowait
-
-	return json.Marshal(map[string]interface{}{
-		"LockStmt": fields,
-	})
 }
 
 func (node *LockStmt) UnmarshalJSON(input []byte) (err error) {
@@ -10115,21 +7488,6 @@ func (node *LockStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *ConstraintsSetStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Constraints != nil {
-		fields["constraints"] = node.Constraints
-	}
-	fields["deferred"] = node.Deferred
-
-	return json.Marshal(map[string]interface{}{
-		"ConstraintsSetStmt": fields,
-	})
-}
-
 func (node *ConstraintsSetStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -10153,24 +7511,6 @@ func (node *ConstraintsSetStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *ReindexStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["kind"] = node.Kind
-	if node.Relation != nil {
-		fields["relation"] = node.Relation
-	}
-	fields["name"] = node.Name
-	fields["options"] = node.Options
-	fields["concurrent"] = node.Concurrent
-
-	return json.Marshal(map[string]interface{}{
-		"ReindexStmt": fields,
-	})
 }
 
 func (node *ReindexStmt) UnmarshalJSON(input []byte) (err error) {
@@ -10219,17 +7559,6 @@ func (node *ReindexStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *CheckPointStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-
-	return json.Marshal(map[string]interface{}{
-		"CheckPointStmt": fields,
-	})
-}
-
 func (node *CheckPointStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -10239,25 +7568,6 @@ func (node *CheckPointStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *CreateSchemaStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["schemaname"] = node.Schemaname
-	if node.Authrole != nil {
-		fields["authrole"] = node.Authrole
-	}
-	if node.SchemaElts != nil {
-		fields["schemaElts"] = node.SchemaElts
-	}
-	fields["if_not_exists"] = node.IfNotExists
-
-	return json.Marshal(map[string]interface{}{
-		"CreateSchemaStmt": fields,
-	})
 }
 
 func (node *CreateSchemaStmt) UnmarshalJSON(input []byte) (err error) {
@@ -10299,21 +7609,6 @@ func (node *CreateSchemaStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *AlterDatabaseStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["dbname"] = node.Dbname
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"AlterDatabaseStmt": fields,
-	})
-}
-
 func (node *AlterDatabaseStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -10339,21 +7634,6 @@ func (node *AlterDatabaseStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *AlterDatabaseSetStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["dbname"] = node.Dbname
-	if node.Setstmt != nil {
-		fields["setstmt"] = node.Setstmt
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"AlterDatabaseSetStmt": fields,
-	})
-}
-
 func (node *AlterDatabaseSetStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -10377,24 +7657,6 @@ func (node *AlterDatabaseSetStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *AlterRoleSetStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Role != nil {
-		fields["role"] = node.Role
-	}
-	fields["database"] = node.Database
-	if node.Setstmt != nil {
-		fields["setstmt"] = node.Setstmt
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"AlterRoleSetStmt": fields,
-	})
 }
 
 func (node *AlterRoleSetStmt) UnmarshalJSON(input []byte) (err error) {
@@ -10427,26 +7689,6 @@ func (node *AlterRoleSetStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *CreateConversionStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.ConversionName != nil {
-		fields["conversion_name"] = node.ConversionName
-	}
-	fields["for_encoding_name"] = node.ForEncodingName
-	fields["to_encoding_name"] = node.ToEncodingName
-	if node.FuncName != nil {
-		fields["func_name"] = node.FuncName
-	}
-	fields["def"] = node.Def
-
-	return json.Marshal(map[string]interface{}{
-		"CreateConversionStmt": fields,
-	})
 }
 
 func (node *CreateConversionStmt) UnmarshalJSON(input []byte) (err error) {
@@ -10495,28 +7737,6 @@ func (node *CreateConversionStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *CreateCastStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Sourcetype != nil {
-		fields["sourcetype"] = node.Sourcetype
-	}
-	if node.Targettype != nil {
-		fields["targettype"] = node.Targettype
-	}
-	if node.Func != nil {
-		fields["func"] = node.Func
-	}
-	fields["context"] = node.Context
-	fields["inout"] = node.Inout
-
-	return json.Marshal(map[string]interface{}{
-		"CreateCastStmt": fields,
-	})
-}
-
 func (node *CreateCastStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -10561,31 +7781,6 @@ func (node *CreateCastStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *CreateOpClassStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Opclassname != nil {
-		fields["opclassname"] = node.Opclassname
-	}
-	if node.Opfamilyname != nil {
-		fields["opfamilyname"] = node.Opfamilyname
-	}
-	fields["amname"] = node.Amname
-	if node.Datatype != nil {
-		fields["datatype"] = node.Datatype
-	}
-	if node.Items != nil {
-		fields["items"] = node.Items
-	}
-	fields["isDefault"] = node.IsDefault
-
-	return json.Marshal(map[string]interface{}{
-		"CreateOpClassStmt": fields,
-	})
 }
 
 func (node *CreateOpClassStmt) UnmarshalJSON(input []byte) (err error) {
@@ -10641,21 +7836,6 @@ func (node *CreateOpClassStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *CreateOpFamilyStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Opfamilyname != nil {
-		fields["opfamilyname"] = node.Opfamilyname
-	}
-	fields["amname"] = node.Amname
-
-	return json.Marshal(map[string]interface{}{
-		"CreateOpFamilyStmt": fields,
-	})
-}
-
 func (node *CreateOpFamilyStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -10679,25 +7859,6 @@ func (node *CreateOpFamilyStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *AlterOpFamilyStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Opfamilyname != nil {
-		fields["opfamilyname"] = node.Opfamilyname
-	}
-	fields["amname"] = node.Amname
-	fields["isDrop"] = node.IsDrop
-	if node.Items != nil {
-		fields["items"] = node.Items
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"AlterOpFamilyStmt": fields,
-	})
 }
 
 func (node *AlterOpFamilyStmt) UnmarshalJSON(input []byte) (err error) {
@@ -10739,24 +7900,6 @@ func (node *AlterOpFamilyStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *PrepareStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["name"] = node.Name
-	if node.Argtypes != nil {
-		fields["argtypes"] = node.Argtypes
-	}
-	if node.Query != nil {
-		fields["query"] = node.Query
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"PrepareStmt": fields,
-	})
-}
-
 func (node *PrepareStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -10789,21 +7932,6 @@ func (node *PrepareStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *ExecuteStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["name"] = node.Name
-	if node.Params != nil {
-		fields["params"] = node.Params
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"ExecuteStmt": fields,
-	})
-}
-
 func (node *ExecuteStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -10829,18 +7957,6 @@ func (node *ExecuteStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *DeallocateStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["name"] = node.Name
-
-	return json.Marshal(map[string]interface{}{
-		"DeallocateStmt": fields,
-	})
-}
-
 func (node *DeallocateStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -10857,22 +7973,6 @@ func (node *DeallocateStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *DeclareCursorStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["portalname"] = node.Portalname
-	fields["options"] = node.Options
-	if node.Query != nil {
-		fields["query"] = node.Query
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"DeclareCursorStmt": fields,
-	})
 }
 
 func (node *DeclareCursorStmt) UnmarshalJSON(input []byte) (err error) {
@@ -10905,25 +8005,6 @@ func (node *DeclareCursorStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *CreateTableSpaceStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["tablespacename"] = node.Tablespacename
-	if node.Owner != nil {
-		fields["owner"] = node.Owner
-	}
-	fields["location"] = node.Location
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"CreateTableSpaceStmt": fields,
-	})
 }
 
 func (node *CreateTableSpaceStmt) UnmarshalJSON(input []byte) (err error) {
@@ -10965,19 +8046,6 @@ func (node *CreateTableSpaceStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *DropTableSpaceStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["tablespacename"] = node.Tablespacename
-	fields["missing_ok"] = node.MissingOk
-
-	return json.Marshal(map[string]interface{}{
-		"DropTableSpaceStmt": fields,
-	})
-}
-
 func (node *DropTableSpaceStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -11001,27 +8069,6 @@ func (node *DropTableSpaceStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *AlterObjectDependsStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["objectType"] = node.ObjectType
-	if node.Relation != nil {
-		fields["relation"] = node.Relation
-	}
-	if node.Object != nil {
-		fields["object"] = node.Object
-	}
-	if node.Extname != nil {
-		fields["extname"] = node.Extname
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"AlterObjectDependsStmt": fields,
-	})
 }
 
 func (node *AlterObjectDependsStmt) UnmarshalJSON(input []byte) (err error) {
@@ -11061,26 +8108,6 @@ func (node *AlterObjectDependsStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *AlterObjectSchemaStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["objectType"] = node.ObjectType
-	if node.Relation != nil {
-		fields["relation"] = node.Relation
-	}
-	if node.Object != nil {
-		fields["object"] = node.Object
-	}
-	fields["newschema"] = node.Newschema
-	fields["missing_ok"] = node.MissingOk
-
-	return json.Marshal(map[string]interface{}{
-		"AlterObjectSchemaStmt": fields,
-	})
 }
 
 func (node *AlterObjectSchemaStmt) UnmarshalJSON(input []byte) (err error) {
@@ -11129,27 +8156,6 @@ func (node *AlterObjectSchemaStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *AlterOwnerStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["objectType"] = node.ObjectType
-	if node.Relation != nil {
-		fields["relation"] = node.Relation
-	}
-	if node.Object != nil {
-		fields["object"] = node.Object
-	}
-	if node.Newowner != nil {
-		fields["newowner"] = node.Newowner
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"AlterOwnerStmt": fields,
-	})
-}
-
 func (node *AlterOwnerStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -11189,23 +8195,6 @@ func (node *AlterOwnerStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *AlterOperatorStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Opername != nil {
-		fields["opername"] = node.Opername
-	}
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"AlterOperatorStmt": fields,
-	})
-}
-
 func (node *AlterOperatorStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -11229,21 +8218,6 @@ func (node *AlterOperatorStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *DropOwnedStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Roles != nil {
-		fields["roles"] = node.Roles
-	}
-	fields["behavior"] = node.Behavior
-
-	return json.Marshal(map[string]interface{}{
-		"DropOwnedStmt": fields,
-	})
 }
 
 func (node *DropOwnedStmt) UnmarshalJSON(input []byte) (err error) {
@@ -11271,23 +8245,6 @@ func (node *DropOwnedStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *ReassignOwnedStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Roles != nil {
-		fields["roles"] = node.Roles
-	}
-	if node.Newrole != nil {
-		fields["newrole"] = node.Newrole
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"ReassignOwnedStmt": fields,
-	})
-}
-
 func (node *ReassignOwnedStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -11311,23 +8268,6 @@ func (node *ReassignOwnedStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *CompositeTypeStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Typevar != nil {
-		fields["typevar"] = node.Typevar
-	}
-	if node.Coldeflist != nil {
-		fields["coldeflist"] = node.Coldeflist
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"CompositeTypeStmt": fields,
-	})
 }
 
 func (node *CompositeTypeStmt) UnmarshalJSON(input []byte) (err error) {
@@ -11355,23 +8295,6 @@ func (node *CompositeTypeStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *CreateEnumStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.TypeName != nil {
-		fields["typeName"] = node.TypeName
-	}
-	if node.Vals != nil {
-		fields["vals"] = node.Vals
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"CreateEnumStmt": fields,
-	})
-}
-
 func (node *CreateEnumStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -11397,23 +8320,6 @@ func (node *CreateEnumStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *CreateRangeStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.TypeName != nil {
-		fields["typeName"] = node.TypeName
-	}
-	if node.Params != nil {
-		fields["params"] = node.Params
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"CreateRangeStmt": fields,
-	})
-}
-
 func (node *CreateRangeStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -11437,25 +8343,6 @@ func (node *CreateRangeStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *AlterEnumStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.TypeName != nil {
-		fields["typeName"] = node.TypeName
-	}
-	fields["oldVal"] = node.OldVal
-	fields["newVal"] = node.NewVal
-	fields["newValNeighbor"] = node.NewValNeighbor
-	fields["newValIsAfter"] = node.NewValIsAfter
-	fields["skipIfNewValExists"] = node.SkipIfNewValExists
-
-	return json.Marshal(map[string]interface{}{
-		"AlterEnumStmt": fields,
-	})
 }
 
 func (node *AlterEnumStmt) UnmarshalJSON(input []byte) (err error) {
@@ -11511,23 +8398,6 @@ func (node *AlterEnumStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *AlterTsdictionaryStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Dictname != nil {
-		fields["dictname"] = node.Dictname
-	}
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"AlterTSDictionaryStmt": fields,
-	})
-}
-
 func (node *AlterTsdictionaryStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -11551,30 +8421,6 @@ func (node *AlterTsdictionaryStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *AlterTsconfigurationStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["kind"] = node.Kind
-	if node.Cfgname != nil {
-		fields["cfgname"] = node.Cfgname
-	}
-	if node.Tokentype != nil {
-		fields["tokentype"] = node.Tokentype
-	}
-	if node.Dicts != nil {
-		fields["dicts"] = node.Dicts
-	}
-	fields["override"] = node.Override
-	fields["replace"] = node.Replace
-	fields["missing_ok"] = node.MissingOk
-
-	return json.Marshal(map[string]interface{}{
-		"AlterTSConfigurationStmt": fields,
-	})
 }
 
 func (node *AlterTsconfigurationStmt) UnmarshalJSON(input []byte) (err error) {
@@ -11637,24 +8483,6 @@ func (node *AlterTsconfigurationStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *CreateFdwStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["fdwname"] = node.Fdwname
-	if node.FuncOptions != nil {
-		fields["func_options"] = node.FuncOptions
-	}
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"CreateFdwStmt": fields,
-	})
-}
-
 func (node *CreateFdwStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -11687,24 +8515,6 @@ func (node *CreateFdwStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *AlterFdwStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["fdwname"] = node.Fdwname
-	if node.FuncOptions != nil {
-		fields["func_options"] = node.FuncOptions
-	}
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"AlterFdwStmt": fields,
-	})
-}
-
 func (node *AlterFdwStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -11735,25 +8545,6 @@ func (node *AlterFdwStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *CreateForeignServerStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["servername"] = node.Servername
-	fields["servertype"] = node.Servertype
-	fields["version"] = node.Version
-	fields["fdwname"] = node.Fdwname
-	fields["if_not_exists"] = node.IfNotExists
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"CreateForeignServerStmt": fields,
-	})
 }
 
 func (node *CreateForeignServerStmt) UnmarshalJSON(input []byte) (err error) {
@@ -11809,23 +8600,6 @@ func (node *CreateForeignServerStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *AlterForeignServerStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["servername"] = node.Servername
-	fields["version"] = node.Version
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-	fields["has_version"] = node.HasVersion
-
-	return json.Marshal(map[string]interface{}{
-		"AlterForeignServerStmt": fields,
-	})
-}
-
 func (node *AlterForeignServerStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -11863,25 +8637,6 @@ func (node *AlterForeignServerStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *CreateUserMappingStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.User != nil {
-		fields["user"] = node.User
-	}
-	fields["servername"] = node.Servername
-	fields["if_not_exists"] = node.IfNotExists
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"CreateUserMappingStmt": fields,
-	})
 }
 
 func (node *CreateUserMappingStmt) UnmarshalJSON(input []byte) (err error) {
@@ -11923,24 +8678,6 @@ func (node *CreateUserMappingStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *AlterUserMappingStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.User != nil {
-		fields["user"] = node.User
-	}
-	fields["servername"] = node.Servername
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"AlterUserMappingStmt": fields,
-	})
-}
-
 func (node *AlterUserMappingStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -11971,22 +8708,6 @@ func (node *AlterUserMappingStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *DropUserMappingStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.User != nil {
-		fields["user"] = node.User
-	}
-	fields["servername"] = node.Servername
-	fields["missing_ok"] = node.MissingOk
-
-	return json.Marshal(map[string]interface{}{
-		"DropUserMappingStmt": fields,
-	})
 }
 
 func (node *DropUserMappingStmt) UnmarshalJSON(input []byte) (err error) {
@@ -12021,22 +8742,6 @@ func (node *DropUserMappingStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *AlterTableSpaceOptionsStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["tablespacename"] = node.Tablespacename
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-	fields["isReset"] = node.IsReset
-
-	return json.Marshal(map[string]interface{}{
-		"AlterTableSpaceOptionsStmt": fields,
-	})
-}
-
 func (node *AlterTableSpaceOptionsStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -12067,24 +8772,6 @@ func (node *AlterTableSpaceOptionsStmt) UnmarshalJSON(input []byte) (err error) 
 	}
 
 	return
-}
-
-func (node *AlterTableMoveAllStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["orig_tablespacename"] = node.OrigTablespacename
-	fields["objtype"] = node.Objtype
-	if node.Roles != nil {
-		fields["roles"] = node.Roles
-	}
-	fields["new_tablespacename"] = node.NewTablespacename
-	fields["nowait"] = node.Nowait
-
-	return json.Marshal(map[string]interface{}{
-		"AlterTableMoveAllStmt": fields,
-	})
 }
 
 func (node *AlterTableMoveAllStmt) UnmarshalJSON(input []byte) (err error) {
@@ -12133,23 +8820,6 @@ func (node *AlterTableMoveAllStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *SecLabelStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["objtype"] = node.Objtype
-	if node.Object != nil {
-		fields["object"] = node.Object
-	}
-	fields["provider"] = node.Provider
-	fields["label"] = node.Label
-
-	return json.Marshal(map[string]interface{}{
-		"SecLabelStmt": fields,
-	})
-}
-
 func (node *SecLabelStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -12189,24 +8859,6 @@ func (node *SecLabelStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *CreateForeignTableStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Base != nil {
-		fields["base"] = node.Base
-	}
-	fields["servername"] = node.Servername
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"CreateForeignTableStmt": fields,
-	})
-}
-
 func (node *CreateForeignTableStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -12237,27 +8889,6 @@ func (node *CreateForeignTableStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *ImportForeignSchemaStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["server_name"] = node.ServerName
-	fields["remote_schema"] = node.RemoteSchema
-	fields["local_schema"] = node.LocalSchema
-	fields["list_type"] = node.ListType
-	if node.TableList != nil {
-		fields["table_list"] = node.TableList
-	}
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"ImportForeignSchemaStmt": fields,
-	})
 }
 
 func (node *ImportForeignSchemaStmt) UnmarshalJSON(input []byte) (err error) {
@@ -12313,22 +8944,6 @@ func (node *ImportForeignSchemaStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *CreateExtensionStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["extname"] = node.Extname
-	fields["if_not_exists"] = node.IfNotExists
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"CreateExtensionStmt": fields,
-	})
-}
-
 func (node *CreateExtensionStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -12361,21 +8976,6 @@ func (node *CreateExtensionStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *AlterExtensionStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["extname"] = node.Extname
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"AlterExtensionStmt": fields,
-	})
-}
-
 func (node *AlterExtensionStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -12399,23 +8999,6 @@ func (node *AlterExtensionStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *AlterExtensionContentsStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["extname"] = node.Extname
-	fields["action"] = node.Action
-	fields["objtype"] = node.Objtype
-	if node.Object != nil {
-		fields["object"] = node.Object
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"AlterExtensionContentsStmt": fields,
-	})
 }
 
 func (node *AlterExtensionContentsStmt) UnmarshalJSON(input []byte) (err error) {
@@ -12457,25 +9040,6 @@ func (node *AlterExtensionContentsStmt) UnmarshalJSON(input []byte) (err error) 
 	return
 }
 
-func (node *CreateEventTrigStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["trigname"] = node.Trigname
-	fields["eventname"] = node.Eventname
-	if node.Whenclause != nil {
-		fields["whenclause"] = node.Whenclause
-	}
-	if node.Funcname != nil {
-		fields["funcname"] = node.Funcname
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"CreateEventTrigStmt": fields,
-	})
-}
-
 func (node *CreateEventTrigStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -12515,19 +9079,6 @@ func (node *CreateEventTrigStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *AlterEventTrigStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["trigname"] = node.Trigname
-	fields["tgenabled"] = node.Tgenabled
-
-	return json.Marshal(map[string]interface{}{
-		"AlterEventTrigStmt": fields,
-	})
-}
-
 func (node *AlterEventTrigStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -12551,22 +9102,6 @@ func (node *AlterEventTrigStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *RefreshMatViewStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["concurrent"] = node.Concurrent
-	fields["skipData"] = node.SkipData
-	if node.Relation != nil {
-		fields["relation"] = node.Relation
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"RefreshMatViewStmt": fields,
-	})
 }
 
 func (node *RefreshMatViewStmt) UnmarshalJSON(input []byte) (err error) {
@@ -12601,19 +9136,6 @@ func (node *RefreshMatViewStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *ReplicaIdentityStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["identity_type"] = node.IdentityType
-	fields["name"] = node.Name
-
-	return json.Marshal(map[string]interface{}{
-		"ReplicaIdentityStmt": fields,
-	})
-}
-
 func (node *ReplicaIdentityStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -12639,20 +9161,6 @@ func (node *ReplicaIdentityStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *AlterSystemStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Setstmt != nil {
-		fields["setstmt"] = node.Setstmt
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"AlterSystemStmt": fields,
-	})
-}
-
 func (node *AlterSystemStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -12669,32 +9177,6 @@ func (node *AlterSystemStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *CreatePolicyStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["policy_name"] = node.PolicyName
-	if node.Table != nil {
-		fields["table"] = node.Table
-	}
-	fields["cmd_name"] = node.CmdName
-	fields["permissive"] = node.Permissive
-	if node.Roles != nil {
-		fields["roles"] = node.Roles
-	}
-	if node.Qual != nil {
-		fields["qual"] = node.Qual
-	}
-	if node.WithCheck != nil {
-		fields["with_check"] = node.WithCheck
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"CreatePolicyStmt": fields,
-	})
 }
 
 func (node *CreatePolicyStmt) UnmarshalJSON(input []byte) (err error) {
@@ -12757,30 +9239,6 @@ func (node *CreatePolicyStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *AlterPolicyStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["policy_name"] = node.PolicyName
-	if node.Table != nil {
-		fields["table"] = node.Table
-	}
-	if node.Roles != nil {
-		fields["roles"] = node.Roles
-	}
-	if node.Qual != nil {
-		fields["qual"] = node.Qual
-	}
-	if node.WithCheck != nil {
-		fields["with_check"] = node.WithCheck
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"AlterPolicyStmt": fields,
-	})
-}
-
 func (node *AlterPolicyStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -12825,28 +9283,6 @@ func (node *AlterPolicyStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *CreateTransformStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["replace"] = node.Replace
-	if node.TypeName != nil {
-		fields["type_name"] = node.TypeName
-	}
-	fields["lang"] = node.Lang
-	if node.Fromsql != nil {
-		fields["fromsql"] = node.Fromsql
-	}
-	if node.Tosql != nil {
-		fields["tosql"] = node.Tosql
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"CreateTransformStmt": fields,
-	})
 }
 
 func (node *CreateTransformStmt) UnmarshalJSON(input []byte) (err error) {
@@ -12895,22 +9331,6 @@ func (node *CreateTransformStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *CreateAmStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["amname"] = node.Amname
-	if node.HandlerName != nil {
-		fields["handler_name"] = node.HandlerName
-	}
-	fields["amtype"] = node.Amtype
-
-	return json.Marshal(map[string]interface{}{
-		"CreateAmStmt": fields,
-	})
-}
-
 func (node *CreateAmStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -12941,25 +9361,6 @@ func (node *CreateAmStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *CreatePublicationStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["pubname"] = node.Pubname
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-	if node.Tables != nil {
-		fields["tables"] = node.Tables
-	}
-	fields["for_all_tables"] = node.ForAllTables
-
-	return json.Marshal(map[string]interface{}{
-		"CreatePublicationStmt": fields,
-	})
 }
 
 func (node *CreatePublicationStmt) UnmarshalJSON(input []byte) (err error) {
@@ -12999,26 +9400,6 @@ func (node *CreatePublicationStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *AlterPublicationStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["pubname"] = node.Pubname
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-	if node.Tables != nil {
-		fields["tables"] = node.Tables
-	}
-	fields["for_all_tables"] = node.ForAllTables
-	fields["tableAction"] = node.TableAction
-
-	return json.Marshal(map[string]interface{}{
-		"AlterPublicationStmt": fields,
-	})
 }
 
 func (node *AlterPublicationStmt) UnmarshalJSON(input []byte) (err error) {
@@ -13067,25 +9448,6 @@ func (node *AlterPublicationStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *CreateSubscriptionStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["subname"] = node.Subname
-	fields["conninfo"] = node.Conninfo
-	if node.Publication != nil {
-		fields["publication"] = node.Publication
-	}
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"CreateSubscriptionStmt": fields,
-	})
-}
-
 func (node *CreateSubscriptionStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -13123,26 +9485,6 @@ func (node *CreateSubscriptionStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *AlterSubscriptionStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["kind"] = node.Kind
-	fields["subname"] = node.Subname
-	fields["conninfo"] = node.Conninfo
-	if node.Publication != nil {
-		fields["publication"] = node.Publication
-	}
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"AlterSubscriptionStmt": fields,
-	})
 }
 
 func (node *AlterSubscriptionStmt) UnmarshalJSON(input []byte) (err error) {
@@ -13191,20 +9533,6 @@ func (node *AlterSubscriptionStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *DropSubscriptionStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["subname"] = node.Subname
-	fields["missing_ok"] = node.MissingOk
-	fields["behavior"] = node.Behavior
-
-	return json.Marshal(map[string]interface{}{
-		"DropSubscriptionStmt": fields,
-	})
-}
-
 func (node *DropSubscriptionStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -13235,31 +9563,6 @@ func (node *DropSubscriptionStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *CreateStatsStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Defnames != nil {
-		fields["defnames"] = node.Defnames
-	}
-	if node.StatTypes != nil {
-		fields["stat_types"] = node.StatTypes
-	}
-	if node.Exprs != nil {
-		fields["exprs"] = node.Exprs
-	}
-	if node.Relations != nil {
-		fields["relations"] = node.Relations
-	}
-	fields["stxcomment"] = node.Stxcomment
-	fields["if_not_exists"] = node.IfNotExists
-
-	return json.Marshal(map[string]interface{}{
-		"CreateStatsStmt": fields,
-	})
 }
 
 func (node *CreateStatsStmt) UnmarshalJSON(input []byte) (err error) {
@@ -13315,20 +9618,6 @@ func (node *CreateStatsStmt) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *AlterCollationStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Collname != nil {
-		fields["collname"] = node.Collname
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"AlterCollationStmt": fields,
-	})
-}
-
 func (node *AlterCollationStmt) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -13345,23 +9634,6 @@ func (node *AlterCollationStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *CallStmt) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Funccall != nil {
-		fields["funccall"] = node.Funccall
-	}
-	if node.Funcexpr != nil {
-		fields["funcexpr"] = node.Funcexpr
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"CallStmt": fields,
-	})
 }
 
 func (node *CallStmt) UnmarshalJSON(input []byte) (err error) {
@@ -13387,28 +9659,6 @@ func (node *CallStmt) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *AExpr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["kind"] = node.Kind
-	if node.Name != nil {
-		fields["name"] = node.Name
-	}
-	if node.Lexpr != nil {
-		fields["lexpr"] = node.Lexpr
-	}
-	if node.Rexpr != nil {
-		fields["rexpr"] = node.Rexpr
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"A_Expr": fields,
-	})
 }
 
 func (node *AExpr) UnmarshalJSON(input []byte) (err error) {
@@ -13457,21 +9707,6 @@ func (node *AExpr) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *ColumnRef) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Fields != nil {
-		fields["fields"] = node.Fields
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"ColumnRef": fields,
-	})
-}
-
 func (node *ColumnRef) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -13495,19 +9730,6 @@ func (node *ColumnRef) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *ParamRef) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["number"] = node.Number
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"ParamRef": fields,
-	})
 }
 
 func (node *ParamRef) UnmarshalJSON(input []byte) (err error) {
@@ -13535,21 +9757,6 @@ func (node *ParamRef) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *AConst) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Val != nil {
-		fields["val"] = node.Val
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"A_Const": fields,
-	})
-}
-
 func (node *AConst) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -13573,37 +9780,6 @@ func (node *AConst) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *FuncCall) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Funcname != nil {
-		fields["funcname"] = node.Funcname
-	}
-	if node.Args != nil {
-		fields["args"] = node.Args
-	}
-	if node.AggOrder != nil {
-		fields["agg_order"] = node.AggOrder
-	}
-	if node.AggFilter != nil {
-		fields["agg_filter"] = node.AggFilter
-	}
-	fields["agg_within_group"] = node.AggWithinGroup
-	fields["agg_star"] = node.AggStar
-	fields["agg_distinct"] = node.AggDistinct
-	fields["func_variadic"] = node.FuncVariadic
-	if node.Over != nil {
-		fields["over"] = node.Over
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"FuncCall": fields,
-	})
 }
 
 func (node *FuncCall) UnmarshalJSON(input []byte) (err error) {
@@ -13687,17 +9863,6 @@ func (node *FuncCall) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *AStar) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-
-	return json.Marshal(map[string]interface{}{
-		"A_Star": fields,
-	})
-}
-
 func (node *AStar) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -13707,24 +9872,6 @@ func (node *AStar) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *AIndices) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["is_slice"] = node.IsSlice
-	if node.Lidx != nil {
-		fields["lidx"] = node.Lidx
-	}
-	if node.Uidx != nil {
-		fields["uidx"] = node.Uidx
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"A_Indices": fields,
-	})
 }
 
 func (node *AIndices) UnmarshalJSON(input []byte) (err error) {
@@ -13759,23 +9906,6 @@ func (node *AIndices) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *AIndirection) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Arg != nil {
-		fields["arg"] = node.Arg
-	}
-	if node.Indirection != nil {
-		fields["indirection"] = node.Indirection
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"A_Indirection": fields,
-	})
-}
-
 func (node *AIndirection) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -13801,21 +9931,6 @@ func (node *AIndirection) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *AArrayExpr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Elements != nil {
-		fields["elements"] = node.Elements
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"A_ArrayExpr": fields,
-	})
-}
-
 func (node *AArrayExpr) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -13839,25 +9954,6 @@ func (node *AArrayExpr) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *ResTarget) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["name"] = node.Name
-	if node.Indirection != nil {
-		fields["indirection"] = node.Indirection
-	}
-	if node.Val != nil {
-		fields["val"] = node.Val
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"ResTarget": fields,
-	})
 }
 
 func (node *ResTarget) UnmarshalJSON(input []byte) (err error) {
@@ -13899,22 +9995,6 @@ func (node *ResTarget) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *MultiAssignRef) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Source != nil {
-		fields["source"] = node.Source
-	}
-	fields["colno"] = node.Colno
-	fields["ncolumns"] = node.Ncolumns
-
-	return json.Marshal(map[string]interface{}{
-		"MultiAssignRef": fields,
-	})
-}
-
 func (node *MultiAssignRef) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -13945,24 +10025,6 @@ func (node *MultiAssignRef) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *TypeCast) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Arg != nil {
-		fields["arg"] = node.Arg
-	}
-	if node.TypeName != nil {
-		fields["typeName"] = node.TypeName
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"TypeCast": fields,
-	})
 }
 
 func (node *TypeCast) UnmarshalJSON(input []byte) (err error) {
@@ -13997,24 +10059,6 @@ func (node *TypeCast) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *CollateClause) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Arg != nil {
-		fields["arg"] = node.Arg
-	}
-	if node.Collname != nil {
-		fields["collname"] = node.Collname
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"CollateClause": fields,
-	})
-}
-
 func (node *CollateClause) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -14045,26 +10089,6 @@ func (node *CollateClause) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *SortBy) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Node != nil {
-		fields["node"] = node.Node
-	}
-	fields["sortby_dir"] = node.SortbyDir
-	fields["sortby_nulls"] = node.SortbyNulls
-	if node.UseOp != nil {
-		fields["useOp"] = node.UseOp
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"SortBy": fields,
-	})
 }
 
 func (node *SortBy) UnmarshalJSON(input []byte) (err error) {
@@ -14111,33 +10135,6 @@ func (node *SortBy) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *WindowDef) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["name"] = node.Name
-	fields["refname"] = node.Refname
-	if node.PartitionClause != nil {
-		fields["partitionClause"] = node.PartitionClause
-	}
-	if node.OrderClause != nil {
-		fields["orderClause"] = node.OrderClause
-	}
-	fields["frameOptions"] = node.FrameOptions
-	if node.StartOffset != nil {
-		fields["startOffset"] = node.StartOffset
-	}
-	if node.EndOffset != nil {
-		fields["endOffset"] = node.EndOffset
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"WindowDef": fields,
-	})
 }
 
 func (node *WindowDef) UnmarshalJSON(input []byte) (err error) {
@@ -14207,24 +10204,6 @@ func (node *WindowDef) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *RangeSubselect) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["lateral"] = node.Lateral
-	if node.Subquery != nil {
-		fields["subquery"] = node.Subquery
-	}
-	if node.Alias != nil {
-		fields["alias"] = node.Alias
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"RangeSubselect": fields,
-	})
-}
-
 func (node *RangeSubselect) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -14255,29 +10234,6 @@ func (node *RangeSubselect) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *RangeFunction) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["lateral"] = node.Lateral
-	fields["ordinality"] = node.Ordinality
-	fields["is_rowsfrom"] = node.IsRowsfrom
-	if node.Functions != nil {
-		fields["functions"] = node.Functions
-	}
-	if node.Alias != nil {
-		fields["alias"] = node.Alias
-	}
-	if node.Coldeflist != nil {
-		fields["coldeflist"] = node.Coldeflist
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"RangeFunction": fields,
-	})
 }
 
 func (node *RangeFunction) UnmarshalJSON(input []byte) (err error) {
@@ -14333,30 +10289,6 @@ func (node *RangeFunction) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *RangeTableSample) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Relation != nil {
-		fields["relation"] = node.Relation
-	}
-	if node.Method != nil {
-		fields["method"] = node.Method
-	}
-	if node.Args != nil {
-		fields["args"] = node.Args
-	}
-	if node.Repeatable != nil {
-		fields["repeatable"] = node.Repeatable
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"RangeTableSample": fields,
-	})
-}
-
 func (node *RangeTableSample) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -14401,34 +10333,6 @@ func (node *RangeTableSample) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *RangeTableFunc) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["lateral"] = node.Lateral
-	if node.Docexpr != nil {
-		fields["docexpr"] = node.Docexpr
-	}
-	if node.Rowexpr != nil {
-		fields["rowexpr"] = node.Rowexpr
-	}
-	if node.Namespaces != nil {
-		fields["namespaces"] = node.Namespaces
-	}
-	if node.Columns != nil {
-		fields["columns"] = node.Columns
-	}
-	if node.Alias != nil {
-		fields["alias"] = node.Alias
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"RangeTableFunc": fields,
-	})
 }
 
 func (node *RangeTableFunc) UnmarshalJSON(input []byte) (err error) {
@@ -14491,30 +10395,6 @@ func (node *RangeTableFunc) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *RangeTableFuncCol) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["colname"] = node.Colname
-	if node.TypeName != nil {
-		fields["typeName"] = node.TypeName
-	}
-	fields["for_ordinality"] = node.ForOrdinality
-	fields["is_not_null"] = node.IsNotNull
-	if node.Colexpr != nil {
-		fields["colexpr"] = node.Colexpr
-	}
-	if node.Coldefexpr != nil {
-		fields["coldefexpr"] = node.Coldefexpr
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"RangeTableFuncCol": fields,
-	})
-}
-
 func (node *RangeTableFuncCol) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -14573,33 +10453,6 @@ func (node *RangeTableFuncCol) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *TypeName) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Names != nil {
-		fields["names"] = node.Names
-	}
-	if node.TypeOid != nil {
-		fields["typeOid"] = node.TypeOid
-	}
-	fields["setof"] = node.Setof
-	fields["pct_type"] = node.PctType
-	if node.Typmods != nil {
-		fields["typmods"] = node.Typmods
-	}
-	fields["typemod"] = node.Typemod
-	if node.ArrayBounds != nil {
-		fields["arrayBounds"] = node.ArrayBounds
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"TypeName": fields,
-	})
 }
 
 func (node *TypeName) UnmarshalJSON(input []byte) (err error) {
@@ -14667,50 +10520,6 @@ func (node *TypeName) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *ColumnDef) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["colname"] = node.Colname
-	if node.TypeName != nil {
-		fields["typeName"] = node.TypeName
-	}
-	fields["inhcount"] = node.Inhcount
-	fields["is_local"] = node.IsLocal
-	fields["is_not_null"] = node.IsNotNull
-	fields["is_from_type"] = node.IsFromType
-	fields["storage"] = node.Storage
-	if node.RawDefault != nil {
-		fields["raw_default"] = node.RawDefault
-	}
-	if node.CookedDefault != nil {
-		fields["cooked_default"] = node.CookedDefault
-	}
-	fields["identity"] = node.Identity
-	if node.IdentitySequence != nil {
-		fields["identitySequence"] = node.IdentitySequence
-	}
-	fields["generated"] = node.Generated
-	if node.CollClause != nil {
-		fields["collClause"] = node.CollClause
-	}
-	if node.CollOid != nil {
-		fields["collOid"] = node.CollOid
-	}
-	if node.Constraints != nil {
-		fields["constraints"] = node.Constraints
-	}
-	if node.Fdwoptions != nil {
-		fields["fdwoptions"] = node.Fdwoptions
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"ColumnDef": fields,
-	})
 }
 
 func (node *ColumnDef) UnmarshalJSON(input []byte) (err error) {
@@ -14843,30 +10652,6 @@ func (node *ColumnDef) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *IndexElem) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["name"] = node.Name
-	if node.Expr != nil {
-		fields["expr"] = node.Expr
-	}
-	fields["indexcolname"] = node.Indexcolname
-	if node.Collation != nil {
-		fields["collation"] = node.Collation
-	}
-	if node.Opclass != nil {
-		fields["opclass"] = node.Opclass
-	}
-	fields["ordering"] = node.Ordering
-	fields["nulls_ordering"] = node.NullsOrdering
-
-	return json.Marshal(map[string]interface{}{
-		"IndexElem": fields,
-	})
-}
-
 func (node *IndexElem) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -14925,67 +10710,6 @@ func (node *IndexElem) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *Constraint) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["contype"] = node.Contype
-	fields["conname"] = node.Conname
-	fields["deferrable"] = node.Deferrable
-	fields["initdeferred"] = node.Initdeferred
-	fields["location"] = node.Location
-	fields["is_no_inherit"] = node.IsNoInherit
-	if node.RawExpr != nil {
-		fields["raw_expr"] = node.RawExpr
-	}
-	fields["cooked_expr"] = node.CookedExpr
-	fields["generated_when"] = node.GeneratedWhen
-	if node.Keys != nil {
-		fields["keys"] = node.Keys
-	}
-	if node.Including != nil {
-		fields["including"] = node.Including
-	}
-	if node.Exclusions != nil {
-		fields["exclusions"] = node.Exclusions
-	}
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-	fields["indexname"] = node.Indexname
-	fields["indexspace"] = node.Indexspace
-	fields["reset_default_tblspc"] = node.ResetDefaultTblspc
-	fields["access_method"] = node.AccessMethod
-	if node.WhereClause != nil {
-		fields["where_clause"] = node.WhereClause
-	}
-	if node.Pktable != nil {
-		fields["pktable"] = node.Pktable
-	}
-	if node.FkAttrs != nil {
-		fields["fk_attrs"] = node.FkAttrs
-	}
-	if node.PkAttrs != nil {
-		fields["pk_attrs"] = node.PkAttrs
-	}
-	fields["fk_matchtype"] = node.FkMatchtype
-	fields["fk_upd_action"] = node.FkUpdAction
-	fields["fk_del_action"] = node.FkDelAction
-	if node.OldConpfeqop != nil {
-		fields["old_conpfeqop"] = node.OldConpfeqop
-	}
-	if node.OldPktableOid != nil {
-		fields["old_pktable_oid"] = node.OldPktableOid
-	}
-	fields["skip_validation"] = node.SkipValidation
-	fields["initially_valid"] = node.InitiallyValid
-
-	return json.Marshal(map[string]interface{}{
-		"Constraint": fields,
-	})
 }
 
 func (node *Constraint) UnmarshalJSON(input []byte) (err error) {
@@ -15195,24 +10919,6 @@ func (node *Constraint) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *DefElem) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["defnamespace"] = node.Defnamespace
-	fields["defname"] = node.Defname
-	if node.Arg != nil {
-		fields["arg"] = node.Arg
-	}
-	fields["defaction"] = node.Defaction
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"DefElem": fields,
-	})
-}
-
 func (node *DefElem) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -15257,78 +10963,6 @@ func (node *DefElem) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *RangeTblEntry) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["rtekind"] = node.Rtekind
-	if node.Relid != nil {
-		fields["relid"] = node.Relid
-	}
-	fields["relkind"] = node.Relkind
-	fields["rellockmode"] = node.Rellockmode
-	if node.Tablesample != nil {
-		fields["tablesample"] = node.Tablesample
-	}
-	if node.Subquery != nil {
-		fields["subquery"] = node.Subquery
-	}
-	fields["security_barrier"] = node.SecurityBarrier
-	fields["jointype"] = node.Jointype
-	if node.Joinaliasvars != nil {
-		fields["joinaliasvars"] = node.Joinaliasvars
-	}
-	if node.Functions != nil {
-		fields["functions"] = node.Functions
-	}
-	fields["funcordinality"] = node.Funcordinality
-	if node.Tablefunc != nil {
-		fields["tablefunc"] = node.Tablefunc
-	}
-	if node.ValuesLists != nil {
-		fields["values_lists"] = node.ValuesLists
-	}
-	fields["ctename"] = node.Ctename
-	if node.Ctelevelsup != nil {
-		fields["ctelevelsup"] = node.Ctelevelsup
-	}
-	fields["self_reference"] = node.SelfReference
-	if node.Coltypes != nil {
-		fields["coltypes"] = node.Coltypes
-	}
-	if node.Coltypmods != nil {
-		fields["coltypmods"] = node.Coltypmods
-	}
-	if node.Colcollations != nil {
-		fields["colcollations"] = node.Colcollations
-	}
-	fields["enrname"] = node.Enrname
-	fields["enrtuples"] = node.Enrtuples
-	if node.Alias != nil {
-		fields["alias"] = node.Alias
-	}
-	if node.Eref != nil {
-		fields["eref"] = node.Eref
-	}
-	fields["lateral"] = node.Lateral
-	fields["inh"] = node.Inh
-	fields["inFromCl"] = node.InFromCl
-	if node.RequiredPerms != nil {
-		fields["requiredPerms"] = node.RequiredPerms
-	}
-	if node.CheckAsUser != nil {
-		fields["checkAsUser"] = node.CheckAsUser
-	}
-	if node.SecurityQuals != nil {
-		fields["securityQuals"] = node.SecurityQuals
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"RangeTblEntry": fields,
-	})
 }
 
 func (node *RangeTblEntry) UnmarshalJSON(input []byte) (err error) {
@@ -15545,33 +11179,6 @@ func (node *RangeTblEntry) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *RangeTblFunction) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Funcexpr != nil {
-		fields["funcexpr"] = node.Funcexpr
-	}
-	fields["funccolcount"] = node.Funccolcount
-	if node.Funccolnames != nil {
-		fields["funccolnames"] = node.Funccolnames
-	}
-	if node.Funccoltypes != nil {
-		fields["funccoltypes"] = node.Funccoltypes
-	}
-	if node.Funccoltypmods != nil {
-		fields["funccoltypmods"] = node.Funccoltypmods
-	}
-	if node.Funccolcollations != nil {
-		fields["funccolcollations"] = node.Funccolcollations
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"RangeTblFunction": fields,
-	})
-}
-
 func (node *RangeTblFunction) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -15625,26 +11232,6 @@ func (node *RangeTblFunction) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *TableSampleClause) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Tsmhandler != nil {
-		fields["tsmhandler"] = node.Tsmhandler
-	}
-	if node.Args != nil {
-		fields["args"] = node.Args
-	}
-	if node.Repeatable != nil {
-		fields["repeatable"] = node.Repeatable
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"TableSampleClause": fields,
-	})
-}
-
 func (node *TableSampleClause) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -15675,24 +11262,6 @@ func (node *TableSampleClause) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *WithCheckOption) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["kind"] = node.Kind
-	fields["relname"] = node.Relname
-	fields["polname"] = node.Polname
-	if node.Qual != nil {
-		fields["qual"] = node.Qual
-	}
-	fields["cascaded"] = node.Cascaded
-
-	return json.Marshal(map[string]interface{}{
-		"WithCheckOption": fields,
-	})
 }
 
 func (node *WithCheckOption) UnmarshalJSON(input []byte) (err error) {
@@ -15741,28 +11310,6 @@ func (node *WithCheckOption) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *SortGroupClause) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.TleSortGroupRef != nil {
-		fields["tleSortGroupRef"] = node.TleSortGroupRef
-	}
-	if node.Eqop != nil {
-		fields["eqop"] = node.Eqop
-	}
-	if node.Sortop != nil {
-		fields["sortop"] = node.Sortop
-	}
-	fields["nulls_first"] = node.NullsFirst
-	fields["hashable"] = node.Hashable
-
-	return json.Marshal(map[string]interface{}{
-		"SortGroupClause": fields,
-	})
-}
-
 func (node *SortGroupClause) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -15809,22 +11356,6 @@ func (node *SortGroupClause) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *GroupingSet) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["kind"] = node.Kind
-	if node.Content != nil {
-		fields["content"] = node.Content
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"GroupingSet": fields,
-	})
-}
-
 func (node *GroupingSet) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -15855,47 +11386,6 @@ func (node *GroupingSet) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *WindowClause) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["name"] = node.Name
-	fields["refname"] = node.Refname
-	if node.PartitionClause != nil {
-		fields["partitionClause"] = node.PartitionClause
-	}
-	if node.OrderClause != nil {
-		fields["orderClause"] = node.OrderClause
-	}
-	fields["frameOptions"] = node.FrameOptions
-	if node.StartOffset != nil {
-		fields["startOffset"] = node.StartOffset
-	}
-	if node.EndOffset != nil {
-		fields["endOffset"] = node.EndOffset
-	}
-	if node.StartInRangeFunc != nil {
-		fields["startInRangeFunc"] = node.StartInRangeFunc
-	}
-	if node.EndInRangeFunc != nil {
-		fields["endInRangeFunc"] = node.EndInRangeFunc
-	}
-	if node.InRangeColl != nil {
-		fields["inRangeColl"] = node.InRangeColl
-	}
-	fields["inRangeAsc"] = node.InRangeAsc
-	fields["inRangeNullsFirst"] = node.InRangeNullsFirst
-	if node.Winref != nil {
-		fields["winref"] = node.Winref
-	}
-	fields["copiedOrder"] = node.CopiedOrder
-
-	return json.Marshal(map[string]interface{}{
-		"WindowClause": fields,
-	})
 }
 
 func (node *WindowClause) UnmarshalJSON(input []byte) (err error) {
@@ -16007,24 +11497,6 @@ func (node *WindowClause) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *ObjectWithArgs) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Objname != nil {
-		fields["objname"] = node.Objname
-	}
-	if node.Objargs != nil {
-		fields["objargs"] = node.Objargs
-	}
-	fields["args_unspecified"] = node.ArgsUnspecified
-
-	return json.Marshal(map[string]interface{}{
-		"ObjectWithArgs": fields,
-	})
-}
-
 func (node *ObjectWithArgs) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -16057,21 +11529,6 @@ func (node *ObjectWithArgs) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *AccessPriv) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["priv_name"] = node.PrivName
-	if node.Cols != nil {
-		fields["cols"] = node.Cols
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"AccessPriv": fields,
-	})
-}
-
 func (node *AccessPriv) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -16095,31 +11552,6 @@ func (node *AccessPriv) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *CreateOpClassItem) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["itemtype"] = node.Itemtype
-	if node.Name != nil {
-		fields["name"] = node.Name
-	}
-	fields["number"] = node.Number
-	if node.OrderFamily != nil {
-		fields["order_family"] = node.OrderFamily
-	}
-	if node.ClassArgs != nil {
-		fields["class_args"] = node.ClassArgs
-	}
-	if node.Storedtype != nil {
-		fields["storedtype"] = node.Storedtype
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"CreateOpClassItem": fields,
-	})
 }
 
 func (node *CreateOpClassItem) UnmarshalJSON(input []byte) (err error) {
@@ -16175,23 +11607,6 @@ func (node *CreateOpClassItem) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *TableLikeClause) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Relation != nil {
-		fields["relation"] = node.Relation
-	}
-	if node.Options != nil {
-		fields["options"] = node.Options
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"TableLikeClause": fields,
-	})
-}
-
 func (node *TableLikeClause) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -16215,25 +11630,6 @@ func (node *TableLikeClause) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *FunctionParameter) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["name"] = node.Name
-	if node.ArgType != nil {
-		fields["argType"] = node.ArgType
-	}
-	fields["mode"] = node.Mode
-	if node.Defexpr != nil {
-		fields["defexpr"] = node.Defexpr
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"FunctionParameter": fields,
-	})
 }
 
 func (node *FunctionParameter) UnmarshalJSON(input []byte) (err error) {
@@ -16275,22 +11671,6 @@ func (node *FunctionParameter) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *LockingClause) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.LockedRels != nil {
-		fields["lockedRels"] = node.LockedRels
-	}
-	fields["strength"] = node.Strength
-	fields["waitPolicy"] = node.WaitPolicy
-
-	return json.Marshal(map[string]interface{}{
-		"LockingClause": fields,
-	})
-}
-
 func (node *LockingClause) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -16321,23 +11701,6 @@ func (node *LockingClause) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *RowMarkClause) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Rti != nil {
-		fields["rti"] = node.Rti
-	}
-	fields["strength"] = node.Strength
-	fields["waitPolicy"] = node.WaitPolicy
-	fields["pushedDown"] = node.PushedDown
-
-	return json.Marshal(map[string]interface{}{
-		"RowMarkClause": fields,
-	})
 }
 
 func (node *RowMarkClause) UnmarshalJSON(input []byte) (err error) {
@@ -16379,25 +11742,6 @@ func (node *RowMarkClause) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *XmlSerialize) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["xmloption"] = node.Xmloption
-	if node.Expr != nil {
-		fields["expr"] = node.Expr
-	}
-	if node.TypeName != nil {
-		fields["typeName"] = node.TypeName
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"XmlSerialize": fields,
-	})
-}
-
 func (node *XmlSerialize) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -16437,22 +11781,6 @@ func (node *XmlSerialize) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *WithClause) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Ctes != nil {
-		fields["ctes"] = node.Ctes
-	}
-	fields["recursive"] = node.Recursive
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"WithClause": fields,
-	})
-}
-
 func (node *WithClause) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -16483,25 +11811,6 @@ func (node *WithClause) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *InferClause) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.IndexElems != nil {
-		fields["indexElems"] = node.IndexElems
-	}
-	if node.WhereClause != nil {
-		fields["whereClause"] = node.WhereClause
-	}
-	fields["conname"] = node.Conname
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"InferClause": fields,
-	})
 }
 
 func (node *InferClause) UnmarshalJSON(input []byte) (err error) {
@@ -16541,28 +11850,6 @@ func (node *InferClause) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *OnConflictClause) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["action"] = node.Action
-	if node.Infer != nil {
-		fields["infer"] = node.Infer
-	}
-	if node.TargetList != nil {
-		fields["targetList"] = node.TargetList
-	}
-	if node.WhereClause != nil {
-		fields["whereClause"] = node.WhereClause
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"OnConflictClause": fields,
-	})
 }
 
 func (node *OnConflictClause) UnmarshalJSON(input []byte) (err error) {
@@ -16609,40 +11896,6 @@ func (node *OnConflictClause) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *CommonTableExpr) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["ctename"] = node.Ctename
-	if node.Aliascolnames != nil {
-		fields["aliascolnames"] = node.Aliascolnames
-	}
-	fields["ctematerialized"] = node.Ctematerialized
-	if node.Ctequery != nil {
-		fields["ctequery"] = node.Ctequery
-	}
-	fields["location"] = node.Location
-	fields["cterecursive"] = node.Cterecursive
-	fields["cterefcount"] = node.Cterefcount
-	if node.Ctecolnames != nil {
-		fields["ctecolnames"] = node.Ctecolnames
-	}
-	if node.Ctecoltypes != nil {
-		fields["ctecoltypes"] = node.Ctecoltypes
-	}
-	if node.Ctecoltypmods != nil {
-		fields["ctecoltypmods"] = node.Ctecoltypmods
-	}
-	if node.Ctecolcollations != nil {
-		fields["ctecolcollations"] = node.Ctecolcollations
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"CommonTableExpr": fields,
-	})
 }
 
 func (node *CommonTableExpr) UnmarshalJSON(input []byte) (err error) {
@@ -16733,20 +11986,6 @@ func (node *CommonTableExpr) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *RoleSpec) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["roletype"] = node.Roletype
-	fields["rolename"] = node.Rolename
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"RoleSpec": fields,
-	})
-}
-
 func (node *RoleSpec) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -16779,20 +12018,6 @@ func (node *RoleSpec) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *TriggerTransition) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["name"] = node.Name
-	fields["isNew"] = node.IsNew
-	fields["isTable"] = node.IsTable
-
-	return json.Marshal(map[string]interface{}{
-		"TriggerTransition": fields,
-	})
-}
-
 func (node *TriggerTransition) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -16823,28 +12048,6 @@ func (node *TriggerTransition) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *PartitionElem) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["name"] = node.Name
-	if node.Expr != nil {
-		fields["expr"] = node.Expr
-	}
-	if node.Collation != nil {
-		fields["collation"] = node.Collation
-	}
-	if node.Opclass != nil {
-		fields["opclass"] = node.Opclass
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"PartitionElem": fields,
-	})
 }
 
 func (node *PartitionElem) UnmarshalJSON(input []byte) (err error) {
@@ -16893,22 +12096,6 @@ func (node *PartitionElem) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *PartitionSpec) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["strategy"] = node.Strategy
-	if node.PartParams != nil {
-		fields["partParams"] = node.PartParams
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"PartitionSpec": fields,
-	})
-}
-
 func (node *PartitionSpec) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -16939,31 +12126,6 @@ func (node *PartitionSpec) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *PartitionBoundSpec) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["strategy"] = node.Strategy
-	fields["is_default"] = node.IsDefault
-	fields["modulus"] = node.Modulus
-	fields["remainder"] = node.Remainder
-	if node.Listdatums != nil {
-		fields["listdatums"] = node.Listdatums
-	}
-	if node.Lowerdatums != nil {
-		fields["lowerdatums"] = node.Lowerdatums
-	}
-	if node.Upperdatums != nil {
-		fields["upperdatums"] = node.Upperdatums
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"PartitionBoundSpec": fields,
-	})
 }
 
 func (node *PartitionBoundSpec) UnmarshalJSON(input []byte) (err error) {
@@ -17033,22 +12195,6 @@ func (node *PartitionBoundSpec) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *PartitionRangeDatum) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["kind"] = node.Kind
-	if node.Value != nil {
-		fields["value"] = node.Value
-	}
-	fields["location"] = node.Location
-
-	return json.Marshal(map[string]interface{}{
-		"PartitionRangeDatum": fields,
-	})
-}
-
 func (node *PartitionRangeDatum) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -17081,23 +12227,6 @@ func (node *PartitionRangeDatum) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *PartitionCmd) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Name != nil {
-		fields["name"] = node.Name
-	}
-	if node.Bound != nil {
-		fields["bound"] = node.Bound
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"PartitionCmd": fields,
-	})
-}
-
 func (node *PartitionCmd) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -17121,26 +12250,6 @@ func (node *PartitionCmd) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *VacuumRelation) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	if node.Relation != nil {
-		fields["relation"] = node.Relation
-	}
-	if node.Oid != nil {
-		fields["oid"] = node.Oid
-	}
-	if node.VaCols != nil {
-		fields["va_cols"] = node.VaCols
-	}
-
-	return json.Marshal(map[string]interface{}{
-		"VacuumRelation": fields,
-	})
 }
 
 func (node *VacuumRelation) UnmarshalJSON(input []byte) (err error) {
@@ -17173,23 +12282,6 @@ func (node *VacuumRelation) UnmarshalJSON(input []byte) (err error) {
 	}
 
 	return
-}
-
-func (node *InlineCodeBlock) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["source_text"] = node.SourceText
-	if node.LangOid != nil {
-		fields["langOid"] = node.LangOid
-	}
-	fields["langIsTrusted"] = node.LangIsTrusted
-	fields["atomic"] = node.Atomic
-
-	return json.Marshal(map[string]interface{}{
-		"InlineCodeBlock": fields,
-	})
 }
 
 func (node *InlineCodeBlock) UnmarshalJSON(input []byte) (err error) {
@@ -17231,18 +12323,6 @@ func (node *InlineCodeBlock) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *CallContext) MarshalJSON() (result []byte, err error) {
-	if node == nil {
-		return nil, nil
-	}
-	fields := map[string]interface{}{}
-	fields["atomic"] = node.Atomic
-
-	return json.Marshal(map[string]interface{}{
-		"CallContext": fields,
-	})
-}
-
 func (node *CallContext) UnmarshalJSON(input []byte) (err error) {
 	var fields map[string]json.RawMessage
 
@@ -17266,10 +12346,6 @@ func (node *Root) UnmarshalJSON(input []byte) (err error) {
 	return
 }
 
-func (node *Root) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(node.Node)
-}
-
 func (e *OverridingKind) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -17285,10 +12361,6 @@ func (e *OverridingKind) UnmarshalJSON(input []byte) (err error) {
 	*e = NewOverridingKind(s)
 
 	return nil
-}
-
-func (e *OverridingKind) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }
 
 func (e *QuerySource) UnmarshalJSON(input []byte) (err error) {
@@ -17308,10 +12380,6 @@ func (e *QuerySource) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *QuerySource) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *SortByDir) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -17327,10 +12395,6 @@ func (e *SortByDir) UnmarshalJSON(input []byte) (err error) {
 	*e = NewSortByDir(s)
 
 	return nil
-}
-
-func (e *SortByDir) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }
 
 func (e *SortByNulls) UnmarshalJSON(input []byte) (err error) {
@@ -17350,10 +12414,6 @@ func (e *SortByNulls) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *SortByNulls) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *A_Expr_Kind) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -17369,10 +12429,6 @@ func (e *A_Expr_Kind) UnmarshalJSON(input []byte) (err error) {
 	*e = NewA_Expr_Kind(s)
 
 	return nil
-}
-
-func (e *A_Expr_Kind) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }
 
 func (e *RoleSpecType) UnmarshalJSON(input []byte) (err error) {
@@ -17392,10 +12448,6 @@ func (e *RoleSpecType) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *RoleSpecType) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *TableLikeOption) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -17411,10 +12463,6 @@ func (e *TableLikeOption) UnmarshalJSON(input []byte) (err error) {
 	*e = NewTableLikeOption(s)
 
 	return nil
-}
-
-func (e *TableLikeOption) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }
 
 func (e *DefElemAction) UnmarshalJSON(input []byte) (err error) {
@@ -17434,10 +12482,6 @@ func (e *DefElemAction) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *DefElemAction) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *PartitionRangeDatumKind) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -17453,10 +12497,6 @@ func (e *PartitionRangeDatumKind) UnmarshalJSON(input []byte) (err error) {
 	*e = NewPartitionRangeDatumKind(s)
 
 	return nil
-}
-
-func (e *PartitionRangeDatumKind) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }
 
 func (e *RTEKind) UnmarshalJSON(input []byte) (err error) {
@@ -17476,10 +12516,6 @@ func (e *RTEKind) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *RTEKind) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *WCOKind) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -17495,10 +12531,6 @@ func (e *WCOKind) UnmarshalJSON(input []byte) (err error) {
 	*e = NewWCOKind(s)
 
 	return nil
-}
-
-func (e *WCOKind) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }
 
 func (e *GroupingSetKind) UnmarshalJSON(input []byte) (err error) {
@@ -17518,10 +12550,6 @@ func (e *GroupingSetKind) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *GroupingSetKind) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *CTEMaterialize) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -17537,10 +12565,6 @@ func (e *CTEMaterialize) UnmarshalJSON(input []byte) (err error) {
 	*e = NewCTEMaterialize(s)
 
 	return nil
-}
-
-func (e *CTEMaterialize) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }
 
 func (e *SetOperation) UnmarshalJSON(input []byte) (err error) {
@@ -17560,10 +12584,6 @@ func (e *SetOperation) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *SetOperation) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *ObjectType) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -17579,10 +12599,6 @@ func (e *ObjectType) UnmarshalJSON(input []byte) (err error) {
 	*e = NewObjectType(s)
 
 	return nil
-}
-
-func (e *ObjectType) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }
 
 func (e *DropBehavior) UnmarshalJSON(input []byte) (err error) {
@@ -17602,10 +12618,6 @@ func (e *DropBehavior) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *DropBehavior) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *AlterTableType) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -17621,10 +12633,6 @@ func (e *AlterTableType) UnmarshalJSON(input []byte) (err error) {
 	*e = NewAlterTableType(s)
 
 	return nil
-}
-
-func (e *AlterTableType) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }
 
 func (e *GrantTargetType) UnmarshalJSON(input []byte) (err error) {
@@ -17644,10 +12652,6 @@ func (e *GrantTargetType) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *GrantTargetType) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *VariableSetKind) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -17663,10 +12667,6 @@ func (e *VariableSetKind) UnmarshalJSON(input []byte) (err error) {
 	*e = NewVariableSetKind(s)
 
 	return nil
-}
-
-func (e *VariableSetKind) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }
 
 func (e *ConstrType) UnmarshalJSON(input []byte) (err error) {
@@ -17686,10 +12686,6 @@ func (e *ConstrType) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *ConstrType) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *ImportForeignSchemaType) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -17705,10 +12701,6 @@ func (e *ImportForeignSchemaType) UnmarshalJSON(input []byte) (err error) {
 	*e = NewImportForeignSchemaType(s)
 
 	return nil
-}
-
-func (e *ImportForeignSchemaType) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }
 
 func (e *RoleStmtType) UnmarshalJSON(input []byte) (err error) {
@@ -17728,10 +12720,6 @@ func (e *RoleStmtType) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *RoleStmtType) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *FetchDirection) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -17747,10 +12735,6 @@ func (e *FetchDirection) UnmarshalJSON(input []byte) (err error) {
 	*e = NewFetchDirection(s)
 
 	return nil
-}
-
-func (e *FetchDirection) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }
 
 func (e *FunctionParameterMode) UnmarshalJSON(input []byte) (err error) {
@@ -17770,10 +12754,6 @@ func (e *FunctionParameterMode) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *FunctionParameterMode) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *TransactionStmtKind) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -17789,10 +12769,6 @@ func (e *TransactionStmtKind) UnmarshalJSON(input []byte) (err error) {
 	*e = NewTransactionStmtKind(s)
 
 	return nil
-}
-
-func (e *TransactionStmtKind) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }
 
 func (e *ViewCheckOption) UnmarshalJSON(input []byte) (err error) {
@@ -17812,10 +12788,6 @@ func (e *ViewCheckOption) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *ViewCheckOption) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *ClusterOption) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -17831,10 +12803,6 @@ func (e *ClusterOption) UnmarshalJSON(input []byte) (err error) {
 	*e = NewClusterOption(s)
 
 	return nil
-}
-
-func (e *ClusterOption) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }
 
 func (e *DiscardMode) UnmarshalJSON(input []byte) (err error) {
@@ -17854,10 +12822,6 @@ func (e *DiscardMode) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *DiscardMode) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *ReindexObjectType) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -17873,10 +12837,6 @@ func (e *ReindexObjectType) UnmarshalJSON(input []byte) (err error) {
 	*e = NewReindexObjectType(s)
 
 	return nil
-}
-
-func (e *ReindexObjectType) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }
 
 func (e *AlterTSConfigType) UnmarshalJSON(input []byte) (err error) {
@@ -17896,10 +12856,6 @@ func (e *AlterTSConfigType) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *AlterTSConfigType) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *AlterSubscriptionType) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -17915,10 +12871,6 @@ func (e *AlterSubscriptionType) UnmarshalJSON(input []byte) (err error) {
 	*e = NewAlterSubscriptionType(s)
 
 	return nil
-}
-
-func (e *AlterSubscriptionType) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }
 
 func (e *OnCommitAction) UnmarshalJSON(input []byte) (err error) {
@@ -17938,10 +12890,6 @@ func (e *OnCommitAction) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *OnCommitAction) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *ParamKind) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -17957,10 +12905,6 @@ func (e *ParamKind) UnmarshalJSON(input []byte) (err error) {
 	*e = NewParamKind(s)
 
 	return nil
-}
-
-func (e *ParamKind) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }
 
 func (e *CoercionContext) UnmarshalJSON(input []byte) (err error) {
@@ -17980,10 +12924,6 @@ func (e *CoercionContext) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *CoercionContext) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *CoercionForm) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -17999,10 +12939,6 @@ func (e *CoercionForm) UnmarshalJSON(input []byte) (err error) {
 	*e = NewCoercionForm(s)
 
 	return nil
-}
-
-func (e *CoercionForm) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }
 
 func (e *BoolExprType) UnmarshalJSON(input []byte) (err error) {
@@ -18022,10 +12958,6 @@ func (e *BoolExprType) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *BoolExprType) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *SubLinkType) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -18041,10 +12973,6 @@ func (e *SubLinkType) UnmarshalJSON(input []byte) (err error) {
 	*e = NewSubLinkType(s)
 
 	return nil
-}
-
-func (e *SubLinkType) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }
 
 func (e *RowCompareType) UnmarshalJSON(input []byte) (err error) {
@@ -18064,10 +12992,6 @@ func (e *RowCompareType) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *RowCompareType) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *MinMaxOp) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -18083,10 +13007,6 @@ func (e *MinMaxOp) UnmarshalJSON(input []byte) (err error) {
 	*e = NewMinMaxOp(s)
 
 	return nil
-}
-
-func (e *MinMaxOp) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }
 
 func (e *SQLValueFunctionOp) UnmarshalJSON(input []byte) (err error) {
@@ -18106,10 +13026,6 @@ func (e *SQLValueFunctionOp) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *SQLValueFunctionOp) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *XmlExprOp) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -18125,10 +13041,6 @@ func (e *XmlExprOp) UnmarshalJSON(input []byte) (err error) {
 	*e = NewXmlExprOp(s)
 
 	return nil
-}
-
-func (e *XmlExprOp) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }
 
 func (e *XmlOptionType) UnmarshalJSON(input []byte) (err error) {
@@ -18148,10 +13060,6 @@ func (e *XmlOptionType) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *XmlOptionType) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *NullTestType) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -18167,10 +13075,6 @@ func (e *NullTestType) UnmarshalJSON(input []byte) (err error) {
 	*e = NewNullTestType(s)
 
 	return nil
-}
-
-func (e *NullTestType) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }
 
 func (e *BoolTestType) UnmarshalJSON(input []byte) (err error) {
@@ -18190,10 +13094,6 @@ func (e *BoolTestType) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *BoolTestType) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *CmdType) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -18209,10 +13109,6 @@ func (e *CmdType) UnmarshalJSON(input []byte) (err error) {
 	*e = NewCmdType(s)
 
 	return nil
-}
-
-func (e *CmdType) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }
 
 func (e *JoinType) UnmarshalJSON(input []byte) (err error) {
@@ -18232,10 +13128,6 @@ func (e *JoinType) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *JoinType) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *AggStrategy) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -18251,10 +13143,6 @@ func (e *AggStrategy) UnmarshalJSON(input []byte) (err error) {
 	*e = NewAggStrategy(s)
 
 	return nil
-}
-
-func (e *AggStrategy) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }
 
 func (e *AggSplit) UnmarshalJSON(input []byte) (err error) {
@@ -18274,10 +13162,6 @@ func (e *AggSplit) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *AggSplit) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *SetOpCmd) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -18293,10 +13177,6 @@ func (e *SetOpCmd) UnmarshalJSON(input []byte) (err error) {
 	*e = NewSetOpCmd(s)
 
 	return nil
-}
-
-func (e *SetOpCmd) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }
 
 func (e *SetOpStrategy) UnmarshalJSON(input []byte) (err error) {
@@ -18316,10 +13196,6 @@ func (e *SetOpStrategy) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *SetOpStrategy) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *OnConflictAction) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -18335,10 +13211,6 @@ func (e *OnConflictAction) UnmarshalJSON(input []byte) (err error) {
 	*e = NewOnConflictAction(s)
 
 	return nil
-}
-
-func (e *OnConflictAction) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }
 
 func (e *LockClauseStrength) UnmarshalJSON(input []byte) (err error) {
@@ -18358,10 +13230,6 @@ func (e *LockClauseStrength) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *LockClauseStrength) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *LockWaitPolicy) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -18379,10 +13247,6 @@ func (e *LockWaitPolicy) UnmarshalJSON(input []byte) (err error) {
 	return nil
 }
 
-func (e *LockWaitPolicy) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
-}
-
 func (e *LockTupleMode) UnmarshalJSON(input []byte) (err error) {
 	var i int32
 	err = json.Unmarshal(input, &i)
@@ -18398,8 +13262,4 @@ func (e *LockTupleMode) UnmarshalJSON(input []byte) (err error) {
 	*e = NewLockTupleMode(s)
 
 	return nil
-}
-
-func (e *LockTupleMode) MarshalJSON() (result []byte, err error) {
-	return json.Marshal(e.String())
 }

@@ -2,10 +2,6 @@
 
 package pgtree
 
-import (
-	"fmt"
-)
-
 type OverridingKind int32
 
 const (
@@ -16,26 +12,23 @@ const (
 
 func NewOverridingKind(name string) OverridingKind {
 	switch name {
-	case "OVERRIDING_NOT_SET":
-		return OVERRIDING_NOT_SET
 	case "OVERRIDING_USER_VALUE":
 		return OVERRIDING_USER_VALUE
 	case "OVERRIDING_SYSTEM_VALUE":
 		return OVERRIDING_SYSTEM_VALUE
 	}
+
 	return OverridingKind(0)
 }
 
+var OverridingKindString = map[OverridingKind]string{
+	OVERRIDING_NOT_SET:      "OVERRIDING_NOT_SET",
+	OVERRIDING_USER_VALUE:   "OVERRIDING_USER_VALUE",
+	OVERRIDING_SYSTEM_VALUE: "OVERRIDING_SYSTEM_VALUE",
+}
+
 func (e OverridingKind) String() string {
-	switch e {
-	case OVERRIDING_NOT_SET:
-		return "OVERRIDING_NOT_SET"
-	case OVERRIDING_USER_VALUE:
-		return "OVERRIDING_USER_VALUE"
-	case OVERRIDING_SYSTEM_VALUE:
-		return "OVERRIDING_SYSTEM_VALUE"
-	}
-	return fmt.Sprintf("OverridingKind(%d)", e)
+	return OverridingKindString[e]
 }
 
 type QuerySource int32
@@ -50,8 +43,6 @@ const (
 
 func NewQuerySource(name string) QuerySource {
 	switch name {
-	case "QSRC_ORIGINAL":
-		return QSRC_ORIGINAL
 	case "QSRC_PARSER":
 		return QSRC_PARSER
 	case "QSRC_INSTEAD_RULE":
@@ -61,23 +52,20 @@ func NewQuerySource(name string) QuerySource {
 	case "QSRC_NON_INSTEAD_RULE":
 		return QSRC_NON_INSTEAD_RULE
 	}
+
 	return QuerySource(0)
 }
 
+var QuerySourceString = map[QuerySource]string{
+	QSRC_ORIGINAL:          "QSRC_ORIGINAL",
+	QSRC_PARSER:            "QSRC_PARSER",
+	QSRC_INSTEAD_RULE:      "QSRC_INSTEAD_RULE",
+	QSRC_QUAL_INSTEAD_RULE: "QSRC_QUAL_INSTEAD_RULE",
+	QSRC_NON_INSTEAD_RULE:  "QSRC_NON_INSTEAD_RULE",
+}
+
 func (e QuerySource) String() string {
-	switch e {
-	case QSRC_ORIGINAL:
-		return "QSRC_ORIGINAL"
-	case QSRC_PARSER:
-		return "QSRC_PARSER"
-	case QSRC_INSTEAD_RULE:
-		return "QSRC_INSTEAD_RULE"
-	case QSRC_QUAL_INSTEAD_RULE:
-		return "QSRC_QUAL_INSTEAD_RULE"
-	case QSRC_NON_INSTEAD_RULE:
-		return "QSRC_NON_INSTEAD_RULE"
-	}
-	return fmt.Sprintf("QuerySource(%d)", e)
+	return QuerySourceString[e]
 }
 
 type SortByDir int32
@@ -91,8 +79,6 @@ const (
 
 func NewSortByDir(name string) SortByDir {
 	switch name {
-	case "SORTBY_DEFAULT":
-		return SORTBY_DEFAULT
 	case "SORTBY_ASC":
 		return SORTBY_ASC
 	case "SORTBY_DESC":
@@ -100,21 +86,19 @@ func NewSortByDir(name string) SortByDir {
 	case "SORTBY_USING":
 		return SORTBY_USING
 	}
+
 	return SortByDir(0)
 }
 
+var SortByDirString = map[SortByDir]string{
+	SORTBY_DEFAULT: "SORTBY_DEFAULT",
+	SORTBY_ASC:     "SORTBY_ASC",
+	SORTBY_DESC:    "SORTBY_DESC",
+	SORTBY_USING:   "SORTBY_USING",
+}
+
 func (e SortByDir) String() string {
-	switch e {
-	case SORTBY_DEFAULT:
-		return "SORTBY_DEFAULT"
-	case SORTBY_ASC:
-		return "SORTBY_ASC"
-	case SORTBY_DESC:
-		return "SORTBY_DESC"
-	case SORTBY_USING:
-		return "SORTBY_USING"
-	}
-	return fmt.Sprintf("SortByDir(%d)", e)
+	return SortByDirString[e]
 }
 
 type SortByNulls int32
@@ -127,26 +111,23 @@ const (
 
 func NewSortByNulls(name string) SortByNulls {
 	switch name {
-	case "SORTBY_NULLS_DEFAULT":
-		return SORTBY_NULLS_DEFAULT
 	case "SORTBY_NULLS_FIRST":
 		return SORTBY_NULLS_FIRST
 	case "SORTBY_NULLS_LAST":
 		return SORTBY_NULLS_LAST
 	}
+
 	return SortByNulls(0)
 }
 
+var SortByNullsString = map[SortByNulls]string{
+	SORTBY_NULLS_DEFAULT: "SORTBY_NULLS_DEFAULT",
+	SORTBY_NULLS_FIRST:   "SORTBY_NULLS_FIRST",
+	SORTBY_NULLS_LAST:    "SORTBY_NULLS_LAST",
+}
+
 func (e SortByNulls) String() string {
-	switch e {
-	case SORTBY_NULLS_DEFAULT:
-		return "SORTBY_NULLS_DEFAULT"
-	case SORTBY_NULLS_FIRST:
-		return "SORTBY_NULLS_FIRST"
-	case SORTBY_NULLS_LAST:
-		return "SORTBY_NULLS_LAST"
-	}
-	return fmt.Sprintf("SortByNulls(%d)", e)
+	return SortByNullsString[e]
 }
 
 type A_Expr_Kind int32
@@ -172,8 +153,6 @@ const (
 
 func NewA_Expr_Kind(name string) A_Expr_Kind {
 	switch name {
-	case "AEXPR_OP":
-		return AEXPR_OP
 	case "AEXPR_OP_ANY":
 		return AEXPR_OP_ANY
 	case "AEXPR_OP_ALL":
@@ -205,45 +184,31 @@ func NewA_Expr_Kind(name string) A_Expr_Kind {
 	case "AEXPR_PAREN":
 		return AEXPR_PAREN
 	}
+
 	return A_Expr_Kind(0)
 }
 
+var A_Expr_KindString = map[A_Expr_Kind]string{
+	AEXPR_OP:              "AEXPR_OP",
+	AEXPR_OP_ANY:          "AEXPR_OP_ANY",
+	AEXPR_OP_ALL:          "AEXPR_OP_ALL",
+	AEXPR_DISTINCT:        "AEXPR_DISTINCT",
+	AEXPR_NOT_DISTINCT:    "AEXPR_NOT_DISTINCT",
+	AEXPR_NULLIF:          "AEXPR_NULLIF",
+	AEXPR_OF:              "AEXPR_OF",
+	AEXPR_IN:              "AEXPR_IN",
+	AEXPR_LIKE:            "AEXPR_LIKE",
+	AEXPR_ILIKE:           "AEXPR_ILIKE",
+	AEXPR_SIMILAR:         "AEXPR_SIMILAR",
+	AEXPR_BETWEEN:         "AEXPR_BETWEEN",
+	AEXPR_NOT_BETWEEN:     "AEXPR_NOT_BETWEEN",
+	AEXPR_BETWEEN_SYM:     "AEXPR_BETWEEN_SYM",
+	AEXPR_NOT_BETWEEN_SYM: "AEXPR_NOT_BETWEEN_SYM",
+	AEXPR_PAREN:           "AEXPR_PAREN",
+}
+
 func (e A_Expr_Kind) String() string {
-	switch e {
-	case AEXPR_OP:
-		return "AEXPR_OP"
-	case AEXPR_OP_ANY:
-		return "AEXPR_OP_ANY"
-	case AEXPR_OP_ALL:
-		return "AEXPR_OP_ALL"
-	case AEXPR_DISTINCT:
-		return "AEXPR_DISTINCT"
-	case AEXPR_NOT_DISTINCT:
-		return "AEXPR_NOT_DISTINCT"
-	case AEXPR_NULLIF:
-		return "AEXPR_NULLIF"
-	case AEXPR_OF:
-		return "AEXPR_OF"
-	case AEXPR_IN:
-		return "AEXPR_IN"
-	case AEXPR_LIKE:
-		return "AEXPR_LIKE"
-	case AEXPR_ILIKE:
-		return "AEXPR_ILIKE"
-	case AEXPR_SIMILAR:
-		return "AEXPR_SIMILAR"
-	case AEXPR_BETWEEN:
-		return "AEXPR_BETWEEN"
-	case AEXPR_NOT_BETWEEN:
-		return "AEXPR_NOT_BETWEEN"
-	case AEXPR_BETWEEN_SYM:
-		return "AEXPR_BETWEEN_SYM"
-	case AEXPR_NOT_BETWEEN_SYM:
-		return "AEXPR_NOT_BETWEEN_SYM"
-	case AEXPR_PAREN:
-		return "AEXPR_PAREN"
-	}
-	return fmt.Sprintf("A_Expr_Kind(%d)", e)
+	return A_Expr_KindString[e]
 }
 
 type RoleSpecType int32
@@ -257,8 +222,6 @@ const (
 
 func NewRoleSpecType(name string) RoleSpecType {
 	switch name {
-	case "ROLESPEC_CSTRING":
-		return ROLESPEC_CSTRING
 	case "ROLESPEC_CURRENT_USER":
 		return ROLESPEC_CURRENT_USER
 	case "ROLESPEC_SESSION_USER":
@@ -266,21 +229,19 @@ func NewRoleSpecType(name string) RoleSpecType {
 	case "ROLESPEC_PUBLIC":
 		return ROLESPEC_PUBLIC
 	}
+
 	return RoleSpecType(0)
 }
 
+var RoleSpecTypeString = map[RoleSpecType]string{
+	ROLESPEC_CSTRING:      "ROLESPEC_CSTRING",
+	ROLESPEC_CURRENT_USER: "ROLESPEC_CURRENT_USER",
+	ROLESPEC_SESSION_USER: "ROLESPEC_SESSION_USER",
+	ROLESPEC_PUBLIC:       "ROLESPEC_PUBLIC",
+}
+
 func (e RoleSpecType) String() string {
-	switch e {
-	case ROLESPEC_CSTRING:
-		return "ROLESPEC_CSTRING"
-	case ROLESPEC_CURRENT_USER:
-		return "ROLESPEC_CURRENT_USER"
-	case ROLESPEC_SESSION_USER:
-		return "ROLESPEC_SESSION_USER"
-	case ROLESPEC_PUBLIC:
-		return "ROLESPEC_PUBLIC"
-	}
-	return fmt.Sprintf("RoleSpecType(%d)", e)
+	return RoleSpecTypeString[e]
 }
 
 type TableLikeOption int32
@@ -299,8 +260,6 @@ const (
 
 func NewTableLikeOption(name string) TableLikeOption {
 	switch name {
-	case "CREATE_TABLE_LIKE_COMMENTS":
-		return CREATE_TABLE_LIKE_COMMENTS
 	case "CREATE_TABLE_LIKE_CONSTRAINTS":
 		return CREATE_TABLE_LIKE_CONSTRAINTS
 	case "CREATE_TABLE_LIKE_DEFAULTS":
@@ -318,31 +277,24 @@ func NewTableLikeOption(name string) TableLikeOption {
 	case "CREATE_TABLE_LIKE_ALL":
 		return CREATE_TABLE_LIKE_ALL
 	}
+
 	return TableLikeOption(0)
 }
 
+var TableLikeOptionString = map[TableLikeOption]string{
+	CREATE_TABLE_LIKE_COMMENTS:    "CREATE_TABLE_LIKE_COMMENTS",
+	CREATE_TABLE_LIKE_CONSTRAINTS: "CREATE_TABLE_LIKE_CONSTRAINTS",
+	CREATE_TABLE_LIKE_DEFAULTS:    "CREATE_TABLE_LIKE_DEFAULTS",
+	CREATE_TABLE_LIKE_GENERATED:   "CREATE_TABLE_LIKE_GENERATED",
+	CREATE_TABLE_LIKE_IDENTITY:    "CREATE_TABLE_LIKE_IDENTITY",
+	CREATE_TABLE_LIKE_INDEXES:     "CREATE_TABLE_LIKE_INDEXES",
+	CREATE_TABLE_LIKE_STATISTICS:  "CREATE_TABLE_LIKE_STATISTICS",
+	CREATE_TABLE_LIKE_STORAGE:     "CREATE_TABLE_LIKE_STORAGE",
+	CREATE_TABLE_LIKE_ALL:         "CREATE_TABLE_LIKE_ALL",
+}
+
 func (e TableLikeOption) String() string {
-	switch e {
-	case CREATE_TABLE_LIKE_COMMENTS:
-		return "CREATE_TABLE_LIKE_COMMENTS"
-	case CREATE_TABLE_LIKE_CONSTRAINTS:
-		return "CREATE_TABLE_LIKE_CONSTRAINTS"
-	case CREATE_TABLE_LIKE_DEFAULTS:
-		return "CREATE_TABLE_LIKE_DEFAULTS"
-	case CREATE_TABLE_LIKE_GENERATED:
-		return "CREATE_TABLE_LIKE_GENERATED"
-	case CREATE_TABLE_LIKE_IDENTITY:
-		return "CREATE_TABLE_LIKE_IDENTITY"
-	case CREATE_TABLE_LIKE_INDEXES:
-		return "CREATE_TABLE_LIKE_INDEXES"
-	case CREATE_TABLE_LIKE_STATISTICS:
-		return "CREATE_TABLE_LIKE_STATISTICS"
-	case CREATE_TABLE_LIKE_STORAGE:
-		return "CREATE_TABLE_LIKE_STORAGE"
-	case CREATE_TABLE_LIKE_ALL:
-		return "CREATE_TABLE_LIKE_ALL"
-	}
-	return fmt.Sprintf("TableLikeOption(%d)", e)
+	return TableLikeOptionString[e]
 }
 
 type DefElemAction int32
@@ -356,8 +308,6 @@ const (
 
 func NewDefElemAction(name string) DefElemAction {
 	switch name {
-	case "DEFELEM_UNSPEC":
-		return DEFELEM_UNSPEC
 	case "DEFELEM_SET":
 		return DEFELEM_SET
 	case "DEFELEM_ADD":
@@ -365,21 +315,19 @@ func NewDefElemAction(name string) DefElemAction {
 	case "DEFELEM_DROP":
 		return DEFELEM_DROP
 	}
+
 	return DefElemAction(0)
 }
 
+var DefElemActionString = map[DefElemAction]string{
+	DEFELEM_UNSPEC: "DEFELEM_UNSPEC",
+	DEFELEM_SET:    "DEFELEM_SET",
+	DEFELEM_ADD:    "DEFELEM_ADD",
+	DEFELEM_DROP:   "DEFELEM_DROP",
+}
+
 func (e DefElemAction) String() string {
-	switch e {
-	case DEFELEM_UNSPEC:
-		return "DEFELEM_UNSPEC"
-	case DEFELEM_SET:
-		return "DEFELEM_SET"
-	case DEFELEM_ADD:
-		return "DEFELEM_ADD"
-	case DEFELEM_DROP:
-		return "DEFELEM_DROP"
-	}
-	return fmt.Sprintf("DefElemAction(%d)", e)
+	return DefElemActionString[e]
 }
 
 type PartitionRangeDatumKind int32
@@ -392,26 +340,23 @@ const (
 
 func NewPartitionRangeDatumKind(name string) PartitionRangeDatumKind {
 	switch name {
-	case "PARTITION_RANGE_DATUM_MINVALUE":
-		return PARTITION_RANGE_DATUM_MINVALUE
 	case "PARTITION_RANGE_DATUM_VALUE":
 		return PARTITION_RANGE_DATUM_VALUE
 	case "PARTITION_RANGE_DATUM_MAXVALUE":
 		return PARTITION_RANGE_DATUM_MAXVALUE
 	}
+
 	return PartitionRangeDatumKind(0)
 }
 
+var PartitionRangeDatumKindString = map[PartitionRangeDatumKind]string{
+	PARTITION_RANGE_DATUM_MINVALUE: "PARTITION_RANGE_DATUM_MINVALUE",
+	PARTITION_RANGE_DATUM_VALUE:    "PARTITION_RANGE_DATUM_VALUE",
+	PARTITION_RANGE_DATUM_MAXVALUE: "PARTITION_RANGE_DATUM_MAXVALUE",
+}
+
 func (e PartitionRangeDatumKind) String() string {
-	switch e {
-	case PARTITION_RANGE_DATUM_MINVALUE:
-		return "PARTITION_RANGE_DATUM_MINVALUE"
-	case PARTITION_RANGE_DATUM_VALUE:
-		return "PARTITION_RANGE_DATUM_VALUE"
-	case PARTITION_RANGE_DATUM_MAXVALUE:
-		return "PARTITION_RANGE_DATUM_MAXVALUE"
-	}
-	return fmt.Sprintf("PartitionRangeDatumKind(%d)", e)
+	return PartitionRangeDatumKindString[e]
 }
 
 type RTEKind int32
@@ -430,8 +375,6 @@ const (
 
 func NewRTEKind(name string) RTEKind {
 	switch name {
-	case "RTE_RELATION":
-		return RTE_RELATION
 	case "RTE_SUBQUERY":
 		return RTE_SUBQUERY
 	case "RTE_JOIN":
@@ -449,31 +392,24 @@ func NewRTEKind(name string) RTEKind {
 	case "RTE_RESULT":
 		return RTE_RESULT
 	}
+
 	return RTEKind(0)
 }
 
+var RTEKindString = map[RTEKind]string{
+	RTE_RELATION:        "RTE_RELATION",
+	RTE_SUBQUERY:        "RTE_SUBQUERY",
+	RTE_JOIN:            "RTE_JOIN",
+	RTE_FUNCTION:        "RTE_FUNCTION",
+	RTE_TABLEFUNC:       "RTE_TABLEFUNC",
+	RTE_VALUES:          "RTE_VALUES",
+	RTE_CTE:             "RTE_CTE",
+	RTE_NAMEDTUPLESTORE: "RTE_NAMEDTUPLESTORE",
+	RTE_RESULT:          "RTE_RESULT",
+}
+
 func (e RTEKind) String() string {
-	switch e {
-	case RTE_RELATION:
-		return "RTE_RELATION"
-	case RTE_SUBQUERY:
-		return "RTE_SUBQUERY"
-	case RTE_JOIN:
-		return "RTE_JOIN"
-	case RTE_FUNCTION:
-		return "RTE_FUNCTION"
-	case RTE_TABLEFUNC:
-		return "RTE_TABLEFUNC"
-	case RTE_VALUES:
-		return "RTE_VALUES"
-	case RTE_CTE:
-		return "RTE_CTE"
-	case RTE_NAMEDTUPLESTORE:
-		return "RTE_NAMEDTUPLESTORE"
-	case RTE_RESULT:
-		return "RTE_RESULT"
-	}
-	return fmt.Sprintf("RTEKind(%d)", e)
+	return RTEKindString[e]
 }
 
 type WCOKind int32
@@ -487,8 +423,6 @@ const (
 
 func NewWCOKind(name string) WCOKind {
 	switch name {
-	case "WCO_VIEW_CHECK":
-		return WCO_VIEW_CHECK
 	case "WCO_RLS_INSERT_CHECK":
 		return WCO_RLS_INSERT_CHECK
 	case "WCO_RLS_UPDATE_CHECK":
@@ -496,21 +430,19 @@ func NewWCOKind(name string) WCOKind {
 	case "WCO_RLS_CONFLICT_CHECK":
 		return WCO_RLS_CONFLICT_CHECK
 	}
+
 	return WCOKind(0)
 }
 
+var WCOKindString = map[WCOKind]string{
+	WCO_VIEW_CHECK:         "WCO_VIEW_CHECK",
+	WCO_RLS_INSERT_CHECK:   "WCO_RLS_INSERT_CHECK",
+	WCO_RLS_UPDATE_CHECK:   "WCO_RLS_UPDATE_CHECK",
+	WCO_RLS_CONFLICT_CHECK: "WCO_RLS_CONFLICT_CHECK",
+}
+
 func (e WCOKind) String() string {
-	switch e {
-	case WCO_VIEW_CHECK:
-		return "WCO_VIEW_CHECK"
-	case WCO_RLS_INSERT_CHECK:
-		return "WCO_RLS_INSERT_CHECK"
-	case WCO_RLS_UPDATE_CHECK:
-		return "WCO_RLS_UPDATE_CHECK"
-	case WCO_RLS_CONFLICT_CHECK:
-		return "WCO_RLS_CONFLICT_CHECK"
-	}
-	return fmt.Sprintf("WCOKind(%d)", e)
+	return WCOKindString[e]
 }
 
 type GroupingSetKind int32
@@ -525,8 +457,6 @@ const (
 
 func NewGroupingSetKind(name string) GroupingSetKind {
 	switch name {
-	case "GROUPING_SET_EMPTY":
-		return GROUPING_SET_EMPTY
 	case "GROUPING_SET_SIMPLE":
 		return GROUPING_SET_SIMPLE
 	case "GROUPING_SET_ROLLUP":
@@ -536,23 +466,20 @@ func NewGroupingSetKind(name string) GroupingSetKind {
 	case "GROUPING_SET_SETS":
 		return GROUPING_SET_SETS
 	}
+
 	return GroupingSetKind(0)
 }
 
+var GroupingSetKindString = map[GroupingSetKind]string{
+	GROUPING_SET_EMPTY:  "GROUPING_SET_EMPTY",
+	GROUPING_SET_SIMPLE: "GROUPING_SET_SIMPLE",
+	GROUPING_SET_ROLLUP: "GROUPING_SET_ROLLUP",
+	GROUPING_SET_CUBE:   "GROUPING_SET_CUBE",
+	GROUPING_SET_SETS:   "GROUPING_SET_SETS",
+}
+
 func (e GroupingSetKind) String() string {
-	switch e {
-	case GROUPING_SET_EMPTY:
-		return "GROUPING_SET_EMPTY"
-	case GROUPING_SET_SIMPLE:
-		return "GROUPING_SET_SIMPLE"
-	case GROUPING_SET_ROLLUP:
-		return "GROUPING_SET_ROLLUP"
-	case GROUPING_SET_CUBE:
-		return "GROUPING_SET_CUBE"
-	case GROUPING_SET_SETS:
-		return "GROUPING_SET_SETS"
-	}
-	return fmt.Sprintf("GroupingSetKind(%d)", e)
+	return GroupingSetKindString[e]
 }
 
 type CTEMaterialize int32
@@ -565,26 +492,23 @@ const (
 
 func NewCTEMaterialize(name string) CTEMaterialize {
 	switch name {
-	case "CTEMaterializeDefault":
-		return CTEMaterializeDefault
 	case "CTEMaterializeAlways":
 		return CTEMaterializeAlways
 	case "CTEMaterializeNever":
 		return CTEMaterializeNever
 	}
+
 	return CTEMaterialize(0)
 }
 
+var CTEMaterializeString = map[CTEMaterialize]string{
+	CTEMaterializeDefault: "CTEMaterializeDefault",
+	CTEMaterializeAlways:  "CTEMaterializeAlways",
+	CTEMaterializeNever:   "CTEMaterializeNever",
+}
+
 func (e CTEMaterialize) String() string {
-	switch e {
-	case CTEMaterializeDefault:
-		return "CTEMaterializeDefault"
-	case CTEMaterializeAlways:
-		return "CTEMaterializeAlways"
-	case CTEMaterializeNever:
-		return "CTEMaterializeNever"
-	}
-	return fmt.Sprintf("CTEMaterialize(%d)", e)
+	return CTEMaterializeString[e]
 }
 
 type SetOperation int32
@@ -598,8 +522,6 @@ const (
 
 func NewSetOperation(name string) SetOperation {
 	switch name {
-	case "SETOP_NONE":
-		return SETOP_NONE
 	case "SETOP_UNION":
 		return SETOP_UNION
 	case "SETOP_INTERSECT":
@@ -607,21 +529,19 @@ func NewSetOperation(name string) SetOperation {
 	case "SETOP_EXCEPT":
 		return SETOP_EXCEPT
 	}
+
 	return SetOperation(0)
 }
 
+var SetOperationString = map[SetOperation]string{
+	SETOP_NONE:      "SETOP_NONE",
+	SETOP_UNION:     "SETOP_UNION",
+	SETOP_INTERSECT: "SETOP_INTERSECT",
+	SETOP_EXCEPT:    "SETOP_EXCEPT",
+}
+
 func (e SetOperation) String() string {
-	switch e {
-	case SETOP_NONE:
-		return "SETOP_NONE"
-	case SETOP_UNION:
-		return "SETOP_UNION"
-	case SETOP_INTERSECT:
-		return "SETOP_INTERSECT"
-	case SETOP_EXCEPT:
-		return "SETOP_EXCEPT"
-	}
-	return fmt.Sprintf("SetOperation(%d)", e)
+	return SetOperationString[e]
 }
 
 type ObjectType int32
@@ -681,8 +601,6 @@ const (
 
 func NewObjectType(name string) ObjectType {
 	switch name {
-	case "OBJECT_ACCESS_METHOD":
-		return OBJECT_ACCESS_METHOD
 	case "OBJECT_AGGREGATE":
 		return OBJECT_AGGREGATE
 	case "OBJECT_AMOP":
@@ -782,113 +700,65 @@ func NewObjectType(name string) ObjectType {
 	case "OBJECT_VIEW":
 		return OBJECT_VIEW
 	}
+
 	return ObjectType(0)
 }
 
+var ObjectTypeString = map[ObjectType]string{
+	OBJECT_ACCESS_METHOD:   "OBJECT_ACCESS_METHOD",
+	OBJECT_AGGREGATE:       "OBJECT_AGGREGATE",
+	OBJECT_AMOP:            "OBJECT_AMOP",
+	OBJECT_AMPROC:          "OBJECT_AMPROC",
+	OBJECT_ATTRIBUTE:       "OBJECT_ATTRIBUTE",
+	OBJECT_CAST:            "OBJECT_CAST",
+	OBJECT_COLUMN:          "OBJECT_COLUMN",
+	OBJECT_COLLATION:       "OBJECT_COLLATION",
+	OBJECT_CONVERSION:      "OBJECT_CONVERSION",
+	OBJECT_DATABASE:        "OBJECT_DATABASE",
+	OBJECT_DEFAULT:         "OBJECT_DEFAULT",
+	OBJECT_DEFACL:          "OBJECT_DEFACL",
+	OBJECT_DOMAIN:          "OBJECT_DOMAIN",
+	OBJECT_DOMCONSTRAINT:   "OBJECT_DOMCONSTRAINT",
+	OBJECT_EVENT_TRIGGER:   "OBJECT_EVENT_TRIGGER",
+	OBJECT_EXTENSION:       "OBJECT_EXTENSION",
+	OBJECT_FDW:             "OBJECT_FDW",
+	OBJECT_FOREIGN_SERVER:  "OBJECT_FOREIGN_SERVER",
+	OBJECT_FOREIGN_TABLE:   "OBJECT_FOREIGN_TABLE",
+	OBJECT_FUNCTION:        "OBJECT_FUNCTION",
+	OBJECT_INDEX:           "OBJECT_INDEX",
+	OBJECT_LANGUAGE:        "OBJECT_LANGUAGE",
+	OBJECT_LARGEOBJECT:     "OBJECT_LARGEOBJECT",
+	OBJECT_MATVIEW:         "OBJECT_MATVIEW",
+	OBJECT_OPCLASS:         "OBJECT_OPCLASS",
+	OBJECT_OPERATOR:        "OBJECT_OPERATOR",
+	OBJECT_OPFAMILY:        "OBJECT_OPFAMILY",
+	OBJECT_POLICY:          "OBJECT_POLICY",
+	OBJECT_PROCEDURE:       "OBJECT_PROCEDURE",
+	OBJECT_PUBLICATION:     "OBJECT_PUBLICATION",
+	OBJECT_PUBLICATION_REL: "OBJECT_PUBLICATION_REL",
+	OBJECT_ROLE:            "OBJECT_ROLE",
+	OBJECT_ROUTINE:         "OBJECT_ROUTINE",
+	OBJECT_RULE:            "OBJECT_RULE",
+	OBJECT_SCHEMA:          "OBJECT_SCHEMA",
+	OBJECT_SEQUENCE:        "OBJECT_SEQUENCE",
+	OBJECT_SUBSCRIPTION:    "OBJECT_SUBSCRIPTION",
+	OBJECT_STATISTIC_EXT:   "OBJECT_STATISTIC_EXT",
+	OBJECT_TABCONSTRAINT:   "OBJECT_TABCONSTRAINT",
+	OBJECT_TABLE:           "OBJECT_TABLE",
+	OBJECT_TABLESPACE:      "OBJECT_TABLESPACE",
+	OBJECT_TRANSFORM:       "OBJECT_TRANSFORM",
+	OBJECT_TRIGGER:         "OBJECT_TRIGGER",
+	OBJECT_TSCONFIGURATION: "OBJECT_TSCONFIGURATION",
+	OBJECT_TSDICTIONARY:    "OBJECT_TSDICTIONARY",
+	OBJECT_TSPARSER:        "OBJECT_TSPARSER",
+	OBJECT_TSTEMPLATE:      "OBJECT_TSTEMPLATE",
+	OBJECT_TYPE:            "OBJECT_TYPE",
+	OBJECT_USER_MAPPING:    "OBJECT_USER_MAPPING",
+	OBJECT_VIEW:            "OBJECT_VIEW",
+}
+
 func (e ObjectType) String() string {
-	switch e {
-	case OBJECT_ACCESS_METHOD:
-		return "OBJECT_ACCESS_METHOD"
-	case OBJECT_AGGREGATE:
-		return "OBJECT_AGGREGATE"
-	case OBJECT_AMOP:
-		return "OBJECT_AMOP"
-	case OBJECT_AMPROC:
-		return "OBJECT_AMPROC"
-	case OBJECT_ATTRIBUTE:
-		return "OBJECT_ATTRIBUTE"
-	case OBJECT_CAST:
-		return "OBJECT_CAST"
-	case OBJECT_COLUMN:
-		return "OBJECT_COLUMN"
-	case OBJECT_COLLATION:
-		return "OBJECT_COLLATION"
-	case OBJECT_CONVERSION:
-		return "OBJECT_CONVERSION"
-	case OBJECT_DATABASE:
-		return "OBJECT_DATABASE"
-	case OBJECT_DEFAULT:
-		return "OBJECT_DEFAULT"
-	case OBJECT_DEFACL:
-		return "OBJECT_DEFACL"
-	case OBJECT_DOMAIN:
-		return "OBJECT_DOMAIN"
-	case OBJECT_DOMCONSTRAINT:
-		return "OBJECT_DOMCONSTRAINT"
-	case OBJECT_EVENT_TRIGGER:
-		return "OBJECT_EVENT_TRIGGER"
-	case OBJECT_EXTENSION:
-		return "OBJECT_EXTENSION"
-	case OBJECT_FDW:
-		return "OBJECT_FDW"
-	case OBJECT_FOREIGN_SERVER:
-		return "OBJECT_FOREIGN_SERVER"
-	case OBJECT_FOREIGN_TABLE:
-		return "OBJECT_FOREIGN_TABLE"
-	case OBJECT_FUNCTION:
-		return "OBJECT_FUNCTION"
-	case OBJECT_INDEX:
-		return "OBJECT_INDEX"
-	case OBJECT_LANGUAGE:
-		return "OBJECT_LANGUAGE"
-	case OBJECT_LARGEOBJECT:
-		return "OBJECT_LARGEOBJECT"
-	case OBJECT_MATVIEW:
-		return "OBJECT_MATVIEW"
-	case OBJECT_OPCLASS:
-		return "OBJECT_OPCLASS"
-	case OBJECT_OPERATOR:
-		return "OBJECT_OPERATOR"
-	case OBJECT_OPFAMILY:
-		return "OBJECT_OPFAMILY"
-	case OBJECT_POLICY:
-		return "OBJECT_POLICY"
-	case OBJECT_PROCEDURE:
-		return "OBJECT_PROCEDURE"
-	case OBJECT_PUBLICATION:
-		return "OBJECT_PUBLICATION"
-	case OBJECT_PUBLICATION_REL:
-		return "OBJECT_PUBLICATION_REL"
-	case OBJECT_ROLE:
-		return "OBJECT_ROLE"
-	case OBJECT_ROUTINE:
-		return "OBJECT_ROUTINE"
-	case OBJECT_RULE:
-		return "OBJECT_RULE"
-	case OBJECT_SCHEMA:
-		return "OBJECT_SCHEMA"
-	case OBJECT_SEQUENCE:
-		return "OBJECT_SEQUENCE"
-	case OBJECT_SUBSCRIPTION:
-		return "OBJECT_SUBSCRIPTION"
-	case OBJECT_STATISTIC_EXT:
-		return "OBJECT_STATISTIC_EXT"
-	case OBJECT_TABCONSTRAINT:
-		return "OBJECT_TABCONSTRAINT"
-	case OBJECT_TABLE:
-		return "OBJECT_TABLE"
-	case OBJECT_TABLESPACE:
-		return "OBJECT_TABLESPACE"
-	case OBJECT_TRANSFORM:
-		return "OBJECT_TRANSFORM"
-	case OBJECT_TRIGGER:
-		return "OBJECT_TRIGGER"
-	case OBJECT_TSCONFIGURATION:
-		return "OBJECT_TSCONFIGURATION"
-	case OBJECT_TSDICTIONARY:
-		return "OBJECT_TSDICTIONARY"
-	case OBJECT_TSPARSER:
-		return "OBJECT_TSPARSER"
-	case OBJECT_TSTEMPLATE:
-		return "OBJECT_TSTEMPLATE"
-	case OBJECT_TYPE:
-		return "OBJECT_TYPE"
-	case OBJECT_USER_MAPPING:
-		return "OBJECT_USER_MAPPING"
-	case OBJECT_VIEW:
-		return "OBJECT_VIEW"
-	}
-	return fmt.Sprintf("ObjectType(%d)", e)
+	return ObjectTypeString[e]
 }
 
 type DropBehavior int32
@@ -900,22 +770,20 @@ const (
 
 func NewDropBehavior(name string) DropBehavior {
 	switch name {
-	case "DROP_RESTRICT":
-		return DROP_RESTRICT
 	case "DROP_CASCADE":
 		return DROP_CASCADE
 	}
+
 	return DropBehavior(0)
 }
 
+var DropBehaviorString = map[DropBehavior]string{
+	DROP_RESTRICT: "DROP_RESTRICT",
+	DROP_CASCADE:  "DROP_CASCADE",
+}
+
 func (e DropBehavior) String() string {
-	switch e {
-	case DROP_RESTRICT:
-		return "DROP_RESTRICT"
-	case DROP_CASCADE:
-		return "DROP_CASCADE"
-	}
-	return fmt.Sprintf("DropBehavior(%d)", e)
+	return DropBehaviorString[e]
 }
 
 type AlterTableType int32
@@ -991,8 +859,6 @@ const (
 
 func NewAlterTableType(name string) AlterTableType {
 	switch name {
-	case "AT_AddColumn":
-		return AT_AddColumn
 	case "AT_AddColumnRecurse":
 		return AT_AddColumnRecurse
 	case "AT_AddColumnToView":
@@ -1124,145 +990,81 @@ func NewAlterTableType(name string) AlterTableType {
 	case "AT_DropIdentity":
 		return AT_DropIdentity
 	}
+
 	return AlterTableType(0)
 }
 
+var AlterTableTypeString = map[AlterTableType]string{
+	AT_AddColumn:                 "AT_AddColumn",
+	AT_AddColumnRecurse:          "AT_AddColumnRecurse",
+	AT_AddColumnToView:           "AT_AddColumnToView",
+	AT_ColumnDefault:             "AT_ColumnDefault",
+	AT_DropNotNull:               "AT_DropNotNull",
+	AT_SetNotNull:                "AT_SetNotNull",
+	AT_CheckNotNull:              "AT_CheckNotNull",
+	AT_SetStatistics:             "AT_SetStatistics",
+	AT_SetOptions:                "AT_SetOptions",
+	AT_ResetOptions:              "AT_ResetOptions",
+	AT_SetStorage:                "AT_SetStorage",
+	AT_DropColumn:                "AT_DropColumn",
+	AT_DropColumnRecurse:         "AT_DropColumnRecurse",
+	AT_AddIndex:                  "AT_AddIndex",
+	AT_ReAddIndex:                "AT_ReAddIndex",
+	AT_AddConstraint:             "AT_AddConstraint",
+	AT_AddConstraintRecurse:      "AT_AddConstraintRecurse",
+	AT_ReAddConstraint:           "AT_ReAddConstraint",
+	AT_ReAddDomainConstraint:     "AT_ReAddDomainConstraint",
+	AT_AlterConstraint:           "AT_AlterConstraint",
+	AT_ValidateConstraint:        "AT_ValidateConstraint",
+	AT_ValidateConstraintRecurse: "AT_ValidateConstraintRecurse",
+	AT_ProcessedConstraint:       "AT_ProcessedConstraint",
+	AT_AddIndexConstraint:        "AT_AddIndexConstraint",
+	AT_DropConstraint:            "AT_DropConstraint",
+	AT_DropConstraintRecurse:     "AT_DropConstraintRecurse",
+	AT_ReAddComment:              "AT_ReAddComment",
+	AT_AlterColumnType:           "AT_AlterColumnType",
+	AT_AlterColumnGenericOptions: "AT_AlterColumnGenericOptions",
+	AT_ChangeOwner:               "AT_ChangeOwner",
+	AT_ClusterOn:                 "AT_ClusterOn",
+	AT_DropCluster:               "AT_DropCluster",
+	AT_SetLogged:                 "AT_SetLogged",
+	AT_SetUnLogged:               "AT_SetUnLogged",
+	AT_DropOids:                  "AT_DropOids",
+	AT_SetTableSpace:             "AT_SetTableSpace",
+	AT_SetRelOptions:             "AT_SetRelOptions",
+	AT_ResetRelOptions:           "AT_ResetRelOptions",
+	AT_ReplaceRelOptions:         "AT_ReplaceRelOptions",
+	AT_EnableTrig:                "AT_EnableTrig",
+	AT_EnableAlwaysTrig:          "AT_EnableAlwaysTrig",
+	AT_EnableReplicaTrig:         "AT_EnableReplicaTrig",
+	AT_DisableTrig:               "AT_DisableTrig",
+	AT_EnableTrigAll:             "AT_EnableTrigAll",
+	AT_DisableTrigAll:            "AT_DisableTrigAll",
+	AT_EnableTrigUser:            "AT_EnableTrigUser",
+	AT_DisableTrigUser:           "AT_DisableTrigUser",
+	AT_EnableRule:                "AT_EnableRule",
+	AT_EnableAlwaysRule:          "AT_EnableAlwaysRule",
+	AT_EnableReplicaRule:         "AT_EnableReplicaRule",
+	AT_DisableRule:               "AT_DisableRule",
+	AT_AddInherit:                "AT_AddInherit",
+	AT_DropInherit:               "AT_DropInherit",
+	AT_AddOf:                     "AT_AddOf",
+	AT_DropOf:                    "AT_DropOf",
+	AT_ReplicaIdentity:           "AT_ReplicaIdentity",
+	AT_EnableRowSecurity:         "AT_EnableRowSecurity",
+	AT_DisableRowSecurity:        "AT_DisableRowSecurity",
+	AT_ForceRowSecurity:          "AT_ForceRowSecurity",
+	AT_NoForceRowSecurity:        "AT_NoForceRowSecurity",
+	AT_GenericOptions:            "AT_GenericOptions",
+	AT_AttachPartition:           "AT_AttachPartition",
+	AT_DetachPartition:           "AT_DetachPartition",
+	AT_AddIdentity:               "AT_AddIdentity",
+	AT_SetIdentity:               "AT_SetIdentity",
+	AT_DropIdentity:              "AT_DropIdentity",
+}
+
 func (e AlterTableType) String() string {
-	switch e {
-	case AT_AddColumn:
-		return "AT_AddColumn"
-	case AT_AddColumnRecurse:
-		return "AT_AddColumnRecurse"
-	case AT_AddColumnToView:
-		return "AT_AddColumnToView"
-	case AT_ColumnDefault:
-		return "AT_ColumnDefault"
-	case AT_DropNotNull:
-		return "AT_DropNotNull"
-	case AT_SetNotNull:
-		return "AT_SetNotNull"
-	case AT_CheckNotNull:
-		return "AT_CheckNotNull"
-	case AT_SetStatistics:
-		return "AT_SetStatistics"
-	case AT_SetOptions:
-		return "AT_SetOptions"
-	case AT_ResetOptions:
-		return "AT_ResetOptions"
-	case AT_SetStorage:
-		return "AT_SetStorage"
-	case AT_DropColumn:
-		return "AT_DropColumn"
-	case AT_DropColumnRecurse:
-		return "AT_DropColumnRecurse"
-	case AT_AddIndex:
-		return "AT_AddIndex"
-	case AT_ReAddIndex:
-		return "AT_ReAddIndex"
-	case AT_AddConstraint:
-		return "AT_AddConstraint"
-	case AT_AddConstraintRecurse:
-		return "AT_AddConstraintRecurse"
-	case AT_ReAddConstraint:
-		return "AT_ReAddConstraint"
-	case AT_ReAddDomainConstraint:
-		return "AT_ReAddDomainConstraint"
-	case AT_AlterConstraint:
-		return "AT_AlterConstraint"
-	case AT_ValidateConstraint:
-		return "AT_ValidateConstraint"
-	case AT_ValidateConstraintRecurse:
-		return "AT_ValidateConstraintRecurse"
-	case AT_ProcessedConstraint:
-		return "AT_ProcessedConstraint"
-	case AT_AddIndexConstraint:
-		return "AT_AddIndexConstraint"
-	case AT_DropConstraint:
-		return "AT_DropConstraint"
-	case AT_DropConstraintRecurse:
-		return "AT_DropConstraintRecurse"
-	case AT_ReAddComment:
-		return "AT_ReAddComment"
-	case AT_AlterColumnType:
-		return "AT_AlterColumnType"
-	case AT_AlterColumnGenericOptions:
-		return "AT_AlterColumnGenericOptions"
-	case AT_ChangeOwner:
-		return "AT_ChangeOwner"
-	case AT_ClusterOn:
-		return "AT_ClusterOn"
-	case AT_DropCluster:
-		return "AT_DropCluster"
-	case AT_SetLogged:
-		return "AT_SetLogged"
-	case AT_SetUnLogged:
-		return "AT_SetUnLogged"
-	case AT_DropOids:
-		return "AT_DropOids"
-	case AT_SetTableSpace:
-		return "AT_SetTableSpace"
-	case AT_SetRelOptions:
-		return "AT_SetRelOptions"
-	case AT_ResetRelOptions:
-		return "AT_ResetRelOptions"
-	case AT_ReplaceRelOptions:
-		return "AT_ReplaceRelOptions"
-	case AT_EnableTrig:
-		return "AT_EnableTrig"
-	case AT_EnableAlwaysTrig:
-		return "AT_EnableAlwaysTrig"
-	case AT_EnableReplicaTrig:
-		return "AT_EnableReplicaTrig"
-	case AT_DisableTrig:
-		return "AT_DisableTrig"
-	case AT_EnableTrigAll:
-		return "AT_EnableTrigAll"
-	case AT_DisableTrigAll:
-		return "AT_DisableTrigAll"
-	case AT_EnableTrigUser:
-		return "AT_EnableTrigUser"
-	case AT_DisableTrigUser:
-		return "AT_DisableTrigUser"
-	case AT_EnableRule:
-		return "AT_EnableRule"
-	case AT_EnableAlwaysRule:
-		return "AT_EnableAlwaysRule"
-	case AT_EnableReplicaRule:
-		return "AT_EnableReplicaRule"
-	case AT_DisableRule:
-		return "AT_DisableRule"
-	case AT_AddInherit:
-		return "AT_AddInherit"
-	case AT_DropInherit:
-		return "AT_DropInherit"
-	case AT_AddOf:
-		return "AT_AddOf"
-	case AT_DropOf:
-		return "AT_DropOf"
-	case AT_ReplicaIdentity:
-		return "AT_ReplicaIdentity"
-	case AT_EnableRowSecurity:
-		return "AT_EnableRowSecurity"
-	case AT_DisableRowSecurity:
-		return "AT_DisableRowSecurity"
-	case AT_ForceRowSecurity:
-		return "AT_ForceRowSecurity"
-	case AT_NoForceRowSecurity:
-		return "AT_NoForceRowSecurity"
-	case AT_GenericOptions:
-		return "AT_GenericOptions"
-	case AT_AttachPartition:
-		return "AT_AttachPartition"
-	case AT_DetachPartition:
-		return "AT_DetachPartition"
-	case AT_AddIdentity:
-		return "AT_AddIdentity"
-	case AT_SetIdentity:
-		return "AT_SetIdentity"
-	case AT_DropIdentity:
-		return "AT_DropIdentity"
-	}
-	return fmt.Sprintf("AlterTableType(%d)", e)
+	return AlterTableTypeString[e]
 }
 
 type GrantTargetType int32
@@ -1275,26 +1077,23 @@ const (
 
 func NewGrantTargetType(name string) GrantTargetType {
 	switch name {
-	case "ACL_TARGET_OBJECT":
-		return ACL_TARGET_OBJECT
 	case "ACL_TARGET_ALL_IN_SCHEMA":
 		return ACL_TARGET_ALL_IN_SCHEMA
 	case "ACL_TARGET_DEFAULTS":
 		return ACL_TARGET_DEFAULTS
 	}
+
 	return GrantTargetType(0)
 }
 
+var GrantTargetTypeString = map[GrantTargetType]string{
+	ACL_TARGET_OBJECT:        "ACL_TARGET_OBJECT",
+	ACL_TARGET_ALL_IN_SCHEMA: "ACL_TARGET_ALL_IN_SCHEMA",
+	ACL_TARGET_DEFAULTS:      "ACL_TARGET_DEFAULTS",
+}
+
 func (e GrantTargetType) String() string {
-	switch e {
-	case ACL_TARGET_OBJECT:
-		return "ACL_TARGET_OBJECT"
-	case ACL_TARGET_ALL_IN_SCHEMA:
-		return "ACL_TARGET_ALL_IN_SCHEMA"
-	case ACL_TARGET_DEFAULTS:
-		return "ACL_TARGET_DEFAULTS"
-	}
-	return fmt.Sprintf("GrantTargetType(%d)", e)
+	return GrantTargetTypeString[e]
 }
 
 type VariableSetKind int32
@@ -1310,8 +1109,6 @@ const (
 
 func NewVariableSetKind(name string) VariableSetKind {
 	switch name {
-	case "VAR_SET_VALUE":
-		return VAR_SET_VALUE
 	case "VAR_SET_DEFAULT":
 		return VAR_SET_DEFAULT
 	case "VAR_SET_CURRENT":
@@ -1323,25 +1120,21 @@ func NewVariableSetKind(name string) VariableSetKind {
 	case "VAR_RESET_ALL":
 		return VAR_RESET_ALL
 	}
+
 	return VariableSetKind(0)
 }
 
+var VariableSetKindString = map[VariableSetKind]string{
+	VAR_SET_VALUE:   "VAR_SET_VALUE",
+	VAR_SET_DEFAULT: "VAR_SET_DEFAULT",
+	VAR_SET_CURRENT: "VAR_SET_CURRENT",
+	VAR_SET_MULTI:   "VAR_SET_MULTI",
+	VAR_RESET:       "VAR_RESET",
+	VAR_RESET_ALL:   "VAR_RESET_ALL",
+}
+
 func (e VariableSetKind) String() string {
-	switch e {
-	case VAR_SET_VALUE:
-		return "VAR_SET_VALUE"
-	case VAR_SET_DEFAULT:
-		return "VAR_SET_DEFAULT"
-	case VAR_SET_CURRENT:
-		return "VAR_SET_CURRENT"
-	case VAR_SET_MULTI:
-		return "VAR_SET_MULTI"
-	case VAR_RESET:
-		return "VAR_RESET"
-	case VAR_RESET_ALL:
-		return "VAR_RESET_ALL"
-	}
-	return fmt.Sprintf("VariableSetKind(%d)", e)
+	return VariableSetKindString[e]
 }
 
 type ConstrType int32
@@ -1365,8 +1158,6 @@ const (
 
 func NewConstrType(name string) ConstrType {
 	switch name {
-	case "CONSTR_NULL":
-		return CONSTR_NULL
 	case "CONSTR_NOTNULL":
 		return CONSTR_NOTNULL
 	case "CONSTR_DEFAULT":
@@ -1394,41 +1185,29 @@ func NewConstrType(name string) ConstrType {
 	case "CONSTR_ATTR_IMMEDIATE":
 		return CONSTR_ATTR_IMMEDIATE
 	}
+
 	return ConstrType(0)
 }
 
+var ConstrTypeString = map[ConstrType]string{
+	CONSTR_NULL:                "CONSTR_NULL",
+	CONSTR_NOTNULL:             "CONSTR_NOTNULL",
+	CONSTR_DEFAULT:             "CONSTR_DEFAULT",
+	CONSTR_IDENTITY:            "CONSTR_IDENTITY",
+	CONSTR_GENERATED:           "CONSTR_GENERATED",
+	CONSTR_CHECK:               "CONSTR_CHECK",
+	CONSTR_PRIMARY:             "CONSTR_PRIMARY",
+	CONSTR_UNIQUE:              "CONSTR_UNIQUE",
+	CONSTR_EXCLUSION:           "CONSTR_EXCLUSION",
+	CONSTR_FOREIGN:             "CONSTR_FOREIGN",
+	CONSTR_ATTR_DEFERRABLE:     "CONSTR_ATTR_DEFERRABLE",
+	CONSTR_ATTR_NOT_DEFERRABLE: "CONSTR_ATTR_NOT_DEFERRABLE",
+	CONSTR_ATTR_DEFERRED:       "CONSTR_ATTR_DEFERRED",
+	CONSTR_ATTR_IMMEDIATE:      "CONSTR_ATTR_IMMEDIATE",
+}
+
 func (e ConstrType) String() string {
-	switch e {
-	case CONSTR_NULL:
-		return "CONSTR_NULL"
-	case CONSTR_NOTNULL:
-		return "CONSTR_NOTNULL"
-	case CONSTR_DEFAULT:
-		return "CONSTR_DEFAULT"
-	case CONSTR_IDENTITY:
-		return "CONSTR_IDENTITY"
-	case CONSTR_GENERATED:
-		return "CONSTR_GENERATED"
-	case CONSTR_CHECK:
-		return "CONSTR_CHECK"
-	case CONSTR_PRIMARY:
-		return "CONSTR_PRIMARY"
-	case CONSTR_UNIQUE:
-		return "CONSTR_UNIQUE"
-	case CONSTR_EXCLUSION:
-		return "CONSTR_EXCLUSION"
-	case CONSTR_FOREIGN:
-		return "CONSTR_FOREIGN"
-	case CONSTR_ATTR_DEFERRABLE:
-		return "CONSTR_ATTR_DEFERRABLE"
-	case CONSTR_ATTR_NOT_DEFERRABLE:
-		return "CONSTR_ATTR_NOT_DEFERRABLE"
-	case CONSTR_ATTR_DEFERRED:
-		return "CONSTR_ATTR_DEFERRED"
-	case CONSTR_ATTR_IMMEDIATE:
-		return "CONSTR_ATTR_IMMEDIATE"
-	}
-	return fmt.Sprintf("ConstrType(%d)", e)
+	return ConstrTypeString[e]
 }
 
 type ImportForeignSchemaType int32
@@ -1441,26 +1220,23 @@ const (
 
 func NewImportForeignSchemaType(name string) ImportForeignSchemaType {
 	switch name {
-	case "FDW_IMPORT_SCHEMA_ALL":
-		return FDW_IMPORT_SCHEMA_ALL
 	case "FDW_IMPORT_SCHEMA_LIMIT_TO":
 		return FDW_IMPORT_SCHEMA_LIMIT_TO
 	case "FDW_IMPORT_SCHEMA_EXCEPT":
 		return FDW_IMPORT_SCHEMA_EXCEPT
 	}
+
 	return ImportForeignSchemaType(0)
 }
 
+var ImportForeignSchemaTypeString = map[ImportForeignSchemaType]string{
+	FDW_IMPORT_SCHEMA_ALL:      "FDW_IMPORT_SCHEMA_ALL",
+	FDW_IMPORT_SCHEMA_LIMIT_TO: "FDW_IMPORT_SCHEMA_LIMIT_TO",
+	FDW_IMPORT_SCHEMA_EXCEPT:   "FDW_IMPORT_SCHEMA_EXCEPT",
+}
+
 func (e ImportForeignSchemaType) String() string {
-	switch e {
-	case FDW_IMPORT_SCHEMA_ALL:
-		return "FDW_IMPORT_SCHEMA_ALL"
-	case FDW_IMPORT_SCHEMA_LIMIT_TO:
-		return "FDW_IMPORT_SCHEMA_LIMIT_TO"
-	case FDW_IMPORT_SCHEMA_EXCEPT:
-		return "FDW_IMPORT_SCHEMA_EXCEPT"
-	}
-	return fmt.Sprintf("ImportForeignSchemaType(%d)", e)
+	return ImportForeignSchemaTypeString[e]
 }
 
 type RoleStmtType int32
@@ -1473,26 +1249,23 @@ const (
 
 func NewRoleStmtType(name string) RoleStmtType {
 	switch name {
-	case "ROLESTMT_ROLE":
-		return ROLESTMT_ROLE
 	case "ROLESTMT_USER":
 		return ROLESTMT_USER
 	case "ROLESTMT_GROUP":
 		return ROLESTMT_GROUP
 	}
+
 	return RoleStmtType(0)
 }
 
+var RoleStmtTypeString = map[RoleStmtType]string{
+	ROLESTMT_ROLE:  "ROLESTMT_ROLE",
+	ROLESTMT_USER:  "ROLESTMT_USER",
+	ROLESTMT_GROUP: "ROLESTMT_GROUP",
+}
+
 func (e RoleStmtType) String() string {
-	switch e {
-	case ROLESTMT_ROLE:
-		return "ROLESTMT_ROLE"
-	case ROLESTMT_USER:
-		return "ROLESTMT_USER"
-	case ROLESTMT_GROUP:
-		return "ROLESTMT_GROUP"
-	}
-	return fmt.Sprintf("RoleStmtType(%d)", e)
+	return RoleStmtTypeString[e]
 }
 
 type FetchDirection int32
@@ -1506,8 +1279,6 @@ const (
 
 func NewFetchDirection(name string) FetchDirection {
 	switch name {
-	case "FETCH_FORWARD":
-		return FETCH_FORWARD
 	case "FETCH_BACKWARD":
 		return FETCH_BACKWARD
 	case "FETCH_ABSOLUTE":
@@ -1515,21 +1286,19 @@ func NewFetchDirection(name string) FetchDirection {
 	case "FETCH_RELATIVE":
 		return FETCH_RELATIVE
 	}
+
 	return FetchDirection(0)
 }
 
+var FetchDirectionString = map[FetchDirection]string{
+	FETCH_FORWARD:  "FETCH_FORWARD",
+	FETCH_BACKWARD: "FETCH_BACKWARD",
+	FETCH_ABSOLUTE: "FETCH_ABSOLUTE",
+	FETCH_RELATIVE: "FETCH_RELATIVE",
+}
+
 func (e FetchDirection) String() string {
-	switch e {
-	case FETCH_FORWARD:
-		return "FETCH_FORWARD"
-	case FETCH_BACKWARD:
-		return "FETCH_BACKWARD"
-	case FETCH_ABSOLUTE:
-		return "FETCH_ABSOLUTE"
-	case FETCH_RELATIVE:
-		return "FETCH_RELATIVE"
-	}
-	return fmt.Sprintf("FetchDirection(%d)", e)
+	return FetchDirectionString[e]
 }
 
 type FunctionParameterMode int32
@@ -1544,8 +1313,6 @@ const (
 
 func NewFunctionParameterMode(name string) FunctionParameterMode {
 	switch name {
-	case "FUNC_PARAM_IN":
-		return FUNC_PARAM_IN
 	case "FUNC_PARAM_OUT":
 		return FUNC_PARAM_OUT
 	case "FUNC_PARAM_INOUT":
@@ -1555,23 +1322,20 @@ func NewFunctionParameterMode(name string) FunctionParameterMode {
 	case "FUNC_PARAM_TABLE":
 		return FUNC_PARAM_TABLE
 	}
+
 	return FunctionParameterMode(0)
 }
 
+var FunctionParameterModeString = map[FunctionParameterMode]string{
+	FUNC_PARAM_IN:       "FUNC_PARAM_IN",
+	FUNC_PARAM_OUT:      "FUNC_PARAM_OUT",
+	FUNC_PARAM_INOUT:    "FUNC_PARAM_INOUT",
+	FUNC_PARAM_VARIADIC: "FUNC_PARAM_VARIADIC",
+	FUNC_PARAM_TABLE:    "FUNC_PARAM_TABLE",
+}
+
 func (e FunctionParameterMode) String() string {
-	switch e {
-	case FUNC_PARAM_IN:
-		return "FUNC_PARAM_IN"
-	case FUNC_PARAM_OUT:
-		return "FUNC_PARAM_OUT"
-	case FUNC_PARAM_INOUT:
-		return "FUNC_PARAM_INOUT"
-	case FUNC_PARAM_VARIADIC:
-		return "FUNC_PARAM_VARIADIC"
-	case FUNC_PARAM_TABLE:
-		return "FUNC_PARAM_TABLE"
-	}
-	return fmt.Sprintf("FunctionParameterMode(%d)", e)
+	return FunctionParameterModeString[e]
 }
 
 type TransactionStmtKind int32
@@ -1591,8 +1355,6 @@ const (
 
 func NewTransactionStmtKind(name string) TransactionStmtKind {
 	switch name {
-	case "TRANS_STMT_BEGIN":
-		return TRANS_STMT_BEGIN
 	case "TRANS_STMT_START":
 		return TRANS_STMT_START
 	case "TRANS_STMT_COMMIT":
@@ -1612,33 +1374,25 @@ func NewTransactionStmtKind(name string) TransactionStmtKind {
 	case "TRANS_STMT_ROLLBACK_PREPARED":
 		return TRANS_STMT_ROLLBACK_PREPARED
 	}
+
 	return TransactionStmtKind(0)
 }
 
+var TransactionStmtKindString = map[TransactionStmtKind]string{
+	TRANS_STMT_BEGIN:             "TRANS_STMT_BEGIN",
+	TRANS_STMT_START:             "TRANS_STMT_START",
+	TRANS_STMT_COMMIT:            "TRANS_STMT_COMMIT",
+	TRANS_STMT_ROLLBACK:          "TRANS_STMT_ROLLBACK",
+	TRANS_STMT_SAVEPOINT:         "TRANS_STMT_SAVEPOINT",
+	TRANS_STMT_RELEASE:           "TRANS_STMT_RELEASE",
+	TRANS_STMT_ROLLBACK_TO:       "TRANS_STMT_ROLLBACK_TO",
+	TRANS_STMT_PREPARE:           "TRANS_STMT_PREPARE",
+	TRANS_STMT_COMMIT_PREPARED:   "TRANS_STMT_COMMIT_PREPARED",
+	TRANS_STMT_ROLLBACK_PREPARED: "TRANS_STMT_ROLLBACK_PREPARED",
+}
+
 func (e TransactionStmtKind) String() string {
-	switch e {
-	case TRANS_STMT_BEGIN:
-		return "TRANS_STMT_BEGIN"
-	case TRANS_STMT_START:
-		return "TRANS_STMT_START"
-	case TRANS_STMT_COMMIT:
-		return "TRANS_STMT_COMMIT"
-	case TRANS_STMT_ROLLBACK:
-		return "TRANS_STMT_ROLLBACK"
-	case TRANS_STMT_SAVEPOINT:
-		return "TRANS_STMT_SAVEPOINT"
-	case TRANS_STMT_RELEASE:
-		return "TRANS_STMT_RELEASE"
-	case TRANS_STMT_ROLLBACK_TO:
-		return "TRANS_STMT_ROLLBACK_TO"
-	case TRANS_STMT_PREPARE:
-		return "TRANS_STMT_PREPARE"
-	case TRANS_STMT_COMMIT_PREPARED:
-		return "TRANS_STMT_COMMIT_PREPARED"
-	case TRANS_STMT_ROLLBACK_PREPARED:
-		return "TRANS_STMT_ROLLBACK_PREPARED"
-	}
-	return fmt.Sprintf("TransactionStmtKind(%d)", e)
+	return TransactionStmtKindString[e]
 }
 
 type ViewCheckOption int32
@@ -1651,26 +1405,23 @@ const (
 
 func NewViewCheckOption(name string) ViewCheckOption {
 	switch name {
-	case "NO_CHECK_OPTION":
-		return NO_CHECK_OPTION
 	case "LOCAL_CHECK_OPTION":
 		return LOCAL_CHECK_OPTION
 	case "CASCADED_CHECK_OPTION":
 		return CASCADED_CHECK_OPTION
 	}
+
 	return ViewCheckOption(0)
 }
 
+var ViewCheckOptionString = map[ViewCheckOption]string{
+	NO_CHECK_OPTION:       "NO_CHECK_OPTION",
+	LOCAL_CHECK_OPTION:    "LOCAL_CHECK_OPTION",
+	CASCADED_CHECK_OPTION: "CASCADED_CHECK_OPTION",
+}
+
 func (e ViewCheckOption) String() string {
-	switch e {
-	case NO_CHECK_OPTION:
-		return "NO_CHECK_OPTION"
-	case LOCAL_CHECK_OPTION:
-		return "LOCAL_CHECK_OPTION"
-	case CASCADED_CHECK_OPTION:
-		return "CASCADED_CHECK_OPTION"
-	}
-	return fmt.Sprintf("ViewCheckOption(%d)", e)
+	return ViewCheckOptionString[e]
 }
 
 type ClusterOption int32
@@ -1682,22 +1433,20 @@ const (
 
 func NewClusterOption(name string) ClusterOption {
 	switch name {
-	case "CLUOPT_RECHECK":
-		return CLUOPT_RECHECK
 	case "CLUOPT_VERBOSE":
 		return CLUOPT_VERBOSE
 	}
+
 	return ClusterOption(0)
 }
 
+var ClusterOptionString = map[ClusterOption]string{
+	CLUOPT_RECHECK: "CLUOPT_RECHECK",
+	CLUOPT_VERBOSE: "CLUOPT_VERBOSE",
+}
+
 func (e ClusterOption) String() string {
-	switch e {
-	case CLUOPT_RECHECK:
-		return "CLUOPT_RECHECK"
-	case CLUOPT_VERBOSE:
-		return "CLUOPT_VERBOSE"
-	}
-	return fmt.Sprintf("ClusterOption(%d)", e)
+	return ClusterOptionString[e]
 }
 
 type DiscardMode int32
@@ -1711,8 +1460,6 @@ const (
 
 func NewDiscardMode(name string) DiscardMode {
 	switch name {
-	case "DISCARD_ALL":
-		return DISCARD_ALL
 	case "DISCARD_PLANS":
 		return DISCARD_PLANS
 	case "DISCARD_SEQUENCES":
@@ -1720,21 +1467,19 @@ func NewDiscardMode(name string) DiscardMode {
 	case "DISCARD_TEMP":
 		return DISCARD_TEMP
 	}
+
 	return DiscardMode(0)
 }
 
+var DiscardModeString = map[DiscardMode]string{
+	DISCARD_ALL:       "DISCARD_ALL",
+	DISCARD_PLANS:     "DISCARD_PLANS",
+	DISCARD_SEQUENCES: "DISCARD_SEQUENCES",
+	DISCARD_TEMP:      "DISCARD_TEMP",
+}
+
 func (e DiscardMode) String() string {
-	switch e {
-	case DISCARD_ALL:
-		return "DISCARD_ALL"
-	case DISCARD_PLANS:
-		return "DISCARD_PLANS"
-	case DISCARD_SEQUENCES:
-		return "DISCARD_SEQUENCES"
-	case DISCARD_TEMP:
-		return "DISCARD_TEMP"
-	}
-	return fmt.Sprintf("DiscardMode(%d)", e)
+	return DiscardModeString[e]
 }
 
 type ReindexObjectType int32
@@ -1749,8 +1494,6 @@ const (
 
 func NewReindexObjectType(name string) ReindexObjectType {
 	switch name {
-	case "REINDEX_OBJECT_INDEX":
-		return REINDEX_OBJECT_INDEX
 	case "REINDEX_OBJECT_TABLE":
 		return REINDEX_OBJECT_TABLE
 	case "REINDEX_OBJECT_SCHEMA":
@@ -1760,23 +1503,20 @@ func NewReindexObjectType(name string) ReindexObjectType {
 	case "REINDEX_OBJECT_DATABASE":
 		return REINDEX_OBJECT_DATABASE
 	}
+
 	return ReindexObjectType(0)
 }
 
+var ReindexObjectTypeString = map[ReindexObjectType]string{
+	REINDEX_OBJECT_INDEX:    "REINDEX_OBJECT_INDEX",
+	REINDEX_OBJECT_TABLE:    "REINDEX_OBJECT_TABLE",
+	REINDEX_OBJECT_SCHEMA:   "REINDEX_OBJECT_SCHEMA",
+	REINDEX_OBJECT_SYSTEM:   "REINDEX_OBJECT_SYSTEM",
+	REINDEX_OBJECT_DATABASE: "REINDEX_OBJECT_DATABASE",
+}
+
 func (e ReindexObjectType) String() string {
-	switch e {
-	case REINDEX_OBJECT_INDEX:
-		return "REINDEX_OBJECT_INDEX"
-	case REINDEX_OBJECT_TABLE:
-		return "REINDEX_OBJECT_TABLE"
-	case REINDEX_OBJECT_SCHEMA:
-		return "REINDEX_OBJECT_SCHEMA"
-	case REINDEX_OBJECT_SYSTEM:
-		return "REINDEX_OBJECT_SYSTEM"
-	case REINDEX_OBJECT_DATABASE:
-		return "REINDEX_OBJECT_DATABASE"
-	}
-	return fmt.Sprintf("ReindexObjectType(%d)", e)
+	return ReindexObjectTypeString[e]
 }
 
 type AlterTSConfigType int32
@@ -1791,8 +1531,6 @@ const (
 
 func NewAlterTSConfigType(name string) AlterTSConfigType {
 	switch name {
-	case "ALTER_TSCONFIG_ADD_MAPPING":
-		return ALTER_TSCONFIG_ADD_MAPPING
 	case "ALTER_TSCONFIG_ALTER_MAPPING_FOR_TOKEN":
 		return ALTER_TSCONFIG_ALTER_MAPPING_FOR_TOKEN
 	case "ALTER_TSCONFIG_REPLACE_DICT":
@@ -1802,23 +1540,20 @@ func NewAlterTSConfigType(name string) AlterTSConfigType {
 	case "ALTER_TSCONFIG_DROP_MAPPING":
 		return ALTER_TSCONFIG_DROP_MAPPING
 	}
+
 	return AlterTSConfigType(0)
 }
 
+var AlterTSConfigTypeString = map[AlterTSConfigType]string{
+	ALTER_TSCONFIG_ADD_MAPPING:             "ALTER_TSCONFIG_ADD_MAPPING",
+	ALTER_TSCONFIG_ALTER_MAPPING_FOR_TOKEN: "ALTER_TSCONFIG_ALTER_MAPPING_FOR_TOKEN",
+	ALTER_TSCONFIG_REPLACE_DICT:            "ALTER_TSCONFIG_REPLACE_DICT",
+	ALTER_TSCONFIG_REPLACE_DICT_FOR_TOKEN:  "ALTER_TSCONFIG_REPLACE_DICT_FOR_TOKEN",
+	ALTER_TSCONFIG_DROP_MAPPING:            "ALTER_TSCONFIG_DROP_MAPPING",
+}
+
 func (e AlterTSConfigType) String() string {
-	switch e {
-	case ALTER_TSCONFIG_ADD_MAPPING:
-		return "ALTER_TSCONFIG_ADD_MAPPING"
-	case ALTER_TSCONFIG_ALTER_MAPPING_FOR_TOKEN:
-		return "ALTER_TSCONFIG_ALTER_MAPPING_FOR_TOKEN"
-	case ALTER_TSCONFIG_REPLACE_DICT:
-		return "ALTER_TSCONFIG_REPLACE_DICT"
-	case ALTER_TSCONFIG_REPLACE_DICT_FOR_TOKEN:
-		return "ALTER_TSCONFIG_REPLACE_DICT_FOR_TOKEN"
-	case ALTER_TSCONFIG_DROP_MAPPING:
-		return "ALTER_TSCONFIG_DROP_MAPPING"
-	}
-	return fmt.Sprintf("AlterTSConfigType(%d)", e)
+	return AlterTSConfigTypeString[e]
 }
 
 type AlterSubscriptionType int32
@@ -1833,8 +1568,6 @@ const (
 
 func NewAlterSubscriptionType(name string) AlterSubscriptionType {
 	switch name {
-	case "ALTER_SUBSCRIPTION_OPTIONS":
-		return ALTER_SUBSCRIPTION_OPTIONS
 	case "ALTER_SUBSCRIPTION_CONNECTION":
 		return ALTER_SUBSCRIPTION_CONNECTION
 	case "ALTER_SUBSCRIPTION_PUBLICATION":
@@ -1844,23 +1577,20 @@ func NewAlterSubscriptionType(name string) AlterSubscriptionType {
 	case "ALTER_SUBSCRIPTION_ENABLED":
 		return ALTER_SUBSCRIPTION_ENABLED
 	}
+
 	return AlterSubscriptionType(0)
 }
 
+var AlterSubscriptionTypeString = map[AlterSubscriptionType]string{
+	ALTER_SUBSCRIPTION_OPTIONS:     "ALTER_SUBSCRIPTION_OPTIONS",
+	ALTER_SUBSCRIPTION_CONNECTION:  "ALTER_SUBSCRIPTION_CONNECTION",
+	ALTER_SUBSCRIPTION_PUBLICATION: "ALTER_SUBSCRIPTION_PUBLICATION",
+	ALTER_SUBSCRIPTION_REFRESH:     "ALTER_SUBSCRIPTION_REFRESH",
+	ALTER_SUBSCRIPTION_ENABLED:     "ALTER_SUBSCRIPTION_ENABLED",
+}
+
 func (e AlterSubscriptionType) String() string {
-	switch e {
-	case ALTER_SUBSCRIPTION_OPTIONS:
-		return "ALTER_SUBSCRIPTION_OPTIONS"
-	case ALTER_SUBSCRIPTION_CONNECTION:
-		return "ALTER_SUBSCRIPTION_CONNECTION"
-	case ALTER_SUBSCRIPTION_PUBLICATION:
-		return "ALTER_SUBSCRIPTION_PUBLICATION"
-	case ALTER_SUBSCRIPTION_REFRESH:
-		return "ALTER_SUBSCRIPTION_REFRESH"
-	case ALTER_SUBSCRIPTION_ENABLED:
-		return "ALTER_SUBSCRIPTION_ENABLED"
-	}
-	return fmt.Sprintf("AlterSubscriptionType(%d)", e)
+	return AlterSubscriptionTypeString[e]
 }
 
 type OnCommitAction int32
@@ -1874,8 +1604,6 @@ const (
 
 func NewOnCommitAction(name string) OnCommitAction {
 	switch name {
-	case "ONCOMMIT_NOOP":
-		return ONCOMMIT_NOOP
 	case "ONCOMMIT_PRESERVE_ROWS":
 		return ONCOMMIT_PRESERVE_ROWS
 	case "ONCOMMIT_DELETE_ROWS":
@@ -1883,21 +1611,19 @@ func NewOnCommitAction(name string) OnCommitAction {
 	case "ONCOMMIT_DROP":
 		return ONCOMMIT_DROP
 	}
+
 	return OnCommitAction(0)
 }
 
+var OnCommitActionString = map[OnCommitAction]string{
+	ONCOMMIT_NOOP:          "ONCOMMIT_NOOP",
+	ONCOMMIT_PRESERVE_ROWS: "ONCOMMIT_PRESERVE_ROWS",
+	ONCOMMIT_DELETE_ROWS:   "ONCOMMIT_DELETE_ROWS",
+	ONCOMMIT_DROP:          "ONCOMMIT_DROP",
+}
+
 func (e OnCommitAction) String() string {
-	switch e {
-	case ONCOMMIT_NOOP:
-		return "ONCOMMIT_NOOP"
-	case ONCOMMIT_PRESERVE_ROWS:
-		return "ONCOMMIT_PRESERVE_ROWS"
-	case ONCOMMIT_DELETE_ROWS:
-		return "ONCOMMIT_DELETE_ROWS"
-	case ONCOMMIT_DROP:
-		return "ONCOMMIT_DROP"
-	}
-	return fmt.Sprintf("OnCommitAction(%d)", e)
+	return OnCommitActionString[e]
 }
 
 type ParamKind int32
@@ -1911,8 +1637,6 @@ const (
 
 func NewParamKind(name string) ParamKind {
 	switch name {
-	case "PARAM_EXTERN":
-		return PARAM_EXTERN
 	case "PARAM_EXEC":
 		return PARAM_EXEC
 	case "PARAM_SUBLINK":
@@ -1920,21 +1644,19 @@ func NewParamKind(name string) ParamKind {
 	case "PARAM_MULTIEXPR":
 		return PARAM_MULTIEXPR
 	}
+
 	return ParamKind(0)
 }
 
+var ParamKindString = map[ParamKind]string{
+	PARAM_EXTERN:    "PARAM_EXTERN",
+	PARAM_EXEC:      "PARAM_EXEC",
+	PARAM_SUBLINK:   "PARAM_SUBLINK",
+	PARAM_MULTIEXPR: "PARAM_MULTIEXPR",
+}
+
 func (e ParamKind) String() string {
-	switch e {
-	case PARAM_EXTERN:
-		return "PARAM_EXTERN"
-	case PARAM_EXEC:
-		return "PARAM_EXEC"
-	case PARAM_SUBLINK:
-		return "PARAM_SUBLINK"
-	case PARAM_MULTIEXPR:
-		return "PARAM_MULTIEXPR"
-	}
-	return fmt.Sprintf("ParamKind(%d)", e)
+	return ParamKindString[e]
 }
 
 type CoercionContext int32
@@ -1947,26 +1669,23 @@ const (
 
 func NewCoercionContext(name string) CoercionContext {
 	switch name {
-	case "COERCION_IMPLICIT":
-		return COERCION_IMPLICIT
 	case "COERCION_ASSIGNMENT":
 		return COERCION_ASSIGNMENT
 	case "COERCION_EXPLICIT":
 		return COERCION_EXPLICIT
 	}
+
 	return CoercionContext(0)
 }
 
+var CoercionContextString = map[CoercionContext]string{
+	COERCION_IMPLICIT:   "COERCION_IMPLICIT",
+	COERCION_ASSIGNMENT: "COERCION_ASSIGNMENT",
+	COERCION_EXPLICIT:   "COERCION_EXPLICIT",
+}
+
 func (e CoercionContext) String() string {
-	switch e {
-	case COERCION_IMPLICIT:
-		return "COERCION_IMPLICIT"
-	case COERCION_ASSIGNMENT:
-		return "COERCION_ASSIGNMENT"
-	case COERCION_EXPLICIT:
-		return "COERCION_EXPLICIT"
-	}
-	return fmt.Sprintf("CoercionContext(%d)", e)
+	return CoercionContextString[e]
 }
 
 type CoercionForm int32
@@ -1979,26 +1698,23 @@ const (
 
 func NewCoercionForm(name string) CoercionForm {
 	switch name {
-	case "COERCE_EXPLICIT_CALL":
-		return COERCE_EXPLICIT_CALL
 	case "COERCE_EXPLICIT_CAST":
 		return COERCE_EXPLICIT_CAST
 	case "COERCE_IMPLICIT_CAST":
 		return COERCE_IMPLICIT_CAST
 	}
+
 	return CoercionForm(0)
 }
 
+var CoercionFormString = map[CoercionForm]string{
+	COERCE_EXPLICIT_CALL: "COERCE_EXPLICIT_CALL",
+	COERCE_EXPLICIT_CAST: "COERCE_EXPLICIT_CAST",
+	COERCE_IMPLICIT_CAST: "COERCE_IMPLICIT_CAST",
+}
+
 func (e CoercionForm) String() string {
-	switch e {
-	case COERCE_EXPLICIT_CALL:
-		return "COERCE_EXPLICIT_CALL"
-	case COERCE_EXPLICIT_CAST:
-		return "COERCE_EXPLICIT_CAST"
-	case COERCE_IMPLICIT_CAST:
-		return "COERCE_IMPLICIT_CAST"
-	}
-	return fmt.Sprintf("CoercionForm(%d)", e)
+	return CoercionFormString[e]
 }
 
 type BoolExprType int32
@@ -2010,22 +1726,20 @@ const (
 
 func NewBoolExprType(name string) BoolExprType {
 	switch name {
-	case "AND_EXPR":
-		return AND_EXPR
 	case "OR_EXPR":
 		return OR_EXPR
 	}
+
 	return BoolExprType(0)
 }
 
+var BoolExprTypeString = map[BoolExprType]string{
+	AND_EXPR: "AND_EXPR",
+	OR_EXPR:  "OR_EXPR",
+}
+
 func (e BoolExprType) String() string {
-	switch e {
-	case AND_EXPR:
-		return "AND_EXPR"
-	case OR_EXPR:
-		return "OR_EXPR"
-	}
-	return fmt.Sprintf("BoolExprType(%d)", e)
+	return BoolExprTypeString[e]
 }
 
 type SubLinkType int32
@@ -2043,8 +1757,6 @@ const (
 
 func NewSubLinkType(name string) SubLinkType {
 	switch name {
-	case "EXISTS_SUBLINK":
-		return EXISTS_SUBLINK
 	case "ALL_SUBLINK":
 		return ALL_SUBLINK
 	case "ANY_SUBLINK":
@@ -2060,29 +1772,23 @@ func NewSubLinkType(name string) SubLinkType {
 	case "CTE_SUBLINK":
 		return CTE_SUBLINK
 	}
+
 	return SubLinkType(0)
 }
 
+var SubLinkTypeString = map[SubLinkType]string{
+	EXISTS_SUBLINK:     "EXISTS_SUBLINK",
+	ALL_SUBLINK:        "ALL_SUBLINK",
+	ANY_SUBLINK:        "ANY_SUBLINK",
+	ROWCOMPARE_SUBLINK: "ROWCOMPARE_SUBLINK",
+	EXPR_SUBLINK:       "EXPR_SUBLINK",
+	MULTIEXPR_SUBLINK:  "MULTIEXPR_SUBLINK",
+	ARRAY_SUBLINK:      "ARRAY_SUBLINK",
+	CTE_SUBLINK:        "CTE_SUBLINK",
+}
+
 func (e SubLinkType) String() string {
-	switch e {
-	case EXISTS_SUBLINK:
-		return "EXISTS_SUBLINK"
-	case ALL_SUBLINK:
-		return "ALL_SUBLINK"
-	case ANY_SUBLINK:
-		return "ANY_SUBLINK"
-	case ROWCOMPARE_SUBLINK:
-		return "ROWCOMPARE_SUBLINK"
-	case EXPR_SUBLINK:
-		return "EXPR_SUBLINK"
-	case MULTIEXPR_SUBLINK:
-		return "MULTIEXPR_SUBLINK"
-	case ARRAY_SUBLINK:
-		return "ARRAY_SUBLINK"
-	case CTE_SUBLINK:
-		return "CTE_SUBLINK"
-	}
-	return fmt.Sprintf("SubLinkType(%d)", e)
+	return SubLinkTypeString[e]
 }
 
 type RowCompareType int32
@@ -2098,8 +1804,6 @@ const (
 
 func NewRowCompareType(name string) RowCompareType {
 	switch name {
-	case "ROWCOMPARE_LT":
-		return ROWCOMPARE_LT
 	case "ROWCOMPARE_LE":
 		return ROWCOMPARE_LE
 	case "ROWCOMPARE_EQ":
@@ -2111,25 +1815,21 @@ func NewRowCompareType(name string) RowCompareType {
 	case "ROWCOMPARE_NE":
 		return ROWCOMPARE_NE
 	}
+
 	return RowCompareType(0)
 }
 
+var RowCompareTypeString = map[RowCompareType]string{
+	ROWCOMPARE_LT: "ROWCOMPARE_LT",
+	ROWCOMPARE_LE: "ROWCOMPARE_LE",
+	ROWCOMPARE_EQ: "ROWCOMPARE_EQ",
+	ROWCOMPARE_GE: "ROWCOMPARE_GE",
+	ROWCOMPARE_GT: "ROWCOMPARE_GT",
+	ROWCOMPARE_NE: "ROWCOMPARE_NE",
+}
+
 func (e RowCompareType) String() string {
-	switch e {
-	case ROWCOMPARE_LT:
-		return "ROWCOMPARE_LT"
-	case ROWCOMPARE_LE:
-		return "ROWCOMPARE_LE"
-	case ROWCOMPARE_EQ:
-		return "ROWCOMPARE_EQ"
-	case ROWCOMPARE_GE:
-		return "ROWCOMPARE_GE"
-	case ROWCOMPARE_GT:
-		return "ROWCOMPARE_GT"
-	case ROWCOMPARE_NE:
-		return "ROWCOMPARE_NE"
-	}
-	return fmt.Sprintf("RowCompareType(%d)", e)
+	return RowCompareTypeString[e]
 }
 
 type MinMaxOp int32
@@ -2141,22 +1841,20 @@ const (
 
 func NewMinMaxOp(name string) MinMaxOp {
 	switch name {
-	case "IS_GREATEST":
-		return IS_GREATEST
 	case "IS_LEAST":
 		return IS_LEAST
 	}
+
 	return MinMaxOp(0)
 }
 
+var MinMaxOpString = map[MinMaxOp]string{
+	IS_GREATEST: "IS_GREATEST",
+	IS_LEAST:    "IS_LEAST",
+}
+
 func (e MinMaxOp) String() string {
-	switch e {
-	case IS_GREATEST:
-		return "IS_GREATEST"
-	case IS_LEAST:
-		return "IS_LEAST"
-	}
-	return fmt.Sprintf("MinMaxOp(%d)", e)
+	return MinMaxOpString[e]
 }
 
 type SQLValueFunctionOp int32
@@ -2181,8 +1879,6 @@ const (
 
 func NewSQLValueFunctionOp(name string) SQLValueFunctionOp {
 	switch name {
-	case "SVFOP_CURRENT_DATE":
-		return SVFOP_CURRENT_DATE
 	case "SVFOP_CURRENT_TIME":
 		return SVFOP_CURRENT_TIME
 	case "SVFOP_CURRENT_TIME_N":
@@ -2212,43 +1908,30 @@ func NewSQLValueFunctionOp(name string) SQLValueFunctionOp {
 	case "SVFOP_CURRENT_SCHEMA":
 		return SVFOP_CURRENT_SCHEMA
 	}
+
 	return SQLValueFunctionOp(0)
 }
 
+var SQLValueFunctionOpString = map[SQLValueFunctionOp]string{
+	SVFOP_CURRENT_DATE:        "SVFOP_CURRENT_DATE",
+	SVFOP_CURRENT_TIME:        "SVFOP_CURRENT_TIME",
+	SVFOP_CURRENT_TIME_N:      "SVFOP_CURRENT_TIME_N",
+	SVFOP_CURRENT_TIMESTAMP:   "SVFOP_CURRENT_TIMESTAMP",
+	SVFOP_CURRENT_TIMESTAMP_N: "SVFOP_CURRENT_TIMESTAMP_N",
+	SVFOP_LOCALTIME:           "SVFOP_LOCALTIME",
+	SVFOP_LOCALTIME_N:         "SVFOP_LOCALTIME_N",
+	SVFOP_LOCALTIMESTAMP:      "SVFOP_LOCALTIMESTAMP",
+	SVFOP_LOCALTIMESTAMP_N:    "SVFOP_LOCALTIMESTAMP_N",
+	SVFOP_CURRENT_ROLE:        "SVFOP_CURRENT_ROLE",
+	SVFOP_CURRENT_USER:        "SVFOP_CURRENT_USER",
+	SVFOP_USER:                "SVFOP_USER",
+	SVFOP_SESSION_USER:        "SVFOP_SESSION_USER",
+	SVFOP_CURRENT_CATALOG:     "SVFOP_CURRENT_CATALOG",
+	SVFOP_CURRENT_SCHEMA:      "SVFOP_CURRENT_SCHEMA",
+}
+
 func (e SQLValueFunctionOp) String() string {
-	switch e {
-	case SVFOP_CURRENT_DATE:
-		return "SVFOP_CURRENT_DATE"
-	case SVFOP_CURRENT_TIME:
-		return "SVFOP_CURRENT_TIME"
-	case SVFOP_CURRENT_TIME_N:
-		return "SVFOP_CURRENT_TIME_N"
-	case SVFOP_CURRENT_TIMESTAMP:
-		return "SVFOP_CURRENT_TIMESTAMP"
-	case SVFOP_CURRENT_TIMESTAMP_N:
-		return "SVFOP_CURRENT_TIMESTAMP_N"
-	case SVFOP_LOCALTIME:
-		return "SVFOP_LOCALTIME"
-	case SVFOP_LOCALTIME_N:
-		return "SVFOP_LOCALTIME_N"
-	case SVFOP_LOCALTIMESTAMP:
-		return "SVFOP_LOCALTIMESTAMP"
-	case SVFOP_LOCALTIMESTAMP_N:
-		return "SVFOP_LOCALTIMESTAMP_N"
-	case SVFOP_CURRENT_ROLE:
-		return "SVFOP_CURRENT_ROLE"
-	case SVFOP_CURRENT_USER:
-		return "SVFOP_CURRENT_USER"
-	case SVFOP_USER:
-		return "SVFOP_USER"
-	case SVFOP_SESSION_USER:
-		return "SVFOP_SESSION_USER"
-	case SVFOP_CURRENT_CATALOG:
-		return "SVFOP_CURRENT_CATALOG"
-	case SVFOP_CURRENT_SCHEMA:
-		return "SVFOP_CURRENT_SCHEMA"
-	}
-	return fmt.Sprintf("SQLValueFunctionOp(%d)", e)
+	return SQLValueFunctionOpString[e]
 }
 
 type XmlExprOp int32
@@ -2266,8 +1949,6 @@ const (
 
 func NewXmlExprOp(name string) XmlExprOp {
 	switch name {
-	case "IS_XMLCONCAT":
-		return IS_XMLCONCAT
 	case "IS_XMLELEMENT":
 		return IS_XMLELEMENT
 	case "IS_XMLFOREST":
@@ -2283,29 +1964,23 @@ func NewXmlExprOp(name string) XmlExprOp {
 	case "IS_DOCUMENT":
 		return IS_DOCUMENT
 	}
+
 	return XmlExprOp(0)
 }
 
+var XmlExprOpString = map[XmlExprOp]string{
+	IS_XMLCONCAT:    "IS_XMLCONCAT",
+	IS_XMLELEMENT:   "IS_XMLELEMENT",
+	IS_XMLFOREST:    "IS_XMLFOREST",
+	IS_XMLPARSE:     "IS_XMLPARSE",
+	IS_XMLPI:        "IS_XMLPI",
+	IS_XMLROOT:      "IS_XMLROOT",
+	IS_XMLSERIALIZE: "IS_XMLSERIALIZE",
+	IS_DOCUMENT:     "IS_DOCUMENT",
+}
+
 func (e XmlExprOp) String() string {
-	switch e {
-	case IS_XMLCONCAT:
-		return "IS_XMLCONCAT"
-	case IS_XMLELEMENT:
-		return "IS_XMLELEMENT"
-	case IS_XMLFOREST:
-		return "IS_XMLFOREST"
-	case IS_XMLPARSE:
-		return "IS_XMLPARSE"
-	case IS_XMLPI:
-		return "IS_XMLPI"
-	case IS_XMLROOT:
-		return "IS_XMLROOT"
-	case IS_XMLSERIALIZE:
-		return "IS_XMLSERIALIZE"
-	case IS_DOCUMENT:
-		return "IS_DOCUMENT"
-	}
-	return fmt.Sprintf("XmlExprOp(%d)", e)
+	return XmlExprOpString[e]
 }
 
 type XmlOptionType int32
@@ -2317,22 +1992,20 @@ const (
 
 func NewXmlOptionType(name string) XmlOptionType {
 	switch name {
-	case "XMLOPTION_DOCUMENT":
-		return XMLOPTION_DOCUMENT
 	case "XMLOPTION_CONTENT":
 		return XMLOPTION_CONTENT
 	}
+
 	return XmlOptionType(0)
 }
 
+var XmlOptionTypeString = map[XmlOptionType]string{
+	XMLOPTION_DOCUMENT: "XMLOPTION_DOCUMENT",
+	XMLOPTION_CONTENT:  "XMLOPTION_CONTENT",
+}
+
 func (e XmlOptionType) String() string {
-	switch e {
-	case XMLOPTION_DOCUMENT:
-		return "XMLOPTION_DOCUMENT"
-	case XMLOPTION_CONTENT:
-		return "XMLOPTION_CONTENT"
-	}
-	return fmt.Sprintf("XmlOptionType(%d)", e)
+	return XmlOptionTypeString[e]
 }
 
 type NullTestType int32
@@ -2344,22 +2017,20 @@ const (
 
 func NewNullTestType(name string) NullTestType {
 	switch name {
-	case "IS_NULL":
-		return IS_NULL
 	case "IS_NOT_NULL":
 		return IS_NOT_NULL
 	}
+
 	return NullTestType(0)
 }
 
+var NullTestTypeString = map[NullTestType]string{
+	IS_NULL:     "IS_NULL",
+	IS_NOT_NULL: "IS_NOT_NULL",
+}
+
 func (e NullTestType) String() string {
-	switch e {
-	case IS_NULL:
-		return "IS_NULL"
-	case IS_NOT_NULL:
-		return "IS_NOT_NULL"
-	}
-	return fmt.Sprintf("NullTestType(%d)", e)
+	return NullTestTypeString[e]
 }
 
 type BoolTestType int32
@@ -2371,22 +2042,20 @@ const (
 
 func NewBoolTestType(name string) BoolTestType {
 	switch name {
-	case "IS_TRUE":
-		return IS_TRUE
 	case "IS_NOT_TRUE":
 		return IS_NOT_TRUE
 	}
+
 	return BoolTestType(0)
 }
 
+var BoolTestTypeString = map[BoolTestType]string{
+	IS_TRUE:     "IS_TRUE",
+	IS_NOT_TRUE: "IS_NOT_TRUE",
+}
+
 func (e BoolTestType) String() string {
-	switch e {
-	case IS_TRUE:
-		return "IS_TRUE"
-	case IS_NOT_TRUE:
-		return "IS_NOT_TRUE"
-	}
-	return fmt.Sprintf("BoolTestType(%d)", e)
+	return BoolTestTypeString[e]
 }
 
 type CmdType int32
@@ -2403,8 +2072,6 @@ const (
 
 func NewCmdType(name string) CmdType {
 	switch name {
-	case "CMD_UNKNOWN":
-		return CMD_UNKNOWN
 	case "CMD_SELECT":
 		return CMD_SELECT
 	case "CMD_UPDATE":
@@ -2418,27 +2085,22 @@ func NewCmdType(name string) CmdType {
 	case "CMD_NOTHING":
 		return CMD_NOTHING
 	}
+
 	return CmdType(0)
 }
 
+var CmdTypeString = map[CmdType]string{
+	CMD_UNKNOWN: "CMD_UNKNOWN",
+	CMD_SELECT:  "CMD_SELECT",
+	CMD_UPDATE:  "CMD_UPDATE",
+	CMD_INSERT:  "CMD_INSERT",
+	CMD_DELETE:  "CMD_DELETE",
+	CMD_UTILITY: "CMD_UTILITY",
+	CMD_NOTHING: "CMD_NOTHING",
+}
+
 func (e CmdType) String() string {
-	switch e {
-	case CMD_UNKNOWN:
-		return "CMD_UNKNOWN"
-	case CMD_SELECT:
-		return "CMD_SELECT"
-	case CMD_UPDATE:
-		return "CMD_UPDATE"
-	case CMD_INSERT:
-		return "CMD_INSERT"
-	case CMD_DELETE:
-		return "CMD_DELETE"
-	case CMD_UTILITY:
-		return "CMD_UTILITY"
-	case CMD_NOTHING:
-		return "CMD_NOTHING"
-	}
-	return fmt.Sprintf("CmdType(%d)", e)
+	return CmdTypeString[e]
 }
 
 type JoinType int32
@@ -2456,8 +2118,6 @@ const (
 
 func NewJoinType(name string) JoinType {
 	switch name {
-	case "JOIN_INNER":
-		return JOIN_INNER
 	case "JOIN_LEFT":
 		return JOIN_LEFT
 	case "JOIN_FULL":
@@ -2473,29 +2133,23 @@ func NewJoinType(name string) JoinType {
 	case "JOIN_UNIQUE_INNER":
 		return JOIN_UNIQUE_INNER
 	}
+
 	return JoinType(0)
 }
 
+var JoinTypeString = map[JoinType]string{
+	JOIN_INNER:        "JOIN_INNER",
+	JOIN_LEFT:         "JOIN_LEFT",
+	JOIN_FULL:         "JOIN_FULL",
+	JOIN_RIGHT:        "JOIN_RIGHT",
+	JOIN_SEMI:         "JOIN_SEMI",
+	JOIN_ANTI:         "JOIN_ANTI",
+	JOIN_UNIQUE_OUTER: "JOIN_UNIQUE_OUTER",
+	JOIN_UNIQUE_INNER: "JOIN_UNIQUE_INNER",
+}
+
 func (e JoinType) String() string {
-	switch e {
-	case JOIN_INNER:
-		return "JOIN_INNER"
-	case JOIN_LEFT:
-		return "JOIN_LEFT"
-	case JOIN_FULL:
-		return "JOIN_FULL"
-	case JOIN_RIGHT:
-		return "JOIN_RIGHT"
-	case JOIN_SEMI:
-		return "JOIN_SEMI"
-	case JOIN_ANTI:
-		return "JOIN_ANTI"
-	case JOIN_UNIQUE_OUTER:
-		return "JOIN_UNIQUE_OUTER"
-	case JOIN_UNIQUE_INNER:
-		return "JOIN_UNIQUE_INNER"
-	}
-	return fmt.Sprintf("JoinType(%d)", e)
+	return JoinTypeString[e]
 }
 
 type AggStrategy int32
@@ -2509,8 +2163,6 @@ const (
 
 func NewAggStrategy(name string) AggStrategy {
 	switch name {
-	case "AGG_PLAIN":
-		return AGG_PLAIN
 	case "AGG_SORTED":
 		return AGG_SORTED
 	case "AGG_HASHED":
@@ -2518,21 +2170,19 @@ func NewAggStrategy(name string) AggStrategy {
 	case "AGG_MIXED":
 		return AGG_MIXED
 	}
+
 	return AggStrategy(0)
 }
 
+var AggStrategyString = map[AggStrategy]string{
+	AGG_PLAIN:  "AGG_PLAIN",
+	AGG_SORTED: "AGG_SORTED",
+	AGG_HASHED: "AGG_HASHED",
+	AGG_MIXED:  "AGG_MIXED",
+}
+
 func (e AggStrategy) String() string {
-	switch e {
-	case AGG_PLAIN:
-		return "AGG_PLAIN"
-	case AGG_SORTED:
-		return "AGG_SORTED"
-	case AGG_HASHED:
-		return "AGG_HASHED"
-	case AGG_MIXED:
-		return "AGG_MIXED"
-	}
-	return fmt.Sprintf("AggStrategy(%d)", e)
+	return AggStrategyString[e]
 }
 
 type AggSplit int32
@@ -2545,26 +2195,23 @@ const (
 
 func NewAggSplit(name string) AggSplit {
 	switch name {
-	case "AGGSPLIT_SIMPLE":
-		return AGGSPLIT_SIMPLE
 	case "AGGSPLIT_INITIAL_SERIAL":
 		return AGGSPLIT_INITIAL_SERIAL
 	case "AGGSPLIT_FINAL_DESERIAL":
 		return AGGSPLIT_FINAL_DESERIAL
 	}
+
 	return AggSplit(0)
 }
 
+var AggSplitString = map[AggSplit]string{
+	AGGSPLIT_SIMPLE:         "AGGSPLIT_SIMPLE",
+	AGGSPLIT_INITIAL_SERIAL: "AGGSPLIT_INITIAL_SERIAL",
+	AGGSPLIT_FINAL_DESERIAL: "AGGSPLIT_FINAL_DESERIAL",
+}
+
 func (e AggSplit) String() string {
-	switch e {
-	case AGGSPLIT_SIMPLE:
-		return "AGGSPLIT_SIMPLE"
-	case AGGSPLIT_INITIAL_SERIAL:
-		return "AGGSPLIT_INITIAL_SERIAL"
-	case AGGSPLIT_FINAL_DESERIAL:
-		return "AGGSPLIT_FINAL_DESERIAL"
-	}
-	return fmt.Sprintf("AggSplit(%d)", e)
+	return AggSplitString[e]
 }
 
 type SetOpCmd int32
@@ -2578,8 +2225,6 @@ const (
 
 func NewSetOpCmd(name string) SetOpCmd {
 	switch name {
-	case "SETOPCMD_INTERSECT":
-		return SETOPCMD_INTERSECT
 	case "SETOPCMD_INTERSECT_ALL":
 		return SETOPCMD_INTERSECT_ALL
 	case "SETOPCMD_EXCEPT":
@@ -2587,21 +2232,19 @@ func NewSetOpCmd(name string) SetOpCmd {
 	case "SETOPCMD_EXCEPT_ALL":
 		return SETOPCMD_EXCEPT_ALL
 	}
+
 	return SetOpCmd(0)
 }
 
+var SetOpCmdString = map[SetOpCmd]string{
+	SETOPCMD_INTERSECT:     "SETOPCMD_INTERSECT",
+	SETOPCMD_INTERSECT_ALL: "SETOPCMD_INTERSECT_ALL",
+	SETOPCMD_EXCEPT:        "SETOPCMD_EXCEPT",
+	SETOPCMD_EXCEPT_ALL:    "SETOPCMD_EXCEPT_ALL",
+}
+
 func (e SetOpCmd) String() string {
-	switch e {
-	case SETOPCMD_INTERSECT:
-		return "SETOPCMD_INTERSECT"
-	case SETOPCMD_INTERSECT_ALL:
-		return "SETOPCMD_INTERSECT_ALL"
-	case SETOPCMD_EXCEPT:
-		return "SETOPCMD_EXCEPT"
-	case SETOPCMD_EXCEPT_ALL:
-		return "SETOPCMD_EXCEPT_ALL"
-	}
-	return fmt.Sprintf("SetOpCmd(%d)", e)
+	return SetOpCmdString[e]
 }
 
 type SetOpStrategy int32
@@ -2613,22 +2256,20 @@ const (
 
 func NewSetOpStrategy(name string) SetOpStrategy {
 	switch name {
-	case "SETOP_SORTED":
-		return SETOP_SORTED
 	case "SETOP_HASHED":
 		return SETOP_HASHED
 	}
+
 	return SetOpStrategy(0)
 }
 
+var SetOpStrategyString = map[SetOpStrategy]string{
+	SETOP_SORTED: "SETOP_SORTED",
+	SETOP_HASHED: "SETOP_HASHED",
+}
+
 func (e SetOpStrategy) String() string {
-	switch e {
-	case SETOP_SORTED:
-		return "SETOP_SORTED"
-	case SETOP_HASHED:
-		return "SETOP_HASHED"
-	}
-	return fmt.Sprintf("SetOpStrategy(%d)", e)
+	return SetOpStrategyString[e]
 }
 
 type OnConflictAction int32
@@ -2641,26 +2282,23 @@ const (
 
 func NewOnConflictAction(name string) OnConflictAction {
 	switch name {
-	case "ONCONFLICT_NONE":
-		return ONCONFLICT_NONE
 	case "ONCONFLICT_NOTHING":
 		return ONCONFLICT_NOTHING
 	case "ONCONFLICT_UPDATE":
 		return ONCONFLICT_UPDATE
 	}
+
 	return OnConflictAction(0)
 }
 
+var OnConflictActionString = map[OnConflictAction]string{
+	ONCONFLICT_NONE:    "ONCONFLICT_NONE",
+	ONCONFLICT_NOTHING: "ONCONFLICT_NOTHING",
+	ONCONFLICT_UPDATE:  "ONCONFLICT_UPDATE",
+}
+
 func (e OnConflictAction) String() string {
-	switch e {
-	case ONCONFLICT_NONE:
-		return "ONCONFLICT_NONE"
-	case ONCONFLICT_NOTHING:
-		return "ONCONFLICT_NOTHING"
-	case ONCONFLICT_UPDATE:
-		return "ONCONFLICT_UPDATE"
-	}
-	return fmt.Sprintf("OnConflictAction(%d)", e)
+	return OnConflictActionString[e]
 }
 
 type LockClauseStrength int32
@@ -2675,8 +2313,6 @@ const (
 
 func NewLockClauseStrength(name string) LockClauseStrength {
 	switch name {
-	case "LCS_NONE":
-		return LCS_NONE
 	case "LCS_FORKEYSHARE":
 		return LCS_FORKEYSHARE
 	case "LCS_FORSHARE":
@@ -2686,23 +2322,20 @@ func NewLockClauseStrength(name string) LockClauseStrength {
 	case "LCS_FORUPDATE":
 		return LCS_FORUPDATE
 	}
+
 	return LockClauseStrength(0)
 }
 
+var LockClauseStrengthString = map[LockClauseStrength]string{
+	LCS_NONE:           "LCS_NONE",
+	LCS_FORKEYSHARE:    "LCS_FORKEYSHARE",
+	LCS_FORSHARE:       "LCS_FORSHARE",
+	LCS_FORNOKEYUPDATE: "LCS_FORNOKEYUPDATE",
+	LCS_FORUPDATE:      "LCS_FORUPDATE",
+}
+
 func (e LockClauseStrength) String() string {
-	switch e {
-	case LCS_NONE:
-		return "LCS_NONE"
-	case LCS_FORKEYSHARE:
-		return "LCS_FORKEYSHARE"
-	case LCS_FORSHARE:
-		return "LCS_FORSHARE"
-	case LCS_FORNOKEYUPDATE:
-		return "LCS_FORNOKEYUPDATE"
-	case LCS_FORUPDATE:
-		return "LCS_FORUPDATE"
-	}
-	return fmt.Sprintf("LockClauseStrength(%d)", e)
+	return LockClauseStrengthString[e]
 }
 
 type LockWaitPolicy int32
@@ -2715,26 +2348,23 @@ const (
 
 func NewLockWaitPolicy(name string) LockWaitPolicy {
 	switch name {
-	case "LockWaitBlock":
-		return LockWaitBlock
 	case "LockWaitSkip":
 		return LockWaitSkip
 	case "LockWaitError":
 		return LockWaitError
 	}
+
 	return LockWaitPolicy(0)
 }
 
+var LockWaitPolicyString = map[LockWaitPolicy]string{
+	LockWaitBlock: "LockWaitBlock",
+	LockWaitSkip:  "LockWaitSkip",
+	LockWaitError: "LockWaitError",
+}
+
 func (e LockWaitPolicy) String() string {
-	switch e {
-	case LockWaitBlock:
-		return "LockWaitBlock"
-	case LockWaitSkip:
-		return "LockWaitSkip"
-	case LockWaitError:
-		return "LockWaitError"
-	}
-	return fmt.Sprintf("LockWaitPolicy(%d)", e)
+	return LockWaitPolicyString[e]
 }
 
 type LockTupleMode int32
@@ -2748,8 +2378,6 @@ const (
 
 func NewLockTupleMode(name string) LockTupleMode {
 	switch name {
-	case "LockTupleKeyShare":
-		return LockTupleKeyShare
 	case "LockTupleShare":
 		return LockTupleShare
 	case "LockTupleNoKeyExclusive":
@@ -2757,21 +2385,19 @@ func NewLockTupleMode(name string) LockTupleMode {
 	case "LockTupleExclusive":
 		return LockTupleExclusive
 	}
+
 	return LockTupleMode(0)
 }
 
+var LockTupleModeString = map[LockTupleMode]string{
+	LockTupleKeyShare:       "LockTupleKeyShare",
+	LockTupleShare:          "LockTupleShare",
+	LockTupleNoKeyExclusive: "LockTupleNoKeyExclusive",
+	LockTupleExclusive:      "LockTupleExclusive",
+}
+
 func (e LockTupleMode) String() string {
-	switch e {
-	case LockTupleKeyShare:
-		return "LockTupleKeyShare"
-	case LockTupleShare:
-		return "LockTupleShare"
-	case LockTupleNoKeyExclusive:
-		return "LockTupleNoKeyExclusive"
-	case LockTupleExclusive:
-		return "LockTupleExclusive"
-	}
-	return fmt.Sprintf("LockTupleMode(%d)", e)
+	return LockTupleModeString[e]
 }
 
 type Node interface {

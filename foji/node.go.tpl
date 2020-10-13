@@ -10,36 +10,39 @@ import (
     {{ $enumType := .EnumName }}
     type {{ $enumType }} int32
 
-    const (
+const (
     {{- range .Fields }}
         {{ .Ident }} {{ $enumType }} = {{ .Number }}
     {{- end }}
-    )
+)
 
-    func New{{ $enumType }}(name string) {{ $enumType }} {
+func New{{ $enumType }}(name string) {{ $enumType }} {
     switch name {
     {{- range .Fields }}
+        {{- if not (eq .Number "0") }}
         case "{{ .Ident }}":
         return {{ .Ident }}
+        {{- end }}
     {{- end }}
     }
+
     return {{ $enumType }}(0)
-    }
+}
 
-    func (e {{ $enumType }}) String() string {
-    switch e {
+
+var  {{ $enumType }}String = map[{{ $enumType }}]string{
     {{- range .Fields }}
-        case {{ .Ident }}:
-        return "{{ .Ident }}"
+        {{ .Ident }}: "{{ .Ident }}",
     {{- end }}
-    }
-    return fmt.Sprintf("{{ $enumType }}(%d)", e)
-    }
+}
 
+func (e {{ $enumType }}) String() string {
+    return {{ $enumType }}String[e]
+}
 {{- end }}
 
 type Node interface {
-node()
+    node()
 }
 
 type Root struct {

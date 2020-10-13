@@ -32,1137 +32,459 @@ func (p *printer) printNode(node Node) (result string) {
 		}
 		p.level -= 1
 	}()
+
 	switch n := node.(type) {
-	case nil:
 	case *Integer:
-		if n == nil {
-			return
-		}
 		return p.printInteger(n)
 	case *Float:
-		if n == nil {
-			return
-		}
 		return p.printFloat(n)
 	case *String:
-		if n == nil {
-			return
-		}
 		return p.printString(n)
 	case *BitString:
-		if n == nil {
-			return
-		}
 		return p.printBitString(n)
 	case *Null:
-		if n == nil {
-			return
-		}
 		return p.printNull(n)
 	case *List:
-		if n == nil {
-			return
-		}
 		return p.printList(n)
 	case *OidList:
-		if n == nil {
-			return
-		}
 		return p.printOidList(n)
 	case *IntList:
-		if n == nil {
-			return
-		}
 		return p.printIntList(n)
 	case *Alias:
-		if n == nil {
-			return
-		}
 		return p.printAlias(n)
 	case *RangeVar:
-		if n == nil {
-			return
-		}
 		return p.printRangeVar(n)
 	case *TableFunc:
-		if n == nil {
-			return
-		}
 		return p.printTableFunc(n)
 	case *Expr:
-		if n == nil {
-			return
-		}
 		return p.printExpr(n)
 	case *Var:
-		if n == nil {
-			return
-		}
 		return p.printVar(n)
 	case *Param:
-		if n == nil {
-			return
-		}
 		return p.printParam(n)
 	case *Aggref:
-		if n == nil {
-			return
-		}
 		return p.printAggref(n)
 	case *GroupingFunc:
-		if n == nil {
-			return
-		}
 		return p.printGroupingFunc(n)
 	case *WindowFunc:
-		if n == nil {
-			return
-		}
 		return p.printWindowFunc(n)
 	case *SubscriptingRef:
-		if n == nil {
-			return
-		}
 		return p.printSubscriptingRef(n)
 	case *FuncExpr:
-		if n == nil {
-			return
-		}
 		return p.printFuncExpr(n)
 	case *NamedArgExpr:
-		if n == nil {
-			return
-		}
 		return p.printNamedArgExpr(n)
 	case *OpExpr:
-		if n == nil {
-			return
-		}
 		return p.printOpExpr(n)
 	case *DistinctExpr:
-		if n == nil {
-			return
-		}
 		return p.printDistinctExpr(n)
 	case *NullIfExpr:
-		if n == nil {
-			return
-		}
 		return p.printNullIfExpr(n)
 	case *ScalarArrayOpExpr:
-		if n == nil {
-			return
-		}
 		return p.printScalarArrayOpExpr(n)
 	case *BoolExpr:
-		if n == nil {
-			return
-		}
 		return p.printBoolExpr(n)
 	case *SubLink:
-		if n == nil {
-			return
-		}
 		return p.printSubLink(n)
 	case *SubPlan:
-		if n == nil {
-			return
-		}
 		return p.printSubPlan(n)
 	case *AlternativeSubPlan:
-		if n == nil {
-			return
-		}
 		return p.printAlternativeSubPlan(n)
 	case *FieldSelect:
-		if n == nil {
-			return
-		}
 		return p.printFieldSelect(n)
 	case *FieldStore:
-		if n == nil {
-			return
-		}
 		return p.printFieldStore(n)
 	case *RelabelType:
-		if n == nil {
-			return
-		}
 		return p.printRelabelType(n)
 	case *CoerceViaIo:
-		if n == nil {
-			return
-		}
 		return p.printCoerceViaIo(n)
 	case *ArrayCoerceExpr:
-		if n == nil {
-			return
-		}
 		return p.printArrayCoerceExpr(n)
 	case *ConvertRowtypeExpr:
-		if n == nil {
-			return
-		}
 		return p.printConvertRowtypeExpr(n)
 	case *CollateExpr:
-		if n == nil {
-			return
-		}
 		return p.printCollateExpr(n)
 	case *CaseExpr:
-		if n == nil {
-			return
-		}
 		return p.printCaseExpr(n)
 	case *CaseWhen:
-		if n == nil {
-			return
-		}
 		return p.printCaseWhen(n)
 	case *CaseTestExpr:
-		if n == nil {
-			return
-		}
 		return p.printCaseTestExpr(n)
 	case *ArrayExpr:
-		if n == nil {
-			return
-		}
 		return p.printArrayExpr(n)
 	case *RowExpr:
-		if n == nil {
-			return
-		}
 		return p.printRowExpr(n)
 	case *RowCompareExpr:
-		if n == nil {
-			return
-		}
 		return p.printRowCompareExpr(n)
 	case *CoalesceExpr:
-		if n == nil {
-			return
-		}
 		return p.printCoalesceExpr(n)
 	case *MinMaxExpr:
-		if n == nil {
-			return
-		}
 		return p.printMinMaxExpr(n)
 	case *SqlvalueFunction:
-		if n == nil {
-			return
-		}
 		return p.printSqlvalueFunction(n)
 	case *XmlExpr:
-		if n == nil {
-			return
-		}
 		return p.printXmlExpr(n)
 	case *NullTest:
-		if n == nil {
-			return
-		}
 		return p.printNullTest(n)
 	case *BooleanTest:
-		if n == nil {
-			return
-		}
 		return p.printBooleanTest(n)
 	case *CoerceToDomain:
-		if n == nil {
-			return
-		}
 		return p.printCoerceToDomain(n)
 	case *CoerceToDomainValue:
-		if n == nil {
-			return
-		}
 		return p.printCoerceToDomainValue(n)
 	case *SetToDefault:
-		if n == nil {
-			return
-		}
 		return p.printSetToDefault(n)
 	case *CurrentOfExpr:
-		if n == nil {
-			return
-		}
 		return p.printCurrentOfExpr(n)
 	case *NextValueExpr:
-		if n == nil {
-			return
-		}
 		return p.printNextValueExpr(n)
 	case *InferenceElem:
-		if n == nil {
-			return
-		}
 		return p.printInferenceElem(n)
 	case *TargetEntry:
-		if n == nil {
-			return
-		}
 		return p.printTargetEntry(n)
 	case *RangeTblRef:
-		if n == nil {
-			return
-		}
 		return p.printRangeTblRef(n)
 	case *JoinExpr:
-		if n == nil {
-			return
-		}
 		return p.printJoinExpr(n)
 	case *FromExpr:
-		if n == nil {
-			return
-		}
 		return p.printFromExpr(n)
 	case *OnConflictExpr:
-		if n == nil {
-			return
-		}
 		return p.printOnConflictExpr(n)
 	case *IntoClause:
-		if n == nil {
-			return
-		}
 		return p.printIntoClause(n)
 	case *RawStmt:
-		if n == nil {
-			return
-		}
 		return p.printRawStmt(n)
 	case *Query:
-		if n == nil {
-			return
-		}
 		return p.printQuery(n)
 	case *InsertStmt:
-		if n == nil {
-			return
-		}
 		return p.printInsertStmt(n)
 	case *DeleteStmt:
-		if n == nil {
-			return
-		}
 		return p.printDeleteStmt(n)
 	case *UpdateStmt:
-		if n == nil {
-			return
-		}
 		return p.printUpdateStmt(n)
 	case *SelectStmt:
-		if n == nil {
-			return
-		}
 		return p.printSelectStmt(n)
 	case *AlterTableStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterTableStmt(n)
 	case *AlterTableCmd:
-		if n == nil {
-			return
-		}
 		return p.printAlterTableCmd(n)
 	case *AlterDomainStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterDomainStmt(n)
 	case *SetOperationStmt:
-		if n == nil {
-			return
-		}
 		return p.printSetOperationStmt(n)
 	case *GrantStmt:
-		if n == nil {
-			return
-		}
 		return p.printGrantStmt(n)
 	case *GrantRoleStmt:
-		if n == nil {
-			return
-		}
 		return p.printGrantRoleStmt(n)
 	case *AlterDefaultPrivilegesStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterDefaultPrivilegesStmt(n)
 	case *ClosePortalStmt:
-		if n == nil {
-			return
-		}
 		return p.printClosePortalStmt(n)
 	case *ClusterStmt:
-		if n == nil {
-			return
-		}
 		return p.printClusterStmt(n)
 	case *CopyStmt:
-		if n == nil {
-			return
-		}
 		return p.printCopyStmt(n)
 	case *CreateStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreateStmt(n)
 	case *DefineStmt:
-		if n == nil {
-			return
-		}
 		return p.printDefineStmt(n)
 	case *DropStmt:
-		if n == nil {
-			return
-		}
 		return p.printDropStmt(n)
 	case *TruncateStmt:
-		if n == nil {
-			return
-		}
 		return p.printTruncateStmt(n)
 	case *CommentStmt:
-		if n == nil {
-			return
-		}
 		return p.printCommentStmt(n)
 	case *FetchStmt:
-		if n == nil {
-			return
-		}
 		return p.printFetchStmt(n)
 	case *IndexStmt:
-		if n == nil {
-			return
-		}
 		return p.printIndexStmt(n)
 	case *CreateFunctionStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreateFunctionStmt(n)
 	case *AlterFunctionStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterFunctionStmt(n)
 	case *DoStmt:
-		if n == nil {
-			return
-		}
 		return p.printDoStmt(n)
 	case *RenameStmt:
-		if n == nil {
-			return
-		}
 		return p.printRenameStmt(n)
 	case *RuleStmt:
-		if n == nil {
-			return
-		}
 		return p.printRuleStmt(n)
 	case *NotifyStmt:
-		if n == nil {
-			return
-		}
 		return p.printNotifyStmt(n)
 	case *ListenStmt:
-		if n == nil {
-			return
-		}
 		return p.printListenStmt(n)
 	case *UnlistenStmt:
-		if n == nil {
-			return
-		}
 		return p.printUnlistenStmt(n)
 	case *TransactionStmt:
-		if n == nil {
-			return
-		}
 		return p.printTransactionStmt(n)
 	case *ViewStmt:
-		if n == nil {
-			return
-		}
 		return p.printViewStmt(n)
 	case *LoadStmt:
-		if n == nil {
-			return
-		}
 		return p.printLoadStmt(n)
 	case *CreateDomainStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreateDomainStmt(n)
 	case *CreatedbStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreatedbStmt(n)
 	case *DropdbStmt:
-		if n == nil {
-			return
-		}
 		return p.printDropdbStmt(n)
 	case *VacuumStmt:
-		if n == nil {
-			return
-		}
 		return p.printVacuumStmt(n)
 	case *ExplainStmt:
-		if n == nil {
-			return
-		}
 		return p.printExplainStmt(n)
 	case *CreateTableAsStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreateTableAsStmt(n)
 	case *CreateSeqStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreateSeqStmt(n)
 	case *AlterSeqStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterSeqStmt(n)
 	case *VariableSetStmt:
-		if n == nil {
-			return
-		}
 		return p.printVariableSetStmt(n)
 	case *VariableShowStmt:
-		if n == nil {
-			return
-		}
 		return p.printVariableShowStmt(n)
 	case *DiscardStmt:
-		if n == nil {
-			return
-		}
 		return p.printDiscardStmt(n)
 	case *CreateTrigStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreateTrigStmt(n)
 	case *CreatePlangStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreatePlangStmt(n)
 	case *CreateRoleStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreateRoleStmt(n)
 	case *AlterRoleStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterRoleStmt(n)
 	case *DropRoleStmt:
-		if n == nil {
-			return
-		}
 		return p.printDropRoleStmt(n)
 	case *LockStmt:
-		if n == nil {
-			return
-		}
 		return p.printLockStmt(n)
 	case *ConstraintsSetStmt:
-		if n == nil {
-			return
-		}
 		return p.printConstraintsSetStmt(n)
 	case *ReindexStmt:
-		if n == nil {
-			return
-		}
 		return p.printReindexStmt(n)
 	case *CheckPointStmt:
-		if n == nil {
-			return
-		}
 		return p.printCheckPointStmt(n)
 	case *CreateSchemaStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreateSchemaStmt(n)
 	case *AlterDatabaseStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterDatabaseStmt(n)
 	case *AlterDatabaseSetStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterDatabaseSetStmt(n)
 	case *AlterRoleSetStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterRoleSetStmt(n)
 	case *CreateConversionStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreateConversionStmt(n)
 	case *CreateCastStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreateCastStmt(n)
 	case *CreateOpClassStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreateOpClassStmt(n)
 	case *CreateOpFamilyStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreateOpFamilyStmt(n)
 	case *AlterOpFamilyStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterOpFamilyStmt(n)
 	case *PrepareStmt:
-		if n == nil {
-			return
-		}
 		return p.printPrepareStmt(n)
 	case *ExecuteStmt:
-		if n == nil {
-			return
-		}
 		return p.printExecuteStmt(n)
 	case *DeallocateStmt:
-		if n == nil {
-			return
-		}
 		return p.printDeallocateStmt(n)
 	case *DeclareCursorStmt:
-		if n == nil {
-			return
-		}
 		return p.printDeclareCursorStmt(n)
 	case *CreateTableSpaceStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreateTableSpaceStmt(n)
 	case *DropTableSpaceStmt:
-		if n == nil {
-			return
-		}
 		return p.printDropTableSpaceStmt(n)
 	case *AlterObjectDependsStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterObjectDependsStmt(n)
 	case *AlterObjectSchemaStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterObjectSchemaStmt(n)
 	case *AlterOwnerStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterOwnerStmt(n)
 	case *AlterOperatorStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterOperatorStmt(n)
 	case *DropOwnedStmt:
-		if n == nil {
-			return
-		}
 		return p.printDropOwnedStmt(n)
 	case *ReassignOwnedStmt:
-		if n == nil {
-			return
-		}
 		return p.printReassignOwnedStmt(n)
 	case *CompositeTypeStmt:
-		if n == nil {
-			return
-		}
 		return p.printCompositeTypeStmt(n)
 	case *CreateEnumStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreateEnumStmt(n)
 	case *CreateRangeStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreateRangeStmt(n)
 	case *AlterEnumStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterEnumStmt(n)
 	case *AlterTsdictionaryStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterTsdictionaryStmt(n)
 	case *AlterTsconfigurationStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterTsconfigurationStmt(n)
 	case *CreateFdwStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreateFdwStmt(n)
 	case *AlterFdwStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterFdwStmt(n)
 	case *CreateForeignServerStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreateForeignServerStmt(n)
 	case *AlterForeignServerStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterForeignServerStmt(n)
 	case *CreateUserMappingStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreateUserMappingStmt(n)
 	case *AlterUserMappingStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterUserMappingStmt(n)
 	case *DropUserMappingStmt:
-		if n == nil {
-			return
-		}
 		return p.printDropUserMappingStmt(n)
 	case *AlterTableSpaceOptionsStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterTableSpaceOptionsStmt(n)
 	case *AlterTableMoveAllStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterTableMoveAllStmt(n)
 	case *SecLabelStmt:
-		if n == nil {
-			return
-		}
 		return p.printSecLabelStmt(n)
 	case *CreateForeignTableStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreateForeignTableStmt(n)
 	case *ImportForeignSchemaStmt:
-		if n == nil {
-			return
-		}
 		return p.printImportForeignSchemaStmt(n)
 	case *CreateExtensionStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreateExtensionStmt(n)
 	case *AlterExtensionStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterExtensionStmt(n)
 	case *AlterExtensionContentsStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterExtensionContentsStmt(n)
 	case *CreateEventTrigStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreateEventTrigStmt(n)
 	case *AlterEventTrigStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterEventTrigStmt(n)
 	case *RefreshMatViewStmt:
-		if n == nil {
-			return
-		}
 		return p.printRefreshMatViewStmt(n)
 	case *ReplicaIdentityStmt:
-		if n == nil {
-			return
-		}
 		return p.printReplicaIdentityStmt(n)
 	case *AlterSystemStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterSystemStmt(n)
 	case *CreatePolicyStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreatePolicyStmt(n)
 	case *AlterPolicyStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterPolicyStmt(n)
 	case *CreateTransformStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreateTransformStmt(n)
 	case *CreateAmStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreateAmStmt(n)
 	case *CreatePublicationStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreatePublicationStmt(n)
 	case *AlterPublicationStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterPublicationStmt(n)
 	case *CreateSubscriptionStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreateSubscriptionStmt(n)
 	case *AlterSubscriptionStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterSubscriptionStmt(n)
 	case *DropSubscriptionStmt:
-		if n == nil {
-			return
-		}
 		return p.printDropSubscriptionStmt(n)
 	case *CreateStatsStmt:
-		if n == nil {
-			return
-		}
 		return p.printCreateStatsStmt(n)
 	case *AlterCollationStmt:
-		if n == nil {
-			return
-		}
 		return p.printAlterCollationStmt(n)
 	case *CallStmt:
-		if n == nil {
-			return
-		}
 		return p.printCallStmt(n)
 	case *AExpr:
-		if n == nil {
-			return
-		}
 		return p.printAExpr(n)
 	case *ColumnRef:
-		if n == nil {
-			return
-		}
 		return p.printColumnRef(n)
 	case *ParamRef:
-		if n == nil {
-			return
-		}
 		return p.printParamRef(n)
 	case *AConst:
-		if n == nil {
-			return
-		}
 		return p.printAConst(n)
 	case *FuncCall:
-		if n == nil {
-			return
-		}
 		return p.printFuncCall(n)
 	case *AStar:
-		if n == nil {
-			return
-		}
 		return p.printAStar(n)
 	case *AIndices:
-		if n == nil {
-			return
-		}
 		return p.printAIndices(n)
 	case *AIndirection:
-		if n == nil {
-			return
-		}
 		return p.printAIndirection(n)
 	case *AArrayExpr:
-		if n == nil {
-			return
-		}
 		return p.printAArrayExpr(n)
 	case *ResTarget:
-		if n == nil {
-			return
-		}
 		return p.printResTarget(n)
 	case *MultiAssignRef:
-		if n == nil {
-			return
-		}
 		return p.printMultiAssignRef(n)
 	case *TypeCast:
-		if n == nil {
-			return
-		}
 		return p.printTypeCast(n)
 	case *CollateClause:
-		if n == nil {
-			return
-		}
 		return p.printCollateClause(n)
 	case *SortBy:
-		if n == nil {
-			return
-		}
 		return p.printSortBy(n)
 	case *WindowDef:
-		if n == nil {
-			return
-		}
 		return p.printWindowDef(n)
 	case *RangeSubselect:
-		if n == nil {
-			return
-		}
 		return p.printRangeSubselect(n)
 	case *RangeFunction:
-		if n == nil {
-			return
-		}
 		return p.printRangeFunction(n)
 	case *RangeTableSample:
-		if n == nil {
-			return
-		}
 		return p.printRangeTableSample(n)
 	case *RangeTableFunc:
-		if n == nil {
-			return
-		}
 		return p.printRangeTableFunc(n)
 	case *RangeTableFuncCol:
-		if n == nil {
-			return
-		}
 		return p.printRangeTableFuncCol(n)
 	case *TypeName:
-		if n == nil {
-			return
-		}
 		return p.printTypeName(n)
 	case *ColumnDef:
-		if n == nil {
-			return
-		}
 		return p.printColumnDef(n)
 	case *IndexElem:
-		if n == nil {
-			return
-		}
 		return p.printIndexElem(n)
 	case *Constraint:
-		if n == nil {
-			return
-		}
 		return p.printConstraint(n)
 	case *DefElem:
-		if n == nil {
-			return
-		}
 		return p.printDefElem(n)
 	case *RangeTblEntry:
-		if n == nil {
-			return
-		}
 		return p.printRangeTblEntry(n)
 	case *RangeTblFunction:
-		if n == nil {
-			return
-		}
 		return p.printRangeTblFunction(n)
 	case *TableSampleClause:
-		if n == nil {
-			return
-		}
 		return p.printTableSampleClause(n)
 	case *WithCheckOption:
-		if n == nil {
-			return
-		}
 		return p.printWithCheckOption(n)
 	case *SortGroupClause:
-		if n == nil {
-			return
-		}
 		return p.printSortGroupClause(n)
 	case *GroupingSet:
-		if n == nil {
-			return
-		}
 		return p.printGroupingSet(n)
 	case *WindowClause:
-		if n == nil {
-			return
-		}
 		return p.printWindowClause(n)
 	case *ObjectWithArgs:
-		if n == nil {
-			return
-		}
 		return p.printObjectWithArgs(n)
 	case *AccessPriv:
-		if n == nil {
-			return
-		}
 		return p.printAccessPriv(n)
 	case *CreateOpClassItem:
-		if n == nil {
-			return
-		}
 		return p.printCreateOpClassItem(n)
 	case *TableLikeClause:
-		if n == nil {
-			return
-		}
 		return p.printTableLikeClause(n)
 	case *FunctionParameter:
-		if n == nil {
-			return
-		}
 		return p.printFunctionParameter(n)
 	case *LockingClause:
-		if n == nil {
-			return
-		}
 		return p.printLockingClause(n)
 	case *RowMarkClause:
-		if n == nil {
-			return
-		}
 		return p.printRowMarkClause(n)
 	case *XmlSerialize:
-		if n == nil {
-			return
-		}
 		return p.printXmlSerialize(n)
 	case *WithClause:
-		if n == nil {
-			return
-		}
 		return p.printWithClause(n)
 	case *InferClause:
-		if n == nil {
-			return
-		}
 		return p.printInferClause(n)
 	case *OnConflictClause:
-		if n == nil {
-			return
-		}
 		return p.printOnConflictClause(n)
 	case *CommonTableExpr:
-		if n == nil {
-			return
-		}
 		return p.printCommonTableExpr(n)
 	case *RoleSpec:
-		if n == nil {
-			return
-		}
 		return p.printRoleSpec(n)
 	case *TriggerTransition:
-		if n == nil {
-			return
-		}
 		return p.printTriggerTransition(n)
 	case *PartitionElem:
-		if n == nil {
-			return
-		}
 		return p.printPartitionElem(n)
 	case *PartitionSpec:
-		if n == nil {
-			return
-		}
 		return p.printPartitionSpec(n)
 	case *PartitionBoundSpec:
-		if n == nil {
-			return
-		}
 		return p.printPartitionBoundSpec(n)
 	case *PartitionRangeDatum:
-		if n == nil {
-			return
-		}
 		return p.printPartitionRangeDatum(n)
 	case *PartitionCmd:
-		if n == nil {
-			return
-		}
 		return p.printPartitionCmd(n)
 	case *VacuumRelation:
-		if n == nil {
-			return
-		}
 		return p.printVacuumRelation(n)
 	case *InlineCodeBlock:
-		if n == nil {
-			return
-		}
 		return p.printInlineCodeBlock(n)
 	case *CallContext:
-		if n == nil {
-			return
-		}
 		return p.printCallContext(n)
 
 	case *Root:

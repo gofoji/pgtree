@@ -893,7 +893,7 @@ func (p *printer) printCreateEnumStmt(node *CreateEnumStmt) string {
 func (p *printer) printCommentStmt(node *CommentStmt) string {
 	b := p.builder()
 	b.keyword("COMMENT ON")
-	b.Append(node.Objtype.TypeName())
+	b.keyword(ObjectTypeTypeName[node.Objtype])
 
 	switch n := node.Object.(type) {
 	case *String:
@@ -1058,7 +1058,7 @@ func (p *printer) printRenameStmt(node *RenameStmt) string {
 	case OBJECT_TABCONSTRAINT, OBJECT_COLUMN:
 		b.keyword("TABLE")
 	default:
-		b.keyword(node.RenameType.TypeName())
+		b.keyword(ObjectTypeTypeName[node.RenameType])
 	}
 
 	switch node.RenameType {
@@ -1091,7 +1091,7 @@ func (p *printer) printRenameStmt(node *RenameStmt) string {
 func (p *printer) printAlterObjectSchemaStmt(node *AlterObjectSchemaStmt) string {
 	b := p.builder()
 	b.keyword("ALTER")
-	b.keyword(node.ObjectType.TypeName())
+	b.keyword(ObjectTypeTypeName[node.ObjectType])
 	b.Append(p.printNode(node.Object))
 	b.Append(p.printNode(node.Relation))
 	b.keyword("SET SCHEMA")
@@ -1216,28 +1216,22 @@ func (p *printer) printDefElem(node *DefElem) string {
 }
 
 func (p *printer) printBinaryList(nn []Node, sep string, invert bool) string {
-	if len(nn) == 1 {
-		list, ok := nn[0].(*List)
-		if ok {
-			o := p.printArr(list.Items)
-			left := o[0]
-			right := p.identifier(o[1:]...)
+	list := nn[0].(*List)
+	o := p.printArr(list.Items)
+	left := o[0]
+	right := p.identifier(o[1:]...)
 
-			if invert {
-				return right + " " + sep + " " + left
-			}
-
-			return left + " " + sep + " " + right
-		}
+	if invert {
+		return right + " " + sep + " " + left
 	}
 
-	return ""
+	return left + " " + sep + " " + right
 }
 
 func (p *printer) printDropStmt(node *DropStmt) string {
 	b := p.builder()
 	b.keyword("DROP")
-	b.keyword(node.RemoveType.TypeName())
+	b.keyword(ObjectTypeTypeName[node.RemoveType])
 	b.keywordIf("CONCURRENTLY", node.Concurrent)
 	b.keywordIf("IF EXISTS", node.MissingOk)
 
@@ -1412,7 +1406,7 @@ func (p *printer) printCreateTableAsStmt(node *CreateTableAsStmt) string {
 	b := p.builder()
 	b.keyword("CREATE")
 	b.Append(p.relPersistence(node.Into.Rel))
-	b.Append(node.Relkind.TypeName())
+	b.keyword(ObjectTypeTypeName[node.Relkind])
 	b.keywordIf("IF NOT EXISTS", node.IfNotExists)
 	b.identifier(p.printNode(node.Into))
 	b.Append(p.printSubClauseInlineSpace(node.Into.ColNames))
@@ -1601,7 +1595,7 @@ func (p *printer) printViewStmt(node *ViewStmt) string {
 }
 
 func (p *printer) printSqlvalueFunction(node *SqlvalueFunction) string {
-	return node.Op.Op()
+	return SQLValueFunctionOpLabel[node.Op]
 }
 
 func (p *printer) printIndexElem(node *IndexElem) string {
@@ -1628,7 +1622,7 @@ func (p *printer) printRangeFunction(node *RangeFunction) string {
 
 func (p *printer) printLockingClause(node *LockingClause) string {
 	b := p.builder()
-	b.keyword("FOR " + node.Strength.Keyword())
+	b.keyword("FOR " + LockClauseStrengthKeyword[node.Strength])
 
 	switch node.WaitPolicy {
 	case LockWaitError:
@@ -1642,7 +1636,7 @@ func (p *printer) printLockStmt(node *LockStmt) string {
 	b := p.builder()
 	b.keyword("LOCK")
 	b.Append(p.printNodes(node.Relations, ", "))
-	b.keyword(LockMode(node.Mode).Keyword())
+	b.keyword(LockModeKeyword[LockMode(node.Mode)])
 	b.keywordIf("NOWAIT", node.Nowait)
 
 	return b.Join(" ")
@@ -1742,7 +1736,7 @@ func (p *printer) printRuleStmt(node *RuleStmt) string {
 	b.identifier(node.Rulename)
 	b.keyword("AS")
 	b.keyword("ON")
-	b.keyword(node.Event.Keyword())
+	b.keyword(CmdTypeKeyword[node.Event])
 	b.keyword("TO")
 	b.identifier(p.printRangeVar(node.Relation))
 
