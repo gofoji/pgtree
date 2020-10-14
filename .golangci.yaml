@@ -10,14 +10,8 @@ linters:
   enable-all: true
   disable:
     - dupl
-    - goconst
-    - wsl
     - gochecknoglobals
     - exhaustive
-    - funlen
-    - nestif
-    - gocognit
-    - gocyclo
 
 linters-settings:
   gocritic:

@@ -14,6 +14,7 @@ func Parse(sql string) (Node, error) {
 	}
 
 	result := &Root{}
+
 	err = json.Unmarshal([]byte(r), result)
 	if err != nil {
 		return nil, err

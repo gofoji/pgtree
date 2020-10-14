@@ -33,11 +33,13 @@ func (c *sqlBuilder) appendPadded(s string) {
 
 		return
 	}
+
 	ss := strings.Split(s, "\n")
 	for j := range ss {
 		if len(ss[j]) == 0 {
 			continue
 		}
+
 		c.ss = append(c.ss, strings.TrimRight(c.opt.Padding+ss[j]+"\n", " "))
 	}
 }
@@ -59,6 +61,7 @@ func endsWithSpace(s string) bool {
 	if l == 0 {
 		return false
 	}
+
 	i := s[l-1]
 
 	return asciiSpace[i] == 1

@@ -1,6 +1,6 @@
 package pgtree
 
-var ObjectTypeTypeName = map[ObjectType]string{
+var objectTypeTypeName = map[ObjectType]string{
 	OBJECT_ACCESS_METHOD:   "ACCESS METHOD",
 	OBJECT_AGGREGATE:       "AGGREGATE",
 	OBJECT_AMOP:            "AMOP",
@@ -53,7 +53,7 @@ var ObjectTypeTypeName = map[ObjectType]string{
 	OBJECT_VIEW:            "VIEW",
 }
 
-var SQLValueFunctionOpLabel = map[SQLValueFunctionOp]string{
+var sqlValueFunctionOpLabel = map[SQLValueFunctionOp]string{
 	SVFOP_CURRENT_DATE:        "current_date",
 	SVFOP_CURRENT_TIME:        "current_time",
 	SVFOP_CURRENT_TIME_N:      "current_time",
@@ -71,7 +71,7 @@ var SQLValueFunctionOpLabel = map[SQLValueFunctionOp]string{
 	SVFOP_CURRENT_SCHEMA:      "current_schema",
 }
 
-var LockClauseStrengthKeyword = map[LockClauseStrength]string{
+var lockClauseStrengthKeyword = map[LockClauseStrength]string{
 	LCS_NONE:           "",
 	LCS_FORKEYSHARE:    "KEY SHARE",
 	LCS_FORSHARE:       "SHARE",
@@ -79,20 +79,21 @@ var LockClauseStrengthKeyword = map[LockClauseStrength]string{
 	LCS_FORUPDATE:      "UPDATE",
 }
 
-type LockMode int8
+type lockMode int8
 
+// LockModes.
 const (
-	LockModeAccessShare          LockMode = 1
-	LockModeRowShare             LockMode = 2
-	LockModeRowExclusive         LockMode = 3
-	LockModeShareUpdateExclusive LockMode = 4
-	LockModeShare                LockMode = 5
-	LockModeShareRowExclusive    LockMode = 6
-	LockModeExclusive            LockMode = 7
-	LockModeAccessExclusive      LockMode = 8
+	LockModeAccessShare          lockMode = 1
+	LockModeRowShare             lockMode = 2
+	LockModeRowExclusive         lockMode = 3
+	LockModeShareUpdateExclusive lockMode = 4
+	LockModeShare                lockMode = 5
+	LockModeShareRowExclusive    lockMode = 6
+	LockModeExclusive            lockMode = 7
+	LockModeAccessExclusive      lockMode = 8
 )
 
-var LockModeKeyword = map[LockMode]string{
+var lockModeKeyword = map[lockMode]string{
 	LockModeAccessShare:          "IN ACCESS SHARE MODE",
 	LockModeRowShare:             "IN ROW SHARE MODE",
 	LockModeRowExclusive:         "IN ROW EXCLUSIVE MODE",
@@ -103,20 +104,20 @@ var LockModeKeyword = map[LockMode]string{
 	LockModeAccessExclusive:      "IN ACCESS EXCLUSIVE MODE",
 }
 
-var CmdTypeKeyword = map[CmdType]string{
+var cmdTypeKeyword = map[CmdType]string{
 	CMD_SELECT: "SELECT",
 	CMD_UPDATE: "UPDATE",
 	CMD_INSERT: "INSERT",
 	CMD_DELETE: "DELETE",
 }
 
-var SetOpUnionKeyword = map[SetOperation]string{
+var setOpUnionKeyword = map[SetOperation]string{
 	SETOP_UNION:     "UNION",
 	SETOP_INTERSECT: "INTERSECT",
 	SETOP_EXCEPT:    "EXCEPT",
 }
 
-var ConstrTypeKeyword = map[ConstrType]string{
+var constrTypeKeyword = map[ConstrType]string{
 	CONSTR_NULL:      "NULL",
 	CONSTR_NOTNULL:   "NOT NULL",
 	CONSTR_DEFAULT:   "DEFAULT",

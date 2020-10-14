@@ -100,6 +100,7 @@ func (p *printer) padLines(s string) string {
 
 func (p *printer) printNodes(list Nodes, sep string) string {
 	b := p.builder()
+
 	for i := range list {
 		b.append(p.printNode(list[i]))
 	}
@@ -109,6 +110,7 @@ func (p *printer) printNodes(list Nodes, sep string) string {
 
 func (p *printer) printArr(list Nodes) []string {
 	b := p.builder()
+
 	for i := range list {
 		b.append(p.printNode(list[i]))
 	}

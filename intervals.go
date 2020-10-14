@@ -2,8 +2,8 @@ package pgtree
 
 type intervalModType uint32
 
+// Interval types.
 const (
-	// All available interval mods according to the spec.
 	Empty intervalModType = 1 << iota
 	Month
 	Year
