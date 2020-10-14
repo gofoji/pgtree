@@ -1,6 +1,7 @@
-package pgtree
+package nodes
 
-var objectTypeTypeName = map[ObjectType]string{
+// ObjectTypeKeyword maps the ObjectType enum to the SQL name keyword.
+var ObjectTypeKeyword = map[ObjectType]string{
 	OBJECT_ACCESS_METHOD:   "ACCESS METHOD",
 	OBJECT_AGGREGATE:       "AGGREGATE",
 	OBJECT_AMOP:            "AMOP",
@@ -53,7 +54,8 @@ var objectTypeTypeName = map[ObjectType]string{
 	OBJECT_VIEW:            "VIEW",
 }
 
-var sqlValueFunctionOpLabel = map[SQLValueFunctionOp]string{
+// SQLValueFunctionOpName maps SQLValueFunctionOp to sql standard function name.
+var SQLValueFunctionOpName = map[SQLValueFunctionOp]string{
 	SVFOP_CURRENT_DATE:        "current_date",
 	SVFOP_CURRENT_TIME:        "current_time",
 	SVFOP_CURRENT_TIME_N:      "current_time",
@@ -71,7 +73,8 @@ var sqlValueFunctionOpLabel = map[SQLValueFunctionOp]string{
 	SVFOP_CURRENT_SCHEMA:      "current_schema",
 }
 
-var lockClauseStrengthKeyword = map[LockClauseStrength]string{
+// LockClauseStrengthKeyword maps LockClauseStrength enums to sql keyword.
+var LockClauseStrengthKeyword = map[LockClauseStrength]string{
 	LCS_NONE:           "",
 	LCS_FORKEYSHARE:    "KEY SHARE",
 	LCS_FORSHARE:       "SHARE",
@@ -79,21 +82,23 @@ var lockClauseStrengthKeyword = map[LockClauseStrength]string{
 	LCS_FORUPDATE:      "UPDATE",
 }
 
-type lockMode int8
+// LockMode enumeration of lock modes.
+type LockMode uint8
 
 // LockModes.
 const (
-	LockModeAccessShare          lockMode = 1
-	LockModeRowShare             lockMode = 2
-	LockModeRowExclusive         lockMode = 3
-	LockModeShareUpdateExclusive lockMode = 4
-	LockModeShare                lockMode = 5
-	LockModeShareRowExclusive    lockMode = 6
-	LockModeExclusive            lockMode = 7
-	LockModeAccessExclusive      lockMode = 8
+	LockModeAccessShare          LockMode = 1
+	LockModeRowShare             LockMode = 2
+	LockModeRowExclusive         LockMode = 3
+	LockModeShareUpdateExclusive LockMode = 4
+	LockModeShare                LockMode = 5
+	LockModeShareRowExclusive    LockMode = 6
+	LockModeExclusive            LockMode = 7
+	LockModeAccessExclusive      LockMode = 8
 )
 
-var lockModeKeyword = map[lockMode]string{
+// LockModeKeyword maps LockMode enums to sql keyword.
+var LockModeKeyword = map[LockMode]string{
 	LockModeAccessShare:          "IN ACCESS SHARE MODE",
 	LockModeRowShare:             "IN ROW SHARE MODE",
 	LockModeRowExclusive:         "IN ROW EXCLUSIVE MODE",
@@ -104,20 +109,23 @@ var lockModeKeyword = map[lockMode]string{
 	LockModeAccessExclusive:      "IN ACCESS EXCLUSIVE MODE",
 }
 
-var cmdTypeKeyword = map[CmdType]string{
+// CmdTypeKeyword maps CmdType enums to sql keyword.
+var CmdTypeKeyword = map[CmdType]string{
 	CMD_SELECT: "SELECT",
 	CMD_UPDATE: "UPDATE",
 	CMD_INSERT: "INSERT",
 	CMD_DELETE: "DELETE",
 }
 
-var setOpUnionKeyword = map[SetOperation]string{
+// SetOpKeyword maps SetOperation enums to sql keyword.
+var SetOpKeyword = map[SetOperation]string{
 	SETOP_UNION:     "UNION",
 	SETOP_INTERSECT: "INTERSECT",
 	SETOP_EXCEPT:    "EXCEPT",
 }
 
-var constrTypeKeyword = map[ConstrType]string{
+// ConstrTypeKeyword maps ConstrType enums to sql keyword.
+var ConstrTypeKeyword = map[ConstrType]string{
 	CONSTR_NULL:      "NULL",
 	CONSTR_NOTNULL:   "NOT NULL",
 	CONSTR_DEFAULT:   "DEFAULT",
@@ -128,39 +136,50 @@ var constrTypeKeyword = map[ConstrType]string{
 	CONSTR_FOREIGN:   "FOREIGN KEY",
 }
 
-type commandOption struct {
-	command string
-	option  string
+// AlterTableCommand maps AlterTableType enums to sql commands.
+var AlterTableCommand = map[AlterTableType]string{
+	AT_AddColumn:                 "ADD",
+	AT_ColumnDefault:             "ALTER",
+	AT_DropNotNull:               "ALTER",
+	AT_SetNotNull:                "ALTER",
+	AT_SetStatistics:             "ALTER",
+	AT_SetOptions:                "ALTER",
+	AT_ResetOptions:              "ALTER",
+	AT_SetStorage:                "ALTER",
+	AT_DropColumn:                "DROP",
+	AT_AddIndex:                  "ADD INDEX",
+	AT_AddConstraint:             "ADD",
+	AT_AlterConstraint:           "ALTER CONSTRAINT",
+	AT_ValidateConstraint:        "VALIDATE CONSTRAINT",
+	AT_DropConstraint:            "DROP CONSTRAINT",
+	AT_AlterColumnType:           "ALTER",
+	AT_AlterColumnGenericOptions: "ALTER",
+	AT_ChangeOwner:               "OWNER TO",
+	AT_SetRelOptions:             "SET",
+	AT_ResetRelOptions:           "RESET",
 }
 
-var alterTableCommand = map[AlterTableType]commandOption{
-	AT_AddColumn:                 {"ADD", ""},
-	AT_ColumnDefault:             {"ALTER", "SET DEFAULT"},
-	AT_DropNotNull:               {"ALTER", "DROP NOT NULL"},
-	AT_SetNotNull:                {"ALTER", "SET NOT NULL"},
-	AT_SetStatistics:             {"ALTER", "SET STATISTICS"},
-	AT_SetOptions:                {"ALTER", "SET"},
-	AT_ResetOptions:              {"ALTER", "RESET"},
-	AT_SetStorage:                {"ALTER", "SET STORAGE"},
-	AT_DropColumn:                {"DROP", ""},
-	AT_AddIndex:                  {"ADD INDEX", ""},
-	AT_AddConstraint:             {"ADD", ""},
-	AT_AlterConstraint:           {"ALTER CONSTRAINT", ""},
-	AT_ValidateConstraint:        {"VALIDATE CONSTRAINT", ""},
-	AT_DropConstraint:            {"DROP CONSTRAINT", ""},
-	AT_AlterColumnType:           {"ALTER", "TYPE"},
-	AT_AlterColumnGenericOptions: {"ALTER", "OPTIONS"},
-	AT_ChangeOwner:               {"OWNER TO", ""},
-	AT_SetRelOptions:             {"SET", ""},
-	AT_ResetRelOptions:           {"RESET", ""},
+// AlterTableOption maps AlterTableType enums to sql command options.
+var AlterTableOption = map[AlterTableType]string{
+	AT_ColumnDefault:             "SET DEFAULT",
+	AT_DropNotNull:               "DROP NOT NULL",
+	AT_SetNotNull:                "SET NOT NULL",
+	AT_SetStatistics:             "SET STATISTICS",
+	AT_SetOptions:                "SET",
+	AT_ResetOptions:              "RESET",
+	AT_SetStorage:                "SET STORAGE",
+	AT_AlterColumnType:           "TYPE",
+	AT_AlterColumnGenericOptions: "OPTIONS",
 }
 
+// Defines the operator types used in Op Class definitions.
 const (
-	operatorItemType = 1
-	functionItemType = 2
+	OperatorItemType = 1
+	FunctionItemType = 2
 )
 
-var pgTypeNameToKeyword = map[string]string{
+// PgTypeNameToKeyword maps internal type names to sql names.
+var PgTypeNameToKeyword = map[string]string{
 	"bool":        "boolean",
 	"int2":        "smallint",
 	"int4":        "int",

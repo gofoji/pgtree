@@ -3,18 +3,20 @@ package pgtree
 import (
 	"fmt"
 	"strings"
+
+	"github.com/gofoji/pgtree/nodes"
 )
 
 // ExtractString is a simple utility to join the output of all String nodes by the sep.
-func ExtractString(list []Node, sep string) string {
+func ExtractString(list []nodes.Node, sep string) string {
 	return strings.Join(extractStrings(list), sep)
 }
 
-func extractStrings(list []Node) []string {
+func extractStrings(list []nodes.Node) []string {
 	var result []string
 
 	for _, n := range list {
-		s, ok := n.(*String)
+		s, ok := n.(*nodes.String)
 		if ok {
 			result = append(result, s.Str)
 		}
@@ -29,7 +31,7 @@ type TableRef struct {
 	Schema  string
 	Table   string
 	Alias   string
-	Ref     *RangeVar
+	Ref     *nodes.RangeVar
 }
 
 func (t TableRef) String() string {
@@ -53,12 +55,12 @@ func (t TableRef) String() string {
 }
 
 // ExtractTables returns all tables identified in the SQL.
-func ExtractTables(node Node) []TableRef {
+func ExtractTables(node nodes.Node) []TableRef {
 	var result []TableRef
 
-	Walk(node, nil, func(node Node, stack []Node, v Visitor) Visitor {
+	Walk(node, nil, func(node nodes.Node, stack []nodes.Node, v Visitor) Visitor {
 		switch n := node.(type) {
-		case *RangeVar:
+		case *nodes.RangeVar:
 			t := TableRef{
 				Catalog: n.Catalogname,
 				Schema:  n.Schemaname,
@@ -85,7 +87,7 @@ func ExtractTables(node Node) []TableRef {
 type QueryParam struct {
 	Name      string
 	Type      string
-	Reference *ColumnRef
+	Reference *nodes.ColumnRef
 }
 
 func (p QueryParam) String() string {
@@ -102,11 +104,11 @@ func (p QueryParam) String() string {
 	return name
 }
 
-func extractParamNameAndType(node *AExpr) (string, string) {
+func extractParamNameAndType(node *nodes.AExpr) (string, string) {
 	switch n := node.Rexpr.(type) {
-	case *ColumnRef:
+	case *nodes.ColumnRef:
 		return ExtractString(n.Fields, "??"), ""
-	case *TypeCast:
+	case *nodes.TypeCast:
 		t, err := Print(n.TypeName)
 		if err != nil {
 			return "", ""
@@ -123,15 +125,15 @@ func extractParamNameAndType(node *AExpr) (string, string) {
 	return "", ""
 }
 
-func findReference(parent Node) *ColumnRef {
-	p, ok := parent.(*AExpr)
+func findReference(parent nodes.Node) *nodes.ColumnRef {
+	p, ok := parent.(*nodes.AExpr)
 	if ok {
-		r, ok := p.Lexpr.(*ColumnRef)
+		r, ok := p.Lexpr.(*nodes.ColumnRef)
 		if ok {
 			return r
 		}
 
-		r, ok = p.Rexpr.(*ColumnRef)
+		r, ok = p.Rexpr.(*nodes.ColumnRef)
 		if ok {
 			return r
 		}
@@ -155,12 +157,12 @@ const paramToken = "@"
 //
 //    [`myparam = id`]
 //
-func ExtractParams(node Node) Params {
+func ExtractParams(node nodes.Node) Params {
 	var result Params
 
-	Walk(node, nil, func(node Node, stack []Node, v Visitor) Visitor {
+	Walk(node, nil, func(node nodes.Node, stack []nodes.Node, v Visitor) Visitor {
 		switch n := node.(type) {
-		case *AExpr:
+		case *nodes.AExpr:
 			if ExtractString(n.Name, "") == paramToken {
 				name, t := extractParamNameAndType(n)
 				if name != "" {

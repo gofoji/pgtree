@@ -1,2 +1,3 @@
 ignore:
   - "*_gen.go"         # Don't calculate coverage on generate files
+  - "nodes/*"         # Don't calculate coverage on generate files

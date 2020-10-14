@@ -2,15 +2,19 @@
 
 package pgtree
 
-type Visitor func(node Node, stack []Node, v Visitor) Visitor
+import (
+	"github.com/gofoji/pgtree/nodes"
+)
 
-func WalkList(list Nodes, stack []Node, v Visitor) {
+type Visitor func(node nodes.Node, stack []nodes.Node, v Visitor) Visitor
+
+func WalkList(list nodes.Nodes, stack []nodes.Node, v Visitor) {
 	for _, n := range list {
 		Walk(n, stack, v)
 	}
 }
 
-func Walk(node Node, stack []Node, v Visitor) {
+func Walk(node nodes.Node, stack []nodes.Node, v Visitor) {
 	if node == nil || isNilValue(node) {
 		return
 	}
@@ -23,7 +27,7 @@ func Walk(node Node, stack []Node, v Visitor) {
 	switch n := node.(type) {
 {{- range .Messages }}
 	{{- if and (not (eq .MessageName "Node")) ($.HasMessage .) }}
-		case *{{ pascal .MessageName }}:
+		case *nodes.{{ pascal .MessageName }}:
 		{{- range .Fields }}
 			{{- if $.IsMessage .Type }}
 				{{- if .IsRepeated }}
@@ -35,23 +39,23 @@ func Walk(node Node, stack []Node, v Visitor) {
 		{{- end }}
 	{{- end }}
 {{- end }}
-	case *Root:
+	case *nodes.Root:
 		Walk(n.Node, stack, v)
-	case Nodes:
+	case nodes.Nodes:
 		WalkList(n, stack, v)
 	}
 }
 
-type MutateFunc func(node *Node, stack []*Node, visitor MutateFunc) MutateFunc
+type MutateFunc func(node *nodes.Node, stack []*nodes.Node, visitor MutateFunc) MutateFunc
 
-func mutateList(list Nodes, stack []*Node, v MutateFunc) {
+func mutateList(list nodes.Nodes, stack []*nodes.Node, v MutateFunc) {
 	for i := range list {
 		mutate(&list[i], stack, v)
 	}
 }
 
-func mutate(node *Node, stack []*Node, v MutateFunc) {
-	var nodeWrapper Node
+func mutate(node *nodes.Node, stack []*nodes.Node, v MutateFunc) {
+	var nodeWrapper nodes.Node
 	if node == nil || isNilValue(*node) {
 		return
 	}
@@ -65,7 +69,7 @@ func mutate(node *Node, stack []*Node, v MutateFunc) {
 	switch n := (*node).(type) {
 {{- range .Messages }}
 	{{- if not (eq .MessageName "Node") }}
-		case *{{ pascal .MessageName }}:
+		case *nodes.{{ pascal .MessageName }}:
 		{{- range .Fields }}
 			{{- if $.IsMessage .Type }}
 				{{- if .IsRepeated }}
@@ -82,9 +86,9 @@ func mutate(node *Node, stack []*Node, v MutateFunc) {
 		{{- end }}
 	{{- end }}
 {{- end }}
-	case *Root:
+	case *nodes.Root:
 		mutate(&n.Node, stack, v)
-	case Nodes:
+	case nodes.Nodes:
 		mutateList(n, stack, v)
 	}
 }

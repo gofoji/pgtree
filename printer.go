@@ -2,6 +2,8 @@ package pgtree
 
 import (
 	"strings"
+
+	"github.com/gofoji/pgtree/nodes"
 )
 
 // FormatOptions controls the formatting of the printer.
@@ -28,7 +30,7 @@ type printer struct {
 }
 
 // Print renders the Node with minimal spacing.
-func Print(root Node) (string, error) {
+func Print(root nodes.Node) (string, error) {
 	p := printer{}
 	result := p.printNode(root)
 
@@ -40,7 +42,7 @@ func Print(root Node) (string, error) {
 }
 
 // PrettyPrint renders the Node with indented formatting.
-func PrettyPrint(root Node) (string, error) {
+func PrettyPrint(root nodes.Node) (string, error) {
 	opt := FormatOptions{
 		pretty:                 true,
 		OneResultColumnPerLine: true,
@@ -57,10 +59,10 @@ func PrettyPrint(root Node) (string, error) {
 	return result, nil
 }
 
-// Debug renders the Node with indented formatting and dumps.
+// Debug renders the Node with indented formatting and render graph.
 // the second param is an indented trace of the call graph with results.  Very useful for
 // defining new formatting rules or adding support for new Nodes.
-func Debug(root Node) (string, []string, error) {
+func Debug(root nodes.Node) (string, []string, error) {
 	opt := FormatOptions{
 		pretty:                 true,
 		OneResultColumnPerLine: true,
@@ -98,7 +100,7 @@ func (p *printer) padLines(s string) string {
 	return strings.Join(ss, "\n")
 }
 
-func (p *printer) printNodes(list Nodes, sep string) string {
+func (p *printer) printNodes(list nodes.Nodes, sep string) string {
 	b := p.builder()
 
 	for i := range list {
@@ -108,7 +110,7 @@ func (p *printer) printNodes(list Nodes, sep string) string {
 	return b.join(sep)
 }
 
-func (p *printer) printArr(list Nodes) []string {
+func (p *printer) printArr(list nodes.Nodes) []string {
 	b := p.builder()
 
 	for i := range list {

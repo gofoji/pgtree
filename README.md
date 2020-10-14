@@ -24,7 +24,7 @@ pgtree is used by [foji](https://github.com/gofoji/foji) to:
 go get github.com/gofoji/pgtree
 ```
 
-This has a dependency on the postgres source code (compile with C) and can impact build times significantly.
+This has a dependency on the postgres source code (compiled with C) and can impact build times significantly.  As of right now this also impacts installation on Windows.
 
 ## Usage
 
@@ -123,12 +123,12 @@ The returned value of the `Walk` is the visitor, passing back the input continue
 ####Example
 
 ```go
-func ExtractTables(node Node) []TableRef {
+func ExtractTables(node nodes.Node) []TableRef {
 	var result []TableRef
 
-	Walk(node, nil, func(node Node, stack []Node, v Visitor) Visitor {
+	Walk(node, nil, func(node nodes.Node, stack []nodes.Node, v Visitor) Visitor {
 		switch n := node.(type) {
-		case *RangeVar:
+		case *nodes.RangeVar:
 			t := TableRef{
 				Catalog: n.Catalogname,
 				Schema:  n.Schemaname,

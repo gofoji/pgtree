@@ -8,6 +8,8 @@ import (
 	"reflect"
 	"strings"
 	"unsafe"
+
+	"github.com/gofoji/pgtree/nodes"
 )
 
 // Thanks to zerolog for this utility
@@ -15,7 +17,7 @@ func isNilValue(i interface{}) bool {
 	return (*[2]uintptr)(unsafe.Pointer(&i))[1] == 0
 }
 
-func (p *printer) printNode(node Node) (result string) {
+func (p *printer) printNode(node nodes.Node) (result string) {
 	if node == nil || isNilValue(node) {
 		return
 	}
@@ -35,462 +37,462 @@ func (p *printer) printNode(node Node) (result string) {
 	}()
 
 	switch n := node.(type) {
-	case *Integer:
+	case *nodes.Integer:
 		return p.printInteger(n)
-	case *Float:
+	case *nodes.Float:
 		return p.printFloat(n)
-	case *String:
+	case *nodes.String:
 		return p.printString(n)
-	case *BitString:
+	case *nodes.BitString:
 		return p.printBitString(n)
-	case *Null:
+	case *nodes.Null:
 		return p.printNull(n)
-	case *List:
+	case *nodes.List:
 		return p.printList(n)
-	case *OidList:
+	case *nodes.OidList:
 		return p.printOidList(n)
-	case *IntList:
+	case *nodes.IntList:
 		return p.printIntList(n)
-	case *Alias:
+	case *nodes.Alias:
 		return p.printAlias(n)
-	case *RangeVar:
+	case *nodes.RangeVar:
 		return p.printRangeVar(n)
-	case *TableFunc:
+	case *nodes.TableFunc:
 		return p.printTableFunc(n)
-	case *Expr:
+	case *nodes.Expr:
 		return p.printExpr(n)
-	case *Var:
+	case *nodes.Var:
 		return p.printVar(n)
-	case *Param:
+	case *nodes.Param:
 		return p.printParam(n)
-	case *Aggref:
+	case *nodes.Aggref:
 		return p.printAggref(n)
-	case *GroupingFunc:
+	case *nodes.GroupingFunc:
 		return p.printGroupingFunc(n)
-	case *WindowFunc:
+	case *nodes.WindowFunc:
 		return p.printWindowFunc(n)
-	case *SubscriptingRef:
+	case *nodes.SubscriptingRef:
 		return p.printSubscriptingRef(n)
-	case *FuncExpr:
+	case *nodes.FuncExpr:
 		return p.printFuncExpr(n)
-	case *NamedArgExpr:
+	case *nodes.NamedArgExpr:
 		return p.printNamedArgExpr(n)
-	case *OpExpr:
+	case *nodes.OpExpr:
 		return p.printOpExpr(n)
-	case *DistinctExpr:
+	case *nodes.DistinctExpr:
 		return p.printDistinctExpr(n)
-	case *NullIfExpr:
+	case *nodes.NullIfExpr:
 		return p.printNullIfExpr(n)
-	case *ScalarArrayOpExpr:
+	case *nodes.ScalarArrayOpExpr:
 		return p.printScalarArrayOpExpr(n)
-	case *BoolExpr:
+	case *nodes.BoolExpr:
 		return p.printBoolExpr(n)
-	case *SubLink:
+	case *nodes.SubLink:
 		return p.printSubLink(n)
-	case *SubPlan:
+	case *nodes.SubPlan:
 		return p.printSubPlan(n)
-	case *AlternativeSubPlan:
+	case *nodes.AlternativeSubPlan:
 		return p.printAlternativeSubPlan(n)
-	case *FieldSelect:
+	case *nodes.FieldSelect:
 		return p.printFieldSelect(n)
-	case *FieldStore:
+	case *nodes.FieldStore:
 		return p.printFieldStore(n)
-	case *RelabelType:
+	case *nodes.RelabelType:
 		return p.printRelabelType(n)
-	case *CoerceViaIo:
+	case *nodes.CoerceViaIo:
 		return p.printCoerceViaIo(n)
-	case *ArrayCoerceExpr:
+	case *nodes.ArrayCoerceExpr:
 		return p.printArrayCoerceExpr(n)
-	case *ConvertRowtypeExpr:
+	case *nodes.ConvertRowtypeExpr:
 		return p.printConvertRowtypeExpr(n)
-	case *CollateExpr:
+	case *nodes.CollateExpr:
 		return p.printCollateExpr(n)
-	case *CaseExpr:
+	case *nodes.CaseExpr:
 		return p.printCaseExpr(n)
-	case *CaseWhen:
+	case *nodes.CaseWhen:
 		return p.printCaseWhen(n)
-	case *CaseTestExpr:
+	case *nodes.CaseTestExpr:
 		return p.printCaseTestExpr(n)
-	case *ArrayExpr:
+	case *nodes.ArrayExpr:
 		return p.printArrayExpr(n)
-	case *RowExpr:
+	case *nodes.RowExpr:
 		return p.printRowExpr(n)
-	case *RowCompareExpr:
+	case *nodes.RowCompareExpr:
 		return p.printRowCompareExpr(n)
-	case *CoalesceExpr:
+	case *nodes.CoalesceExpr:
 		return p.printCoalesceExpr(n)
-	case *MinMaxExpr:
+	case *nodes.MinMaxExpr:
 		return p.printMinMaxExpr(n)
-	case *SqlvalueFunction:
+	case *nodes.SqlvalueFunction:
 		return p.printSqlvalueFunction(n)
-	case *XmlExpr:
+	case *nodes.XmlExpr:
 		return p.printXmlExpr(n)
-	case *NullTest:
+	case *nodes.NullTest:
 		return p.printNullTest(n)
-	case *BooleanTest:
+	case *nodes.BooleanTest:
 		return p.printBooleanTest(n)
-	case *CoerceToDomain:
+	case *nodes.CoerceToDomain:
 		return p.printCoerceToDomain(n)
-	case *CoerceToDomainValue:
+	case *nodes.CoerceToDomainValue:
 		return p.printCoerceToDomainValue(n)
-	case *SetToDefault:
+	case *nodes.SetToDefault:
 		return p.printSetToDefault(n)
-	case *CurrentOfExpr:
+	case *nodes.CurrentOfExpr:
 		return p.printCurrentOfExpr(n)
-	case *NextValueExpr:
+	case *nodes.NextValueExpr:
 		return p.printNextValueExpr(n)
-	case *InferenceElem:
+	case *nodes.InferenceElem:
 		return p.printInferenceElem(n)
-	case *TargetEntry:
+	case *nodes.TargetEntry:
 		return p.printTargetEntry(n)
-	case *RangeTblRef:
+	case *nodes.RangeTblRef:
 		return p.printRangeTblRef(n)
-	case *JoinExpr:
+	case *nodes.JoinExpr:
 		return p.printJoinExpr(n)
-	case *FromExpr:
+	case *nodes.FromExpr:
 		return p.printFromExpr(n)
-	case *OnConflictExpr:
+	case *nodes.OnConflictExpr:
 		return p.printOnConflictExpr(n)
-	case *IntoClause:
+	case *nodes.IntoClause:
 		return p.printIntoClause(n)
-	case *RawStmt:
+	case *nodes.RawStmt:
 		return p.printRawStmt(n)
-	case *Query:
+	case *nodes.Query:
 		return p.printQuery(n)
-	case *InsertStmt:
+	case *nodes.InsertStmt:
 		return p.printInsertStmt(n)
-	case *DeleteStmt:
+	case *nodes.DeleteStmt:
 		return p.printDeleteStmt(n)
-	case *UpdateStmt:
+	case *nodes.UpdateStmt:
 		return p.printUpdateStmt(n)
-	case *SelectStmt:
+	case *nodes.SelectStmt:
 		return p.printSelectStmt(n)
-	case *AlterTableStmt:
+	case *nodes.AlterTableStmt:
 		return p.printAlterTableStmt(n)
-	case *AlterTableCmd:
+	case *nodes.AlterTableCmd:
 		return p.printAlterTableCmd(n)
-	case *AlterDomainStmt:
+	case *nodes.AlterDomainStmt:
 		return p.printAlterDomainStmt(n)
-	case *SetOperationStmt:
+	case *nodes.SetOperationStmt:
 		return p.printSetOperationStmt(n)
-	case *GrantStmt:
+	case *nodes.GrantStmt:
 		return p.printGrantStmt(n)
-	case *GrantRoleStmt:
+	case *nodes.GrantRoleStmt:
 		return p.printGrantRoleStmt(n)
-	case *AlterDefaultPrivilegesStmt:
+	case *nodes.AlterDefaultPrivilegesStmt:
 		return p.printAlterDefaultPrivilegesStmt(n)
-	case *ClosePortalStmt:
+	case *nodes.ClosePortalStmt:
 		return p.printClosePortalStmt(n)
-	case *ClusterStmt:
+	case *nodes.ClusterStmt:
 		return p.printClusterStmt(n)
-	case *CopyStmt:
+	case *nodes.CopyStmt:
 		return p.printCopyStmt(n)
-	case *CreateStmt:
+	case *nodes.CreateStmt:
 		return p.printCreateStmt(n)
-	case *DefineStmt:
+	case *nodes.DefineStmt:
 		return p.printDefineStmt(n)
-	case *DropStmt:
+	case *nodes.DropStmt:
 		return p.printDropStmt(n)
-	case *TruncateStmt:
+	case *nodes.TruncateStmt:
 		return p.printTruncateStmt(n)
-	case *CommentStmt:
+	case *nodes.CommentStmt:
 		return p.printCommentStmt(n)
-	case *FetchStmt:
+	case *nodes.FetchStmt:
 		return p.printFetchStmt(n)
-	case *IndexStmt:
+	case *nodes.IndexStmt:
 		return p.printIndexStmt(n)
-	case *CreateFunctionStmt:
+	case *nodes.CreateFunctionStmt:
 		return p.printCreateFunctionStmt(n)
-	case *AlterFunctionStmt:
+	case *nodes.AlterFunctionStmt:
 		return p.printAlterFunctionStmt(n)
-	case *DoStmt:
+	case *nodes.DoStmt:
 		return p.printDoStmt(n)
-	case *RenameStmt:
+	case *nodes.RenameStmt:
 		return p.printRenameStmt(n)
-	case *RuleStmt:
+	case *nodes.RuleStmt:
 		return p.printRuleStmt(n)
-	case *NotifyStmt:
+	case *nodes.NotifyStmt:
 		return p.printNotifyStmt(n)
-	case *ListenStmt:
+	case *nodes.ListenStmt:
 		return p.printListenStmt(n)
-	case *UnlistenStmt:
+	case *nodes.UnlistenStmt:
 		return p.printUnlistenStmt(n)
-	case *TransactionStmt:
+	case *nodes.TransactionStmt:
 		return p.printTransactionStmt(n)
-	case *ViewStmt:
+	case *nodes.ViewStmt:
 		return p.printViewStmt(n)
-	case *LoadStmt:
+	case *nodes.LoadStmt:
 		return p.printLoadStmt(n)
-	case *CreateDomainStmt:
+	case *nodes.CreateDomainStmt:
 		return p.printCreateDomainStmt(n)
-	case *CreatedbStmt:
+	case *nodes.CreatedbStmt:
 		return p.printCreatedbStmt(n)
-	case *DropdbStmt:
+	case *nodes.DropdbStmt:
 		return p.printDropdbStmt(n)
-	case *VacuumStmt:
+	case *nodes.VacuumStmt:
 		return p.printVacuumStmt(n)
-	case *ExplainStmt:
+	case *nodes.ExplainStmt:
 		return p.printExplainStmt(n)
-	case *CreateTableAsStmt:
+	case *nodes.CreateTableAsStmt:
 		return p.printCreateTableAsStmt(n)
-	case *CreateSeqStmt:
+	case *nodes.CreateSeqStmt:
 		return p.printCreateSeqStmt(n)
-	case *AlterSeqStmt:
+	case *nodes.AlterSeqStmt:
 		return p.printAlterSeqStmt(n)
-	case *VariableSetStmt:
+	case *nodes.VariableSetStmt:
 		return p.printVariableSetStmt(n)
-	case *VariableShowStmt:
+	case *nodes.VariableShowStmt:
 		return p.printVariableShowStmt(n)
-	case *DiscardStmt:
+	case *nodes.DiscardStmt:
 		return p.printDiscardStmt(n)
-	case *CreateTrigStmt:
+	case *nodes.CreateTrigStmt:
 		return p.printCreateTrigStmt(n)
-	case *CreatePlangStmt:
+	case *nodes.CreatePlangStmt:
 		return p.printCreatePlangStmt(n)
-	case *CreateRoleStmt:
+	case *nodes.CreateRoleStmt:
 		return p.printCreateRoleStmt(n)
-	case *AlterRoleStmt:
+	case *nodes.AlterRoleStmt:
 		return p.printAlterRoleStmt(n)
-	case *DropRoleStmt:
+	case *nodes.DropRoleStmt:
 		return p.printDropRoleStmt(n)
-	case *LockStmt:
+	case *nodes.LockStmt:
 		return p.printLockStmt(n)
-	case *ConstraintsSetStmt:
+	case *nodes.ConstraintsSetStmt:
 		return p.printConstraintsSetStmt(n)
-	case *ReindexStmt:
+	case *nodes.ReindexStmt:
 		return p.printReindexStmt(n)
-	case *CheckPointStmt:
+	case *nodes.CheckPointStmt:
 		return p.printCheckPointStmt(n)
-	case *CreateSchemaStmt:
+	case *nodes.CreateSchemaStmt:
 		return p.printCreateSchemaStmt(n)
-	case *AlterDatabaseStmt:
+	case *nodes.AlterDatabaseStmt:
 		return p.printAlterDatabaseStmt(n)
-	case *AlterDatabaseSetStmt:
+	case *nodes.AlterDatabaseSetStmt:
 		return p.printAlterDatabaseSetStmt(n)
-	case *AlterRoleSetStmt:
+	case *nodes.AlterRoleSetStmt:
 		return p.printAlterRoleSetStmt(n)
-	case *CreateConversionStmt:
+	case *nodes.CreateConversionStmt:
 		return p.printCreateConversionStmt(n)
-	case *CreateCastStmt:
+	case *nodes.CreateCastStmt:
 		return p.printCreateCastStmt(n)
-	case *CreateOpClassStmt:
+	case *nodes.CreateOpClassStmt:
 		return p.printCreateOpClassStmt(n)
-	case *CreateOpFamilyStmt:
+	case *nodes.CreateOpFamilyStmt:
 		return p.printCreateOpFamilyStmt(n)
-	case *AlterOpFamilyStmt:
+	case *nodes.AlterOpFamilyStmt:
 		return p.printAlterOpFamilyStmt(n)
-	case *PrepareStmt:
+	case *nodes.PrepareStmt:
 		return p.printPrepareStmt(n)
-	case *ExecuteStmt:
+	case *nodes.ExecuteStmt:
 		return p.printExecuteStmt(n)
-	case *DeallocateStmt:
+	case *nodes.DeallocateStmt:
 		return p.printDeallocateStmt(n)
-	case *DeclareCursorStmt:
+	case *nodes.DeclareCursorStmt:
 		return p.printDeclareCursorStmt(n)
-	case *CreateTableSpaceStmt:
+	case *nodes.CreateTableSpaceStmt:
 		return p.printCreateTableSpaceStmt(n)
-	case *DropTableSpaceStmt:
+	case *nodes.DropTableSpaceStmt:
 		return p.printDropTableSpaceStmt(n)
-	case *AlterObjectDependsStmt:
+	case *nodes.AlterObjectDependsStmt:
 		return p.printAlterObjectDependsStmt(n)
-	case *AlterObjectSchemaStmt:
+	case *nodes.AlterObjectSchemaStmt:
 		return p.printAlterObjectSchemaStmt(n)
-	case *AlterOwnerStmt:
+	case *nodes.AlterOwnerStmt:
 		return p.printAlterOwnerStmt(n)
-	case *AlterOperatorStmt:
+	case *nodes.AlterOperatorStmt:
 		return p.printAlterOperatorStmt(n)
-	case *DropOwnedStmt:
+	case *nodes.DropOwnedStmt:
 		return p.printDropOwnedStmt(n)
-	case *ReassignOwnedStmt:
+	case *nodes.ReassignOwnedStmt:
 		return p.printReassignOwnedStmt(n)
-	case *CompositeTypeStmt:
+	case *nodes.CompositeTypeStmt:
 		return p.printCompositeTypeStmt(n)
-	case *CreateEnumStmt:
+	case *nodes.CreateEnumStmt:
 		return p.printCreateEnumStmt(n)
-	case *CreateRangeStmt:
+	case *nodes.CreateRangeStmt:
 		return p.printCreateRangeStmt(n)
-	case *AlterEnumStmt:
+	case *nodes.AlterEnumStmt:
 		return p.printAlterEnumStmt(n)
-	case *AlterTsdictionaryStmt:
+	case *nodes.AlterTsdictionaryStmt:
 		return p.printAlterTsdictionaryStmt(n)
-	case *AlterTsconfigurationStmt:
+	case *nodes.AlterTsconfigurationStmt:
 		return p.printAlterTsconfigurationStmt(n)
-	case *CreateFdwStmt:
+	case *nodes.CreateFdwStmt:
 		return p.printCreateFdwStmt(n)
-	case *AlterFdwStmt:
+	case *nodes.AlterFdwStmt:
 		return p.printAlterFdwStmt(n)
-	case *CreateForeignServerStmt:
+	case *nodes.CreateForeignServerStmt:
 		return p.printCreateForeignServerStmt(n)
-	case *AlterForeignServerStmt:
+	case *nodes.AlterForeignServerStmt:
 		return p.printAlterForeignServerStmt(n)
-	case *CreateUserMappingStmt:
+	case *nodes.CreateUserMappingStmt:
 		return p.printCreateUserMappingStmt(n)
-	case *AlterUserMappingStmt:
+	case *nodes.AlterUserMappingStmt:
 		return p.printAlterUserMappingStmt(n)
-	case *DropUserMappingStmt:
+	case *nodes.DropUserMappingStmt:
 		return p.printDropUserMappingStmt(n)
-	case *AlterTableSpaceOptionsStmt:
+	case *nodes.AlterTableSpaceOptionsStmt:
 		return p.printAlterTableSpaceOptionsStmt(n)
-	case *AlterTableMoveAllStmt:
+	case *nodes.AlterTableMoveAllStmt:
 		return p.printAlterTableMoveAllStmt(n)
-	case *SecLabelStmt:
+	case *nodes.SecLabelStmt:
 		return p.printSecLabelStmt(n)
-	case *CreateForeignTableStmt:
+	case *nodes.CreateForeignTableStmt:
 		return p.printCreateForeignTableStmt(n)
-	case *ImportForeignSchemaStmt:
+	case *nodes.ImportForeignSchemaStmt:
 		return p.printImportForeignSchemaStmt(n)
-	case *CreateExtensionStmt:
+	case *nodes.CreateExtensionStmt:
 		return p.printCreateExtensionStmt(n)
-	case *AlterExtensionStmt:
+	case *nodes.AlterExtensionStmt:
 		return p.printAlterExtensionStmt(n)
-	case *AlterExtensionContentsStmt:
+	case *nodes.AlterExtensionContentsStmt:
 		return p.printAlterExtensionContentsStmt(n)
-	case *CreateEventTrigStmt:
+	case *nodes.CreateEventTrigStmt:
 		return p.printCreateEventTrigStmt(n)
-	case *AlterEventTrigStmt:
+	case *nodes.AlterEventTrigStmt:
 		return p.printAlterEventTrigStmt(n)
-	case *RefreshMatViewStmt:
+	case *nodes.RefreshMatViewStmt:
 		return p.printRefreshMatViewStmt(n)
-	case *ReplicaIdentityStmt:
+	case *nodes.ReplicaIdentityStmt:
 		return p.printReplicaIdentityStmt(n)
-	case *AlterSystemStmt:
+	case *nodes.AlterSystemStmt:
 		return p.printAlterSystemStmt(n)
-	case *CreatePolicyStmt:
+	case *nodes.CreatePolicyStmt:
 		return p.printCreatePolicyStmt(n)
-	case *AlterPolicyStmt:
+	case *nodes.AlterPolicyStmt:
 		return p.printAlterPolicyStmt(n)
-	case *CreateTransformStmt:
+	case *nodes.CreateTransformStmt:
 		return p.printCreateTransformStmt(n)
-	case *CreateAmStmt:
+	case *nodes.CreateAmStmt:
 		return p.printCreateAmStmt(n)
-	case *CreatePublicationStmt:
+	case *nodes.CreatePublicationStmt:
 		return p.printCreatePublicationStmt(n)
-	case *AlterPublicationStmt:
+	case *nodes.AlterPublicationStmt:
 		return p.printAlterPublicationStmt(n)
-	case *CreateSubscriptionStmt:
+	case *nodes.CreateSubscriptionStmt:
 		return p.printCreateSubscriptionStmt(n)
-	case *AlterSubscriptionStmt:
+	case *nodes.AlterSubscriptionStmt:
 		return p.printAlterSubscriptionStmt(n)
-	case *DropSubscriptionStmt:
+	case *nodes.DropSubscriptionStmt:
 		return p.printDropSubscriptionStmt(n)
-	case *CreateStatsStmt:
+	case *nodes.CreateStatsStmt:
 		return p.printCreateStatsStmt(n)
-	case *AlterCollationStmt:
+	case *nodes.AlterCollationStmt:
 		return p.printAlterCollationStmt(n)
-	case *CallStmt:
+	case *nodes.CallStmt:
 		return p.printCallStmt(n)
-	case *AExpr:
+	case *nodes.AExpr:
 		return p.printAExpr(n)
-	case *ColumnRef:
+	case *nodes.ColumnRef:
 		return p.printColumnRef(n)
-	case *ParamRef:
+	case *nodes.ParamRef:
 		return p.printParamRef(n)
-	case *AConst:
+	case *nodes.AConst:
 		return p.printAConst(n)
-	case *FuncCall:
+	case *nodes.FuncCall:
 		return p.printFuncCall(n)
-	case *AStar:
+	case *nodes.AStar:
 		return p.printAStar(n)
-	case *AIndices:
+	case *nodes.AIndices:
 		return p.printAIndices(n)
-	case *AIndirection:
+	case *nodes.AIndirection:
 		return p.printAIndirection(n)
-	case *AArrayExpr:
+	case *nodes.AArrayExpr:
 		return p.printAArrayExpr(n)
-	case *ResTarget:
+	case *nodes.ResTarget:
 		return p.printResTarget(n)
-	case *MultiAssignRef:
+	case *nodes.MultiAssignRef:
 		return p.printMultiAssignRef(n)
-	case *TypeCast:
+	case *nodes.TypeCast:
 		return p.printTypeCast(n)
-	case *CollateClause:
+	case *nodes.CollateClause:
 		return p.printCollateClause(n)
-	case *SortBy:
+	case *nodes.SortBy:
 		return p.printSortBy(n)
-	case *WindowDef:
+	case *nodes.WindowDef:
 		return p.printWindowDef(n)
-	case *RangeSubselect:
+	case *nodes.RangeSubselect:
 		return p.printRangeSubselect(n)
-	case *RangeFunction:
+	case *nodes.RangeFunction:
 		return p.printRangeFunction(n)
-	case *RangeTableSample:
+	case *nodes.RangeTableSample:
 		return p.printRangeTableSample(n)
-	case *RangeTableFunc:
+	case *nodes.RangeTableFunc:
 		return p.printRangeTableFunc(n)
-	case *RangeTableFuncCol:
+	case *nodes.RangeTableFuncCol:
 		return p.printRangeTableFuncCol(n)
-	case *TypeName:
+	case *nodes.TypeName:
 		return p.printTypeName(n)
-	case *ColumnDef:
+	case *nodes.ColumnDef:
 		return p.printColumnDef(n)
-	case *IndexElem:
+	case *nodes.IndexElem:
 		return p.printIndexElem(n)
-	case *Constraint:
+	case *nodes.Constraint:
 		return p.printConstraint(n)
-	case *DefElem:
+	case *nodes.DefElem:
 		return p.printDefElem(n)
-	case *RangeTblEntry:
+	case *nodes.RangeTblEntry:
 		return p.printRangeTblEntry(n)
-	case *RangeTblFunction:
+	case *nodes.RangeTblFunction:
 		return p.printRangeTblFunction(n)
-	case *TableSampleClause:
+	case *nodes.TableSampleClause:
 		return p.printTableSampleClause(n)
-	case *WithCheckOption:
+	case *nodes.WithCheckOption:
 		return p.printWithCheckOption(n)
-	case *SortGroupClause:
+	case *nodes.SortGroupClause:
 		return p.printSortGroupClause(n)
-	case *GroupingSet:
+	case *nodes.GroupingSet:
 		return p.printGroupingSet(n)
-	case *WindowClause:
+	case *nodes.WindowClause:
 		return p.printWindowClause(n)
-	case *ObjectWithArgs:
+	case *nodes.ObjectWithArgs:
 		return p.printObjectWithArgs(n)
-	case *AccessPriv:
+	case *nodes.AccessPriv:
 		return p.printAccessPriv(n)
-	case *CreateOpClassItem:
+	case *nodes.CreateOpClassItem:
 		return p.printCreateOpClassItem(n)
-	case *TableLikeClause:
+	case *nodes.TableLikeClause:
 		return p.printTableLikeClause(n)
-	case *FunctionParameter:
+	case *nodes.FunctionParameter:
 		return p.printFunctionParameter(n)
-	case *LockingClause:
+	case *nodes.LockingClause:
 		return p.printLockingClause(n)
-	case *RowMarkClause:
+	case *nodes.RowMarkClause:
 		return p.printRowMarkClause(n)
-	case *XmlSerialize:
+	case *nodes.XmlSerialize:
 		return p.printXmlSerialize(n)
-	case *WithClause:
+	case *nodes.WithClause:
 		return p.printWithClause(n)
-	case *InferClause:
+	case *nodes.InferClause:
 		return p.printInferClause(n)
-	case *OnConflictClause:
+	case *nodes.OnConflictClause:
 		return p.printOnConflictClause(n)
-	case *CommonTableExpr:
+	case *nodes.CommonTableExpr:
 		return p.printCommonTableExpr(n)
-	case *RoleSpec:
+	case *nodes.RoleSpec:
 		return p.printRoleSpec(n)
-	case *TriggerTransition:
+	case *nodes.TriggerTransition:
 		return p.printTriggerTransition(n)
-	case *PartitionElem:
+	case *nodes.PartitionElem:
 		return p.printPartitionElem(n)
-	case *PartitionSpec:
+	case *nodes.PartitionSpec:
 		return p.printPartitionSpec(n)
-	case *PartitionBoundSpec:
+	case *nodes.PartitionBoundSpec:
 		return p.printPartitionBoundSpec(n)
-	case *PartitionRangeDatum:
+	case *nodes.PartitionRangeDatum:
 		return p.printPartitionRangeDatum(n)
-	case *PartitionCmd:
+	case *nodes.PartitionCmd:
 		return p.printPartitionCmd(n)
-	case *VacuumRelation:
+	case *nodes.VacuumRelation:
 		return p.printVacuumRelation(n)
-	case *InlineCodeBlock:
+	case *nodes.InlineCodeBlock:
 		return p.printInlineCodeBlock(n)
-	case *CallContext:
+	case *nodes.CallContext:
 		return p.printCallContext(n)
 
-	case *Root:
+	case *nodes.Root:
 		return p.printNode(n.Node)
-	case Nodes:
+	case nodes.Nodes:
 		return p.printNodes(n, " ")
 	default:
 		p.addError(errors.New("unhandled node type: " + reflect.TypeOf(node).String()))
@@ -499,757 +501,757 @@ func (p *printer) printNode(node Node) (result string) {
 	return result
 }
 
-func (p *printer) printOidList(node *OidList) string {
+func (p *printer) printOidList(node *nodes.OidList) string {
 	p.addError(errors.New("OidList not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printIntList(node *IntList) string {
+func (p *printer) printIntList(node *nodes.IntList) string {
 	p.addError(errors.New("IntList not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printTableFunc(node *TableFunc) string {
+func (p *printer) printTableFunc(node *nodes.TableFunc) string {
 	p.addError(errors.New("TableFunc not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printExpr(node *Expr) string {
+func (p *printer) printExpr(node *nodes.Expr) string {
 	p.addError(errors.New("Expr not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printVar(node *Var) string {
+func (p *printer) printVar(node *nodes.Var) string {
 	p.addError(errors.New("Var not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printParam(node *Param) string {
+func (p *printer) printParam(node *nodes.Param) string {
 	p.addError(errors.New("Param not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAggref(node *Aggref) string {
+func (p *printer) printAggref(node *nodes.Aggref) string {
 	p.addError(errors.New("Aggref not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printGroupingFunc(node *GroupingFunc) string {
+func (p *printer) printGroupingFunc(node *nodes.GroupingFunc) string {
 	p.addError(errors.New("GroupingFunc not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printWindowFunc(node *WindowFunc) string {
+func (p *printer) printWindowFunc(node *nodes.WindowFunc) string {
 	p.addError(errors.New("WindowFunc not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printSubscriptingRef(node *SubscriptingRef) string {
+func (p *printer) printSubscriptingRef(node *nodes.SubscriptingRef) string {
 	p.addError(errors.New("SubscriptingRef not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printFuncExpr(node *FuncExpr) string {
+func (p *printer) printFuncExpr(node *nodes.FuncExpr) string {
 	p.addError(errors.New("FuncExpr not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printOpExpr(node *OpExpr) string {
+func (p *printer) printOpExpr(node *nodes.OpExpr) string {
 	p.addError(errors.New("OpExpr not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printDistinctExpr(node *DistinctExpr) string {
+func (p *printer) printDistinctExpr(node *nodes.DistinctExpr) string {
 	p.addError(errors.New("DistinctExpr not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printNullIfExpr(node *NullIfExpr) string {
+func (p *printer) printNullIfExpr(node *nodes.NullIfExpr) string {
 	p.addError(errors.New("NullIfExpr not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printScalarArrayOpExpr(node *ScalarArrayOpExpr) string {
+func (p *printer) printScalarArrayOpExpr(node *nodes.ScalarArrayOpExpr) string {
 	p.addError(errors.New("ScalarArrayOpExpr not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printSubPlan(node *SubPlan) string {
+func (p *printer) printSubPlan(node *nodes.SubPlan) string {
 	p.addError(errors.New("SubPlan not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlternativeSubPlan(node *AlternativeSubPlan) string {
+func (p *printer) printAlternativeSubPlan(node *nodes.AlternativeSubPlan) string {
 	p.addError(errors.New("AlternativeSubPlan not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printFieldSelect(node *FieldSelect) string {
+func (p *printer) printFieldSelect(node *nodes.FieldSelect) string {
 	p.addError(errors.New("FieldSelect not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printFieldStore(node *FieldStore) string {
+func (p *printer) printFieldStore(node *nodes.FieldStore) string {
 	p.addError(errors.New("FieldStore not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printRelabelType(node *RelabelType) string {
+func (p *printer) printRelabelType(node *nodes.RelabelType) string {
 	p.addError(errors.New("RelabelType not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCoerceViaIo(node *CoerceViaIo) string {
+func (p *printer) printCoerceViaIo(node *nodes.CoerceViaIo) string {
 	p.addError(errors.New("CoerceViaIO not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printArrayCoerceExpr(node *ArrayCoerceExpr) string {
+func (p *printer) printArrayCoerceExpr(node *nodes.ArrayCoerceExpr) string {
 	p.addError(errors.New("ArrayCoerceExpr not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printConvertRowtypeExpr(node *ConvertRowtypeExpr) string {
+func (p *printer) printConvertRowtypeExpr(node *nodes.ConvertRowtypeExpr) string {
 	p.addError(errors.New("ConvertRowtypeExpr not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCollateExpr(node *CollateExpr) string {
+func (p *printer) printCollateExpr(node *nodes.CollateExpr) string {
 	p.addError(errors.New("CollateExpr not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCaseTestExpr(node *CaseTestExpr) string {
+func (p *printer) printCaseTestExpr(node *nodes.CaseTestExpr) string {
 	p.addError(errors.New("CaseTestExpr not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printArrayExpr(node *ArrayExpr) string {
+func (p *printer) printArrayExpr(node *nodes.ArrayExpr) string {
 	p.addError(errors.New("ArrayExpr not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printRowCompareExpr(node *RowCompareExpr) string {
+func (p *printer) printRowCompareExpr(node *nodes.RowCompareExpr) string {
 	p.addError(errors.New("RowCompareExpr not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printMinMaxExpr(node *MinMaxExpr) string {
+func (p *printer) printMinMaxExpr(node *nodes.MinMaxExpr) string {
 	p.addError(errors.New("MinMaxExpr not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printXmlExpr(node *XmlExpr) string {
+func (p *printer) printXmlExpr(node *nodes.XmlExpr) string {
 	p.addError(errors.New("XmlExpr not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printBooleanTest(node *BooleanTest) string {
+func (p *printer) printBooleanTest(node *nodes.BooleanTest) string {
 	p.addError(errors.New("BooleanTest not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCoerceToDomain(node *CoerceToDomain) string {
+func (p *printer) printCoerceToDomain(node *nodes.CoerceToDomain) string {
 	p.addError(errors.New("CoerceToDomain not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCoerceToDomainValue(node *CoerceToDomainValue) string {
+func (p *printer) printCoerceToDomainValue(node *nodes.CoerceToDomainValue) string {
 	p.addError(errors.New("CoerceToDomainValue not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printNextValueExpr(node *NextValueExpr) string {
+func (p *printer) printNextValueExpr(node *nodes.NextValueExpr) string {
 	p.addError(errors.New("NextValueExpr not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printInferenceElem(node *InferenceElem) string {
+func (p *printer) printInferenceElem(node *nodes.InferenceElem) string {
 	p.addError(errors.New("InferenceElem not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printTargetEntry(node *TargetEntry) string {
+func (p *printer) printTargetEntry(node *nodes.TargetEntry) string {
 	p.addError(errors.New("TargetEntry not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printRangeTblRef(node *RangeTblRef) string {
+func (p *printer) printRangeTblRef(node *nodes.RangeTblRef) string {
 	p.addError(errors.New("RangeTblRef not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printFromExpr(node *FromExpr) string {
+func (p *printer) printFromExpr(node *nodes.FromExpr) string {
 	p.addError(errors.New("FromExpr not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printOnConflictExpr(node *OnConflictExpr) string {
+func (p *printer) printOnConflictExpr(node *nodes.OnConflictExpr) string {
 	p.addError(errors.New("OnConflictExpr not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printQuery(node *Query) string {
+func (p *printer) printQuery(node *nodes.Query) string {
 	p.addError(errors.New("Query not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterDomainStmt(node *AlterDomainStmt) string {
+func (p *printer) printAlterDomainStmt(node *nodes.AlterDomainStmt) string {
 	p.addError(errors.New("AlterDomainStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printSetOperationStmt(node *SetOperationStmt) string {
+func (p *printer) printSetOperationStmt(node *nodes.SetOperationStmt) string {
 	p.addError(errors.New("SetOperationStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printGrantStmt(node *GrantStmt) string {
+func (p *printer) printGrantStmt(node *nodes.GrantStmt) string {
 	p.addError(errors.New("GrantStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printGrantRoleStmt(node *GrantRoleStmt) string {
+func (p *printer) printGrantRoleStmt(node *nodes.GrantRoleStmt) string {
 	p.addError(errors.New("GrantRoleStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterDefaultPrivilegesStmt(node *AlterDefaultPrivilegesStmt) string {
+func (p *printer) printAlterDefaultPrivilegesStmt(node *nodes.AlterDefaultPrivilegesStmt) string {
 	p.addError(errors.New("AlterDefaultPrivilegesStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printClosePortalStmt(node *ClosePortalStmt) string {
+func (p *printer) printClosePortalStmt(node *nodes.ClosePortalStmt) string {
 	p.addError(errors.New("ClosePortalStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printClusterStmt(node *ClusterStmt) string {
+func (p *printer) printClusterStmt(node *nodes.ClusterStmt) string {
 	p.addError(errors.New("ClusterStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCopyStmt(node *CopyStmt) string {
+func (p *printer) printCopyStmt(node *nodes.CopyStmt) string {
 	p.addError(errors.New("CopyStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printDefineStmt(node *DefineStmt) string {
+func (p *printer) printDefineStmt(node *nodes.DefineStmt) string {
 	p.addError(errors.New("DefineStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printFetchStmt(node *FetchStmt) string {
+func (p *printer) printFetchStmt(node *nodes.FetchStmt) string {
 	p.addError(errors.New("FetchStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printIndexStmt(node *IndexStmt) string {
+func (p *printer) printIndexStmt(node *nodes.IndexStmt) string {
 	p.addError(errors.New("IndexStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterFunctionStmt(node *AlterFunctionStmt) string {
+func (p *printer) printAlterFunctionStmt(node *nodes.AlterFunctionStmt) string {
 	p.addError(errors.New("AlterFunctionStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printDoStmt(node *DoStmt) string {
+func (p *printer) printDoStmt(node *nodes.DoStmt) string {
 	p.addError(errors.New("DoStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printListenStmt(node *ListenStmt) string {
+func (p *printer) printListenStmt(node *nodes.ListenStmt) string {
 	p.addError(errors.New("ListenStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printUnlistenStmt(node *UnlistenStmt) string {
+func (p *printer) printUnlistenStmt(node *nodes.UnlistenStmt) string {
 	p.addError(errors.New("UnlistenStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printTransactionStmt(node *TransactionStmt) string {
+func (p *printer) printTransactionStmt(node *nodes.TransactionStmt) string {
 	p.addError(errors.New("TransactionStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printLoadStmt(node *LoadStmt) string {
+func (p *printer) printLoadStmt(node *nodes.LoadStmt) string {
 	p.addError(errors.New("LoadStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCreateDomainStmt(node *CreateDomainStmt) string {
+func (p *printer) printCreateDomainStmt(node *nodes.CreateDomainStmt) string {
 	p.addError(errors.New("CreateDomainStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCreatedbStmt(node *CreatedbStmt) string {
+func (p *printer) printCreatedbStmt(node *nodes.CreatedbStmt) string {
 	p.addError(errors.New("CreatedbStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printDropdbStmt(node *DropdbStmt) string {
+func (p *printer) printDropdbStmt(node *nodes.DropdbStmt) string {
 	p.addError(errors.New("DropdbStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printVacuumStmt(node *VacuumStmt) string {
+func (p *printer) printVacuumStmt(node *nodes.VacuumStmt) string {
 	p.addError(errors.New("VacuumStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCreateSeqStmt(node *CreateSeqStmt) string {
+func (p *printer) printCreateSeqStmt(node *nodes.CreateSeqStmt) string {
 	p.addError(errors.New("CreateSeqStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterSeqStmt(node *AlterSeqStmt) string {
+func (p *printer) printAlterSeqStmt(node *nodes.AlterSeqStmt) string {
 	p.addError(errors.New("AlterSeqStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printVariableSetStmt(node *VariableSetStmt) string {
+func (p *printer) printVariableSetStmt(node *nodes.VariableSetStmt) string {
 	p.addError(errors.New("VariableSetStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printVariableShowStmt(node *VariableShowStmt) string {
+func (p *printer) printVariableShowStmt(node *nodes.VariableShowStmt) string {
 	p.addError(errors.New("VariableShowStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printDiscardStmt(node *DiscardStmt) string {
+func (p *printer) printDiscardStmt(node *nodes.DiscardStmt) string {
 	p.addError(errors.New("DiscardStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCreateTrigStmt(node *CreateTrigStmt) string {
+func (p *printer) printCreateTrigStmt(node *nodes.CreateTrigStmt) string {
 	p.addError(errors.New("CreateTrigStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCreatePlangStmt(node *CreatePlangStmt) string {
+func (p *printer) printCreatePlangStmt(node *nodes.CreatePlangStmt) string {
 	p.addError(errors.New("CreatePLangStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCreateRoleStmt(node *CreateRoleStmt) string {
+func (p *printer) printCreateRoleStmt(node *nodes.CreateRoleStmt) string {
 	p.addError(errors.New("CreateRoleStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterRoleStmt(node *AlterRoleStmt) string {
+func (p *printer) printAlterRoleStmt(node *nodes.AlterRoleStmt) string {
 	p.addError(errors.New("AlterRoleStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printDropRoleStmt(node *DropRoleStmt) string {
+func (p *printer) printDropRoleStmt(node *nodes.DropRoleStmt) string {
 	p.addError(errors.New("DropRoleStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printConstraintsSetStmt(node *ConstraintsSetStmt) string {
+func (p *printer) printConstraintsSetStmt(node *nodes.ConstraintsSetStmt) string {
 	p.addError(errors.New("ConstraintsSetStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printReindexStmt(node *ReindexStmt) string {
+func (p *printer) printReindexStmt(node *nodes.ReindexStmt) string {
 	p.addError(errors.New("ReindexStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCheckPointStmt(node *CheckPointStmt) string {
+func (p *printer) printCheckPointStmt(node *nodes.CheckPointStmt) string {
 	p.addError(errors.New("CheckPointStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterDatabaseStmt(node *AlterDatabaseStmt) string {
+func (p *printer) printAlterDatabaseStmt(node *nodes.AlterDatabaseStmt) string {
 	p.addError(errors.New("AlterDatabaseStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterDatabaseSetStmt(node *AlterDatabaseSetStmt) string {
+func (p *printer) printAlterDatabaseSetStmt(node *nodes.AlterDatabaseSetStmt) string {
 	p.addError(errors.New("AlterDatabaseSetStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterRoleSetStmt(node *AlterRoleSetStmt) string {
+func (p *printer) printAlterRoleSetStmt(node *nodes.AlterRoleSetStmt) string {
 	p.addError(errors.New("AlterRoleSetStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCreateConversionStmt(node *CreateConversionStmt) string {
+func (p *printer) printCreateConversionStmt(node *nodes.CreateConversionStmt) string {
 	p.addError(errors.New("CreateConversionStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCreateOpFamilyStmt(node *CreateOpFamilyStmt) string {
+func (p *printer) printCreateOpFamilyStmt(node *nodes.CreateOpFamilyStmt) string {
 	p.addError(errors.New("CreateOpFamilyStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterOpFamilyStmt(node *AlterOpFamilyStmt) string {
+func (p *printer) printAlterOpFamilyStmt(node *nodes.AlterOpFamilyStmt) string {
 	p.addError(errors.New("AlterOpFamilyStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printPrepareStmt(node *PrepareStmt) string {
+func (p *printer) printPrepareStmt(node *nodes.PrepareStmt) string {
 	p.addError(errors.New("PrepareStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printExecuteStmt(node *ExecuteStmt) string {
+func (p *printer) printExecuteStmt(node *nodes.ExecuteStmt) string {
 	p.addError(errors.New("ExecuteStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printDeallocateStmt(node *DeallocateStmt) string {
+func (p *printer) printDeallocateStmt(node *nodes.DeallocateStmt) string {
 	p.addError(errors.New("DeallocateStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printDeclareCursorStmt(node *DeclareCursorStmt) string {
+func (p *printer) printDeclareCursorStmt(node *nodes.DeclareCursorStmt) string {
 	p.addError(errors.New("DeclareCursorStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCreateTableSpaceStmt(node *CreateTableSpaceStmt) string {
+func (p *printer) printCreateTableSpaceStmt(node *nodes.CreateTableSpaceStmt) string {
 	p.addError(errors.New("CreateTableSpaceStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printDropTableSpaceStmt(node *DropTableSpaceStmt) string {
+func (p *printer) printDropTableSpaceStmt(node *nodes.DropTableSpaceStmt) string {
 	p.addError(errors.New("DropTableSpaceStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterObjectDependsStmt(node *AlterObjectDependsStmt) string {
+func (p *printer) printAlterObjectDependsStmt(node *nodes.AlterObjectDependsStmt) string {
 	p.addError(errors.New("AlterObjectDependsStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterOwnerStmt(node *AlterOwnerStmt) string {
+func (p *printer) printAlterOwnerStmt(node *nodes.AlterOwnerStmt) string {
 	p.addError(errors.New("AlterOwnerStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterOperatorStmt(node *AlterOperatorStmt) string {
+func (p *printer) printAlterOperatorStmt(node *nodes.AlterOperatorStmt) string {
 	p.addError(errors.New("AlterOperatorStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printDropOwnedStmt(node *DropOwnedStmt) string {
+func (p *printer) printDropOwnedStmt(node *nodes.DropOwnedStmt) string {
 	p.addError(errors.New("DropOwnedStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printReassignOwnedStmt(node *ReassignOwnedStmt) string {
+func (p *printer) printReassignOwnedStmt(node *nodes.ReassignOwnedStmt) string {
 	p.addError(errors.New("ReassignOwnedStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCreateRangeStmt(node *CreateRangeStmt) string {
+func (p *printer) printCreateRangeStmt(node *nodes.CreateRangeStmt) string {
 	p.addError(errors.New("CreateRangeStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterTsdictionaryStmt(node *AlterTsdictionaryStmt) string {
+func (p *printer) printAlterTsdictionaryStmt(node *nodes.AlterTsdictionaryStmt) string {
 	p.addError(errors.New("AlterTSDictionaryStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterTsconfigurationStmt(node *AlterTsconfigurationStmt) string {
+func (p *printer) printAlterTsconfigurationStmt(node *nodes.AlterTsconfigurationStmt) string {
 	p.addError(errors.New("AlterTSConfigurationStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCreateFdwStmt(node *CreateFdwStmt) string {
+func (p *printer) printCreateFdwStmt(node *nodes.CreateFdwStmt) string {
 	p.addError(errors.New("CreateFdwStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterFdwStmt(node *AlterFdwStmt) string {
+func (p *printer) printAlterFdwStmt(node *nodes.AlterFdwStmt) string {
 	p.addError(errors.New("AlterFdwStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCreateForeignServerStmt(node *CreateForeignServerStmt) string {
+func (p *printer) printCreateForeignServerStmt(node *nodes.CreateForeignServerStmt) string {
 	p.addError(errors.New("CreateForeignServerStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterForeignServerStmt(node *AlterForeignServerStmt) string {
+func (p *printer) printAlterForeignServerStmt(node *nodes.AlterForeignServerStmt) string {
 	p.addError(errors.New("AlterForeignServerStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCreateUserMappingStmt(node *CreateUserMappingStmt) string {
+func (p *printer) printCreateUserMappingStmt(node *nodes.CreateUserMappingStmt) string {
 	p.addError(errors.New("CreateUserMappingStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterUserMappingStmt(node *AlterUserMappingStmt) string {
+func (p *printer) printAlterUserMappingStmt(node *nodes.AlterUserMappingStmt) string {
 	p.addError(errors.New("AlterUserMappingStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printDropUserMappingStmt(node *DropUserMappingStmt) string {
+func (p *printer) printDropUserMappingStmt(node *nodes.DropUserMappingStmt) string {
 	p.addError(errors.New("DropUserMappingStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterTableSpaceOptionsStmt(node *AlterTableSpaceOptionsStmt) string {
+func (p *printer) printAlterTableSpaceOptionsStmt(node *nodes.AlterTableSpaceOptionsStmt) string {
 	p.addError(errors.New("AlterTableSpaceOptionsStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterTableMoveAllStmt(node *AlterTableMoveAllStmt) string {
+func (p *printer) printAlterTableMoveAllStmt(node *nodes.AlterTableMoveAllStmt) string {
 	p.addError(errors.New("AlterTableMoveAllStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printSecLabelStmt(node *SecLabelStmt) string {
+func (p *printer) printSecLabelStmt(node *nodes.SecLabelStmt) string {
 	p.addError(errors.New("SecLabelStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCreateForeignTableStmt(node *CreateForeignTableStmt) string {
+func (p *printer) printCreateForeignTableStmt(node *nodes.CreateForeignTableStmt) string {
 	p.addError(errors.New("CreateForeignTableStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printImportForeignSchemaStmt(node *ImportForeignSchemaStmt) string {
+func (p *printer) printImportForeignSchemaStmt(node *nodes.ImportForeignSchemaStmt) string {
 	p.addError(errors.New("ImportForeignSchemaStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterExtensionStmt(node *AlterExtensionStmt) string {
+func (p *printer) printAlterExtensionStmt(node *nodes.AlterExtensionStmt) string {
 	p.addError(errors.New("AlterExtensionStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterExtensionContentsStmt(node *AlterExtensionContentsStmt) string {
+func (p *printer) printAlterExtensionContentsStmt(node *nodes.AlterExtensionContentsStmt) string {
 	p.addError(errors.New("AlterExtensionContentsStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCreateEventTrigStmt(node *CreateEventTrigStmt) string {
+func (p *printer) printCreateEventTrigStmt(node *nodes.CreateEventTrigStmt) string {
 	p.addError(errors.New("CreateEventTrigStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterEventTrigStmt(node *AlterEventTrigStmt) string {
+func (p *printer) printAlterEventTrigStmt(node *nodes.AlterEventTrigStmt) string {
 	p.addError(errors.New("AlterEventTrigStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printRefreshMatViewStmt(node *RefreshMatViewStmt) string {
+func (p *printer) printRefreshMatViewStmt(node *nodes.RefreshMatViewStmt) string {
 	p.addError(errors.New("RefreshMatViewStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printReplicaIdentityStmt(node *ReplicaIdentityStmt) string {
+func (p *printer) printReplicaIdentityStmt(node *nodes.ReplicaIdentityStmt) string {
 	p.addError(errors.New("ReplicaIdentityStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterSystemStmt(node *AlterSystemStmt) string {
+func (p *printer) printAlterSystemStmt(node *nodes.AlterSystemStmt) string {
 	p.addError(errors.New("AlterSystemStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCreatePolicyStmt(node *CreatePolicyStmt) string {
+func (p *printer) printCreatePolicyStmt(node *nodes.CreatePolicyStmt) string {
 	p.addError(errors.New("CreatePolicyStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterPolicyStmt(node *AlterPolicyStmt) string {
+func (p *printer) printAlterPolicyStmt(node *nodes.AlterPolicyStmt) string {
 	p.addError(errors.New("AlterPolicyStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCreateAmStmt(node *CreateAmStmt) string {
+func (p *printer) printCreateAmStmt(node *nodes.CreateAmStmt) string {
 	p.addError(errors.New("CreateAmStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCreatePublicationStmt(node *CreatePublicationStmt) string {
+func (p *printer) printCreatePublicationStmt(node *nodes.CreatePublicationStmt) string {
 	p.addError(errors.New("CreatePublicationStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterPublicationStmt(node *AlterPublicationStmt) string {
+func (p *printer) printAlterPublicationStmt(node *nodes.AlterPublicationStmt) string {
 	p.addError(errors.New("AlterPublicationStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCreateSubscriptionStmt(node *CreateSubscriptionStmt) string {
+func (p *printer) printCreateSubscriptionStmt(node *nodes.CreateSubscriptionStmt) string {
 	p.addError(errors.New("CreateSubscriptionStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterSubscriptionStmt(node *AlterSubscriptionStmt) string {
+func (p *printer) printAlterSubscriptionStmt(node *nodes.AlterSubscriptionStmt) string {
 	p.addError(errors.New("AlterSubscriptionStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printDropSubscriptionStmt(node *DropSubscriptionStmt) string {
+func (p *printer) printDropSubscriptionStmt(node *nodes.DropSubscriptionStmt) string {
 	p.addError(errors.New("DropSubscriptionStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCreateStatsStmt(node *CreateStatsStmt) string {
+func (p *printer) printCreateStatsStmt(node *nodes.CreateStatsStmt) string {
 	p.addError(errors.New("CreateStatsStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAlterCollationStmt(node *AlterCollationStmt) string {
+func (p *printer) printAlterCollationStmt(node *nodes.AlterCollationStmt) string {
 	p.addError(errors.New("AlterCollationStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCallStmt(node *CallStmt) string {
+func (p *printer) printCallStmt(node *nodes.CallStmt) string {
 	p.addError(errors.New("CallStmt not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAIndices(node *AIndices) string {
+func (p *printer) printAIndices(node *nodes.AIndices) string {
 	p.addError(errors.New("A_Indices not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAIndirection(node *AIndirection) string {
+func (p *printer) printAIndirection(node *nodes.AIndirection) string {
 	p.addError(errors.New("A_Indirection not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCollateClause(node *CollateClause) string {
+func (p *printer) printCollateClause(node *nodes.CollateClause) string {
 	p.addError(errors.New("CollateClause not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printRangeTableSample(node *RangeTableSample) string {
+func (p *printer) printRangeTableSample(node *nodes.RangeTableSample) string {
 	p.addError(errors.New("RangeTableSample not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printRangeTableFunc(node *RangeTableFunc) string {
+func (p *printer) printRangeTableFunc(node *nodes.RangeTableFunc) string {
 	p.addError(errors.New("RangeTableFunc not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printRangeTableFuncCol(node *RangeTableFuncCol) string {
+func (p *printer) printRangeTableFuncCol(node *nodes.RangeTableFuncCol) string {
 	p.addError(errors.New("RangeTableFuncCol not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printRangeTblEntry(node *RangeTblEntry) string {
+func (p *printer) printRangeTblEntry(node *nodes.RangeTblEntry) string {
 	p.addError(errors.New("RangeTblEntry not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printRangeTblFunction(node *RangeTblFunction) string {
+func (p *printer) printRangeTblFunction(node *nodes.RangeTblFunction) string {
 	p.addError(errors.New("RangeTblFunction not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printTableSampleClause(node *TableSampleClause) string {
+func (p *printer) printTableSampleClause(node *nodes.TableSampleClause) string {
 	p.addError(errors.New("TableSampleClause not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printWithCheckOption(node *WithCheckOption) string {
+func (p *printer) printWithCheckOption(node *nodes.WithCheckOption) string {
 	p.addError(errors.New("WithCheckOption not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printSortGroupClause(node *SortGroupClause) string {
+func (p *printer) printSortGroupClause(node *nodes.SortGroupClause) string {
 	p.addError(errors.New("SortGroupClause not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printGroupingSet(node *GroupingSet) string {
+func (p *printer) printGroupingSet(node *nodes.GroupingSet) string {
 	p.addError(errors.New("GroupingSet not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printWindowClause(node *WindowClause) string {
+func (p *printer) printWindowClause(node *nodes.WindowClause) string {
 	p.addError(errors.New("WindowClause not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printAccessPriv(node *AccessPriv) string {
+func (p *printer) printAccessPriv(node *nodes.AccessPriv) string {
 	p.addError(errors.New("AccessPriv not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printTableLikeClause(node *TableLikeClause) string {
+func (p *printer) printTableLikeClause(node *nodes.TableLikeClause) string {
 	p.addError(errors.New("TableLikeClause not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printRowMarkClause(node *RowMarkClause) string {
+func (p *printer) printRowMarkClause(node *nodes.RowMarkClause) string {
 	p.addError(errors.New("RowMarkClause not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printXmlSerialize(node *XmlSerialize) string {
+func (p *printer) printXmlSerialize(node *nodes.XmlSerialize) string {
 	p.addError(errors.New("XmlSerialize not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printInferClause(node *InferClause) string {
+func (p *printer) printInferClause(node *nodes.InferClause) string {
 	p.addError(errors.New("InferClause not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printOnConflictClause(node *OnConflictClause) string {
+func (p *printer) printOnConflictClause(node *nodes.OnConflictClause) string {
 	p.addError(errors.New("OnConflictClause not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printTriggerTransition(node *TriggerTransition) string {
+func (p *printer) printTriggerTransition(node *nodes.TriggerTransition) string {
 	p.addError(errors.New("TriggerTransition not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printPartitionElem(node *PartitionElem) string {
+func (p *printer) printPartitionElem(node *nodes.PartitionElem) string {
 	p.addError(errors.New("PartitionElem not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printPartitionSpec(node *PartitionSpec) string {
+func (p *printer) printPartitionSpec(node *nodes.PartitionSpec) string {
 	p.addError(errors.New("PartitionSpec not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printPartitionBoundSpec(node *PartitionBoundSpec) string {
+func (p *printer) printPartitionBoundSpec(node *nodes.PartitionBoundSpec) string {
 	p.addError(errors.New("PartitionBoundSpec not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printPartitionRangeDatum(node *PartitionRangeDatum) string {
+func (p *printer) printPartitionRangeDatum(node *nodes.PartitionRangeDatum) string {
 	p.addError(errors.New("PartitionRangeDatum not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printPartitionCmd(node *PartitionCmd) string {
+func (p *printer) printPartitionCmd(node *nodes.PartitionCmd) string {
 	p.addError(errors.New("PartitionCmd not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printVacuumRelation(node *VacuumRelation) string {
+func (p *printer) printVacuumRelation(node *nodes.VacuumRelation) string {
 	p.addError(errors.New("VacuumRelation not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printInlineCodeBlock(node *InlineCodeBlock) string {
+func (p *printer) printInlineCodeBlock(node *nodes.InlineCodeBlock) string {
 	p.addError(errors.New("InlineCodeBlock not implemented"))
 	return "NOT IMPLEMENTED"
 }
 
-func (p *printer) printCallContext(node *CallContext) string {
+func (p *printer) printCallContext(node *nodes.CallContext) string {
 	p.addError(errors.New("CallContext not implemented"))
 	return "NOT IMPLEMENTED"
 }

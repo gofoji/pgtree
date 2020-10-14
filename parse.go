@@ -3,24 +3,22 @@ package pgtree
 import (
 	"encoding/json"
 
+	"github.com/gofoji/pgtree/nodes"
 	"github.com/lfittl/pg_query_go/parser"
 )
 
 // Parse uses the postgres 12 parsing engine to create a Node graph for walking and mutation.
-func Parse(sql string) (Node, error) {
+func Parse(sql string) (nodes.Node, error) {
 	r, err := JSON(sql)
 	if err != nil {
 		return nil, err
 	}
 
-	result := &Root{}
+	result := &nodes.Root{}
 
 	err = json.Unmarshal([]byte(r), result)
-	if err != nil {
-		return nil, err
-	}
 
-	return result, nil
+	return result, err
 }
 
 // JSON uses the postgres 12 parsing engine to generate the json of the graph.

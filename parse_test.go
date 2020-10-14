@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/gofoji/pgtree"
+	"github.com/gofoji/pgtree/nodes"
 )
 
 func TestParseAndPretty(t *testing.T) {
@@ -101,7 +102,7 @@ func FileWithExt(path, ext string) string {
 
 func testParse(sql string) (string, error) {
 	var prettyConcise string
-	var conciseNode pgtree.Node
+	var conciseNode nodes.Node
 
 	// We validate the parsing and printing by:
 	// first Parse the input SQL

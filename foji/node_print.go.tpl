@@ -3,61 +3,63 @@
 package pgtree
 
 import (
-"errors"
-"fmt"
-"reflect"
-"strings"
-"unsafe"
+	"errors"
+	"fmt"
+	"reflect"
+	"strings"
+	"unsafe"
+
+	"github.com/gofoji/pgtree/nodes"
 )
 
 // Thanks to zerolog for this utility
 func isNilValue(i interface{}) bool {
-return (*[2]uintptr)(unsafe.Pointer(&i))[1] == 0
+	return (*[2]uintptr)(unsafe.Pointer(&i))[1] == 0
 }
 
-func (p *printer) printNode(node Node) (result string) {
-if node == nil || isNilValue(node) {
-return
-}
-p.level += 1
-defer func() {
-if p.debug {
-pad := p.pad(p.level-1)
-t := reflect.TypeOf(node)
-name := t.Name()
-if t.Kind() == reflect.Ptr {
-name = t.Elem().Name()
-}
-debugLine := fmt.Sprintln(pad + name + " = `" + strings.ReplaceAll(result, "\n", " \\n ") + "`")
-p.debugOutput = append([]string{debugLine}, p.debugOutput...)
-}
-p.level -= 1
-}()
-
-switch n := node.(type) {
-{{- range .Messages }}
-	{{- if not (eq .MessageName "Node") }}
-		case *{{ pascal .MessageName }}:
-		return p.print{{ pascal .MessageName }}(n)
-	{{- end }}
-{{- end }}
-
-case *Root:
-return p.printNode(n.Node)
-case Nodes:
-return p.printNodes(n, " ")
-default:
-p.addError(errors.New("unhandled node type: " + reflect.TypeOf(node).String()))
-}
-
-return result
-}
-{{- range .Messages }}
-	{{- if not (eq .MessageName "Node") }}
-
-		func (p *printer) print{{ pascal .MessageName }}(node *{{ pascal .MessageName }}) string {
-		p.addError(errors.New("{{ .MessageName }} not implemented"))
-		return "NOT IMPLEMENTED"
+func (p *printer) printNode(node nodes.Node) (result string) {
+	if node == nil || isNilValue(node) {
+		return
+	}
+	p.level += 1
+	defer func() {
+		if p.debug {
+			pad := p.pad(p.level-1)
+			t := reflect.TypeOf(node)
+			name := t.Name()
+			if t.Kind() == reflect.Ptr {
+				name = t.Elem().Name()
+			}
+			debugLine := fmt.Sprintln(pad + name + " = `" + strings.ReplaceAll(result, "\n", " \\n ") + "`")
+			p.debugOutput = append([]string{debugLine}, p.debugOutput...)
 		}
+		p.level -= 1
+	}()
+
+	switch n := node.(type) {
+	{{- range .Messages }}
+		{{- if not (eq .MessageName "Node") }}
+			case *nodes.{{ pascal .MessageName }}:
+			return p.print{{ pascal .MessageName }}(n)
+		{{- end }}
+	{{- end }}
+
+	case *nodes.Root:
+		return p.printNode(n.Node)
+	case nodes.Nodes:
+		return p.printNodes(n, " ")
+	default:
+		p.addError(errors.New("unhandled node type: " + reflect.TypeOf(node).String()))
+	}
+
+	return result
+}
+{{- range .Messages }}
+	{{- if not (eq .MessageName "Node") }}
+
+func (p *printer) print{{ pascal .MessageName }}(node *nodes.{{ pascal .MessageName }}) string {
+	p.addError(errors.New("{{ .MessageName }} not implemented"))
+	return "NOT IMPLEMENTED"
+}
 	{{- end }}
 {{- end }}

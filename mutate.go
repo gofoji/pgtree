@@ -1,6 +1,8 @@
 package pgtree
 
-// ErrInvalidParam is returned if a the Node graph has a parameter that is not defined in the params.
+import "github.com/gofoji/pgtree/nodes"
+
+// ErrInvalidParam is returned if the Node graph has a parameter that is not defined in the input params.
 const ErrInvalidParam = pgtreeError("invalid param")
 
 // ReplaceParams automatically replaces all the instances of the named parameters with the place holder syntax `$#`.
@@ -16,10 +18,10 @@ const ErrInvalidParam = pgtreeError("invalid param")
 //
 //    SELECT * FROM foo WHERE id = $1;
 //
-func ReplaceParams(root *Node, params Params) (err error) {
-	mutate(root, nil, func(node *Node, stack []*Node, v MutateFunc) MutateFunc {
+func ReplaceParams(root *nodes.Node, params Params) (err error) {
+	mutate(root, nil, func(node *nodes.Node, stack []*nodes.Node, v MutateFunc) MutateFunc {
 		switch n := (*node).(type) {
-		case *AExpr:
+		case *nodes.AExpr:
 			if ExtractString(n.Name, "") == paramToken {
 				name, _ := extractParamNameAndType(n)
 				i := params.IndexOf(name)
@@ -29,7 +31,7 @@ func ReplaceParams(root *Node, params Params) (err error) {
 					return nil
 				}
 
-				p := ParamRef{Number: int32(i + 1)}
+				p := nodes.ParamRef{Number: int32(i + 1)}
 				*node = &p
 
 				return nil
