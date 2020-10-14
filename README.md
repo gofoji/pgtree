@@ -118,9 +118,9 @@ Visiting the SQL AST requires a function to match the Visitor signature:
 type Visitor func(node Node, stack []Node, v Visitor) Visitor
 ```
 The first parameter is the current `Node` being visited, the `stack` provides the stack up to the root, the last parameter is the Visitor func.  
-The returned value of the `Walk` is the visitor, passing back the input continues the traversal as usual, returning `nil` will stop walking the current branch at that node.  This is used in the example below, as there is no reason to continue walking after finding a `RangeVar`.  You can also return a different visitor func to change the downstream processing in more complex scenarios.
+The returned value of the `Walk` is the visitor, passing back the input continues the traversal as usual, returning `nil` will stop walking the current branch at that node.  This is used in the example below, as there is no reason to continue walking after finding a `RangeVar`.  You can also return a different visitor func to change the downstream processing in more complex scenarios.  See the next section on Debugging for additional help when writing visitors. 
 
-####Example
+#### Example
 
 ```go
 func ExtractTables(node nodes.Node) []TableRef {

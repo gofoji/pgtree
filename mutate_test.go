@@ -2,6 +2,7 @@ package pgtree_test
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/gofoji/pgtree"
@@ -43,5 +44,14 @@ func TestReplaceParams(t *testing.T) {
 			t.Errorf("Invalid Error, got `%v`, want `%v`", err, pgtree.ErrInvalidParam)
 		}
 	})
+}
 
+func ExampleReplaceParams() {
+	sql := "select * from foo where id = @myParam"
+	root, _ := pgtree.Parse(sql)
+	params := pgtree.ExtractParams(root)
+	pgtree.ReplaceParams(&root, params)
+	outSQL, _ := pgtree.Print(root)
+	fmt.Println(outSQL)
+	// Output: SELECT * FROM foo WHERE id = $1;
 }

@@ -54,3 +54,19 @@ func TestExtractTables(t *testing.T) {
 		})
 	}
 }
+
+func ExampleExtractParams() {
+	sql := "select * from foo where id = @myParam"
+	root, _ := pgtree.Parse(sql)
+	params := pgtree.ExtractParams(root)
+	fmt.Println(params)
+	// Output: [`myparam = id`]
+}
+
+func ExampleExtractTables() {
+	sql := "SELECT * FROM foo LEFT JOIN bar ON foo.id = bar.id"
+	root, _ := pgtree.Parse(sql)
+	tables := pgtree.ExtractTables(root)
+	fmt.Println(tables)
+	// Output: [`foo` `bar`]
+}

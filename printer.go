@@ -12,15 +12,18 @@ type FormatOptions struct {
 	OneResultColumnPerLine bool   // Forces each result item of a select statement to a new line.  Default to true.
 	LowerKeyword           bool   // If true it forces all keywords to lowercase.  Default is to force all to uppercase.
 	UpperType              bool   // If true it forces all types to uppercase.  Default is to force all to lower.
-	SimpleLen              int    // Statements shorter than SimpleLen will automatically have pretty printing disabled (default 50).
+	SimpleLen              int    // Statements shorter than SimpleLen will disable pretty printing (default 50).
 	Padding                string // Used for indentation when Pretty printing.  Default is four spaces.
 }
 
+const defaultSimpleLen = 50
+
+// DefaultFormat used by PrettyPrint.
 var DefaultFormat = FormatOptions{
 	Pretty:                 true,
 	OneResultColumnPerLine: true,
 	Padding:                "    ",
-	SimpleLen:              50,
+	SimpleLen:              defaultSimpleLen,
 }
 
 type printer struct {
