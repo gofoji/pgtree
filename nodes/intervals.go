@@ -1,10 +1,11 @@
-package pgtree
+package nodes
 
-type intervalModType uint32
+// IntervalModType is the internal bit mask for specifying things like "day to minute" or "year".
+type IntervalModType uint32
 
 // Interval types.
 const (
-	Empty intervalModType = 1 << iota
+	Empty IntervalModType = 1 << iota
 	Month
 	Year
 	Day
@@ -35,7 +36,7 @@ const (
 	DTZMod
 )
 
-func (i intervalModType) String() string {
+func (i IntervalModType) String() string {
 	switch i {
 	case Month:
 		return "month"

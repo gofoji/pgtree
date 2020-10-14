@@ -6,8 +6,8 @@ import (
 )
 
 type sqlBuilder struct {
-	opt FormatOptions
-	ss  []string
+	FormatOptions
+	ss []string
 }
 
 func filterEmpty(ss []string) []string {
@@ -28,7 +28,7 @@ func (c *sqlBuilder) append(ss ...string) {
 }
 
 func (c *sqlBuilder) appendPadded(s string) {
-	if !c.opt.pretty {
+	if !c.Pretty {
 		c.append(s)
 
 		return
@@ -40,7 +40,7 @@ func (c *sqlBuilder) appendPadded(s string) {
 			continue
 		}
 
-		c.ss = append(c.ss, strings.TrimRight(c.opt.Padding+ss[j]+"\n", " "))
+		c.ss = append(c.ss, strings.TrimRight(c.Padding+ss[j]+"\n", " "))
 	}
 }
 
@@ -49,7 +49,7 @@ func (c *sqlBuilder) addToLast(s string) {
 }
 
 func (c *sqlBuilder) LF() {
-	if c.opt.pretty {
+	if c.Pretty {
 		c.ss = append(c.ss, "\n")
 	}
 }
@@ -58,10 +58,6 @@ var asciiSpace = [256]uint8{'\t': 1, '\n': 1, '\v': 1, '\f': 1, '\r': 1, ' ': 1}
 
 func endsWithSpace(s string) bool {
 	l := len(s)
-	if l == 0 {
-		return false
-	}
-
 	i := s[l-1]
 
 	return asciiSpace[i] == 1
@@ -109,11 +105,7 @@ func (c sqlBuilder) lines() []string {
 }
 
 func (c *sqlBuilder) keyword(s string) {
-	if c.opt.LowerKeyword {
-		c.append(strings.ToLower(s))
-	}
-
-	c.append(strings.ToUpper(s))
+	c.append(c.FormatOptions.keyword(s))
 }
 
 func (c *sqlBuilder) keywordIf(s string, b bool) {

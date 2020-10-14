@@ -6,20 +6,22 @@ import (
 	"github.com/gofoji/pgtree/nodes"
 )
 
-// FormatOptions controls the formatting of the printer.
+// FormatOptions controls the formatting of the SQL output.
 type FormatOptions struct {
-	pretty                 bool   // When enabled
-	OneResultColumnPerLine bool   // Forces each result item of a select statement to a new line
-	LowerKeyword           bool   // If true it forces all keywords to lowercase.  Default is to force all to uppercase
-	UpperType              bool   // If true it forces all types to uppercase.  Default is to force all to lower
-	SimpleLen              int    // Statements shorter than SimpleLen will automatically have pretty printing disabled
-	Padding                string // Used for indentation when Pretty printing
+	Pretty                 bool   // When enabled injects line feeds and indentation(Padding)
+	OneResultColumnPerLine bool   // Forces each result item of a select statement to a new line.  Default to true.
+	LowerKeyword           bool   // If true it forces all keywords to lowercase.  Default is to force all to uppercase.
+	UpperType              bool   // If true it forces all types to uppercase.  Default is to force all to lower.
+	SimpleLen              int    // Statements shorter than SimpleLen will automatically have pretty printing disabled (default 50).
+	Padding                string // Used for indentation when Pretty printing.  Default is four spaces.
 }
 
-const (
-	defaultSimpleLen = 50
-	defaultPadding   = "    "
-)
+var DefaultFormat = FormatOptions{
+	Pretty:                 true,
+	OneResultColumnPerLine: true,
+	Padding:                "    ",
+	SimpleLen:              50,
+}
 
 type printer struct {
 	FormatOptions
@@ -29,9 +31,9 @@ type printer struct {
 	errs        []error
 }
 
-// Print renders the Node with minimal spacing.
-func Print(root nodes.Node) (string, error) {
-	p := printer{}
+// PrintWithOptions renders the Node with the supplied format options.
+func PrintWithOptions(root nodes.Node, opts FormatOptions) (string, error) {
+	p := printer{FormatOptions: opts}
 	result := p.printNode(root)
 
 	if len(p.errs) > 0 {
@@ -41,35 +43,21 @@ func Print(root nodes.Node) (string, error) {
 	return result, nil
 }
 
+// Print renders the Node with minimal spacing.
+func Print(root nodes.Node) (string, error) {
+	return PrintWithOptions(root, FormatOptions{})
+}
+
 // PrettyPrint renders the Node with indented formatting.
 func PrettyPrint(root nodes.Node) (string, error) {
-	opt := FormatOptions{
-		pretty:                 true,
-		OneResultColumnPerLine: true,
-		Padding:                defaultPadding,
-		SimpleLen:              defaultSimpleLen,
-	}
-	p := printer{FormatOptions: opt}
-	result := p.printNode(root)
-
-	if len(p.errs) > 0 {
-		return "", printErrors{p.errs}
-	}
-
-	return result, nil
+	return PrintWithOptions(root, DefaultFormat)
 }
 
 // Debug renders the Node with indented formatting and render graph.
 // the second param is an indented trace of the call graph with results.  Very useful for
 // defining new formatting rules or adding support for new Nodes.
 func Debug(root nodes.Node) (string, []string, error) {
-	opt := FormatOptions{
-		pretty:                 true,
-		OneResultColumnPerLine: true,
-		Padding:                defaultPadding,
-		SimpleLen:              defaultSimpleLen,
-	}
-	p := printer{FormatOptions: opt, debug: true}
+	p := printer{FormatOptions: DefaultFormat, debug: true}
 	result := p.printNode(root)
 
 	if len(p.errs) > 0 {
@@ -136,14 +124,14 @@ func (p *printer) identifier(names ...string) string {
 	return b.join(".")
 }
 
-func (p *printer) keyword(s string) string {
-	if p.LowerKeyword {
+func (p *printer) builder() sqlBuilder {
+	return sqlBuilder{FormatOptions: p.FormatOptions}
+}
+
+func (o *FormatOptions) keyword(s string) string {
+	if o.LowerKeyword {
 		return strings.ToLower(s)
 	}
 
 	return strings.ToUpper(s)
-}
-
-func (p *printer) builder() sqlBuilder {
-	return sqlBuilder{opt: p.FormatOptions}
 }

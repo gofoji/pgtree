@@ -46,3 +46,31 @@ func TestErrors(t *testing.T) {
 	}
 
 }
+
+func TestLower(t *testing.T) {
+	tests := []struct {
+		name string
+		sql  string
+		want string
+		err  string
+	}{
+		{"basic", "SELEcT * FrOm foo", "select * from foo;\n", ""},
+	}
+	opts := pgtree.DefaultFormat
+	opts.LowerKeyword = true
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			root, _ := pgtree.Parse(test.sql)
+			got, err := pgtree.PrintWithOptions(root, opts)
+			if err != nil {
+				if test.err != err.Error() {
+					t.Errorf("Err = %v, want %v", err, test.err)
+				}
+				return
+			}
+			if got != test.want {
+				t.Errorf("got `%v`, want `%v`", got, test.want)
+			}
+		})
+	}
+}

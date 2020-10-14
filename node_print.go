@@ -84,7 +84,7 @@ func (p *printer) printWithClause(node *nodes.WithClause) string {
 }
 
 func (p *printer) printSelectStmt(node *nodes.SelectStmt) string {
-	if !p.pretty {
+	if !p.Pretty {
 		return p.printSelectStmtInternal(node)
 	}
 
@@ -94,9 +94,9 @@ func (p *printer) printSelectStmt(node *nodes.SelectStmt) string {
 		return r
 	}
 
-	p.pretty = false
+	p.Pretty = false
 	r = p.printSelectStmtInternal(node)
-	p.pretty = true
+	p.Pretty = true
 
 	return r
 }
@@ -195,7 +195,7 @@ func (p *printer) printSelectValues(node *nodes.SelectStmt, b *sqlBuilder) {
 			vv = append(vv, fmt.Sprintf("(%s)", p.printNode(nl)))
 		}
 
-		if p.pretty {
+		if p.Pretty {
 			b.append(p.padLines(strings.Join(vv, ",\n")))
 		} else {
 			b.append(strings.Join(vv, ", "))
@@ -215,7 +215,7 @@ func (p *printer) printSelectTargets(node *nodes.SelectStmt, b *sqlBuilder) {
 	}
 
 	sep := ", "
-	if p.pretty && p.OneResultColumnPerLine {
+	if p.Pretty && p.OneResultColumnPerLine {
 		sep = ",\n"
 	}
 
@@ -340,7 +340,7 @@ func (p *printer) printAStar(_ *nodes.AStar) string {
 
 func (p *printer) printRawStmt(node *nodes.RawStmt) string {
 	term := ";"
-	if p.pretty {
+	if p.Pretty {
 		term = ";\n"
 	}
 
@@ -520,7 +520,7 @@ func (p *printer) printTypeName(node *nodes.TypeName) string {
 
 	if name == keywordInterval && len(node.Typmods) > 0 {
 		i := getInt32(node.Typmods[0])
-		b.keyword(intervalModType(i).String())
+		b.keyword(nodes.IntervalModType(i).String())
 
 		if len(node.Typmods) > 1 {
 			// Precision
@@ -809,7 +809,7 @@ func (p *printer) printCommentStmt(node *nodes.CommentStmt) string {
 }
 
 func (p *printer) printSubClauseCustom(prefix, suffix, sep string, nodes nodes.Nodes, allowPretty bool) string {
-	if allowPretty && p.pretty {
+	if allowPretty && p.Pretty {
 		prefix += "\n"
 		suffix = "\n" + suffix
 		sep += "\n"
@@ -820,7 +820,7 @@ func (p *printer) printSubClauseCustom(prefix, suffix, sep string, nodes nodes.N
 		return ""
 	}
 
-	if allowPretty && p.pretty {
+	if allowPretty && p.Pretty {
 		sub = p.padLines(sub)
 	}
 
@@ -1042,7 +1042,7 @@ func (p *printer) printDefElem(node *nodes.DefElem) string {
 	switch node.Defname {
 	case "as":
 		wrapper := " "
-		if p.pretty {
+		if p.Pretty {
 			wrapper = "\n"
 		}
 
@@ -1186,7 +1186,7 @@ func (p *printer) printBoolExpr(node *nodes.BoolExpr) string {
 		op = p.keyword("OR ")
 	}
 
-	if p.pretty {
+	if p.Pretty {
 		op = "\n" + op
 	} else {
 		op = " " + op
