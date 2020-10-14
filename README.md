@@ -1,7 +1,9 @@
 # pgtree [![Build Status](https://travis-ci.org/gofoji/pgtree.svg?branch=master)](https://travis-ci.org/gofoji/pgtree) [![codecov](https://codecov.io/gh/gofoji/pgtree/branch/master/graph/badge.svg)](https://codecov.io/gh/gofoji/pgtree) [![PkgGoDev](https://pkg.go.dev/badge/github.com/gofoji/pgtree)](https://pkg.go.dev/github.com/gofoji/pgtree) [![Report card](https://goreportcard.com/badge/github.com/gofoji/pgtree)](https://goreportcard.com/report/github.com/gofoji/pgtree)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/gofoji/pgtree/build)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/gofoji/pgtree.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/gofoji/pgtree/alerts/)
+
 [![forthebadge](https://forthebadge.com/images/badges/made-with-go.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
-
 
 Builds on the excellent work of [libpq_query](https://github.com/lfittl/libpg_query) to use the postgres (v12) source code to parse the SQL.  
 
@@ -13,7 +15,7 @@ for zero copy or minimum allocations. Do *NOT* use pgtree in a performance criti
 
 ## Why
 
-pgtree is used by [foji](github.com/gofoji/foji) to:
+pgtree is used by [foji](https://github.com/gofoji/foji) to:
 1. Validate and format the SQL 
 1. Convert developer friendly params into valid SQL parameter references ([example](#Param-Extract))
 1. Convert wildcard return attributes to point in time data model attributes  ( `*` => list of fields )
