@@ -560,40 +560,17 @@ func (p *printer) mapTypeName(name, args string) string {
 		return typeWrapper(name, args)
 	}
 
-	switch name[len("pg_catalog."):] {
+	name = name[len("pg_catalog."):]
+	switch name {
 	case "bpchar":
 		return typeWrapper("char", args)
 	case "varchar":
 		return typeWrapper("varchar", args)
 	case "numeric":
 		return typeWrapper("numeric", args)
-	case "bool":
-		return "boolean"
-	case "int2":
-		return "smallint"
-	case "int4":
-		return "int"
-	case "int8":
-		return "bigint"
-	case "real", "float4":
-		return "real"
-	case "float8":
-		return "double precision"
-	case "time":
-		return "time"
-	case "timetz":
-		return "time with time zone"
-	case "timestamp":
-		return "timestamp"
-	case "timestamptz":
-		return "timestamp with time zone"
-	case keywordInterval:
-		return keywordInterval
 	}
 
-	p.addError(ErrPrinter.Wrap("Unknown data type: " + name))
-
-	return "**UNKNOWN TYPE**"
+	return pgTypeNameToKeyword[name]
 }
 
 func (p *printer) printConstraint(node *Constraint) string {

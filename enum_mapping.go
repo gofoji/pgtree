@@ -159,3 +159,18 @@ const (
 	operatorItemType = 1
 	functionItemType = 2
 )
+
+var pgTypeNameToKeyword = map[string]string{
+	"bool":        "boolean",
+	"int2":        "smallint",
+	"int4":        "int",
+	"int8":        "bigint",
+	"real":        "real",
+	"float4":      "real",
+	"float8":      "double precision",
+	"time":        "time",
+	"timetz":      "time with time zone",
+	"timestamp":   "timestamp",
+	"timestamptz": "timestamp with time zone",
+	"interval":    "interval",
+}
