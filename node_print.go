@@ -592,10 +592,12 @@ func (p *printer) printConstraint(node *nodes.Constraint) string {
 
 	pre := ""
 	post := ""
+
 	switch node.Contype {
 	case nodes.CONSTR_GENERATED:
 		b.keyword(nodes.ContraintGeneratedWhenToKeyword[node.GeneratedWhen])
 		b.keyword("AS")
+
 		pre = "("
 		post = ") " + p.keyword("STORED")
 	case nodes.CONSTR_IDENTITY:
@@ -625,12 +627,7 @@ func (p *printer) printConstraint(node *nodes.Constraint) string {
 	}
 
 	if len(node.Options) > 0 {
-		if node.Contype == nodes.CONSTR_IDENTITY {
-			b.append(p.printSubClauseCustom("(", ")", " ", node.Options, false))
-		} else {
-			b.keyword("WITH")
-			b.append(p.printSubClauseInline(node.Options))
-		}
+		p.printConstraintOptions(node, &b)
 	}
 
 	if len(node.Exclusions) > 0 {
@@ -638,6 +635,15 @@ func (p *printer) printConstraint(node *nodes.Constraint) string {
 	}
 
 	return b.join(" ")
+}
+
+func (p *printer) printConstraintOptions(node *nodes.Constraint, b *sqlBuilder) {
+	if node.Contype == nodes.CONSTR_IDENTITY {
+		b.append(p.printSubClauseCustom("(", ")", " ", node.Options, false))
+	} else {
+		b.keyword("WITH")
+		b.append(p.printSubClauseInline(node.Options))
+	}
 }
 
 func (p *printer) printConstraintExclusions(node *nodes.Constraint, b *sqlBuilder) {
@@ -1047,65 +1053,51 @@ func (p *printer) printFunctionParameter(node *nodes.FunctionParameter) string {
 }
 
 var StorageParametersNumeric = map[string]interface{}{
-	"fillfactor":                  nil,
-	"toast_tuple_target":          nil,
-	"parallel_workers":            nil,
-	"autovacuum_vacuum_threshold": nil,
-	//"toast.autovacuum_vacuum_threshold":nil,
-	"autovacuum_vacuum_scale_factor": nil,
-	//"toast.autovacuum_vacuum_scale_factor":nil,
-	"autovacuum_analyze_threshold":    nil,
-	"autovacuum_analyze_scale_factor": nil,
-	"autovacuum_vacuum_cost_delay":    nil,
-	//"toast.autovacuum_vacuum_cost_delay":nil,
-	"autovacuum_vacuum_cost_limit": nil,
-	//"toast.autovacuum_vacuum_cost_limit":nil,
-	"autovacuum_freeze_min_age": nil,
-	//"toast.autovacuum_freeze_min_age":nil,
-	"autovacuum_freeze_max_age": nil,
-	//"toast.autovacuum_freeze_max_age":nil,
-	"autovacuum_freeze_table_age": nil,
-	//"toast.autovacuum_freeze_table_age":nil,
-	"autovacuum_multixact_freeze_min_age": nil,
-	//"toast.autovacuum_multixact_freeze_min_age":nil,
-	"autovacuum_multixact_freeze_max_age": nil,
-	//"toast.autovacuum_multixact_freeze_max_age":nil,
+	"fillfactor":                            nil,
+	"toast_tuple_target":                    nil,
+	"parallel_workers":                      nil,
+	"autovacuum_vacuum_threshold":           nil,
+	"autovacuum_vacuum_scale_factor":        nil,
+	"autovacuum_analyze_threshold":          nil,
+	"autovacuum_analyze_scale_factor":       nil,
+	"autovacuum_vacuum_cost_delay":          nil,
+	"autovacuum_vacuum_cost_limit":          nil,
+	"autovacuum_freeze_min_age":             nil,
+	"autovacuum_freeze_max_age":             nil,
+	"autovacuum_freeze_table_age":           nil,
+	"autovacuum_multixact_freeze_min_age":   nil,
+	"autovacuum_multixact_freeze_max_age":   nil,
 	"autovacuum_multixact_freeze_table_age": nil,
-	//"toast.autovacuum_multixact_freeze_table_age":nil,
-	"log_autovacuum_min_duration": nil,
-	//"toast.log_autovacuum_min_duration":nil,
+	"log_autovacuum_min_duration":           nil,
 }
 
 var StorageParametersBool = map[string]interface{}{
-	"autovacuum_enabled": nil,
-	//"toast.autovacuum_enabled":   nil,
+	"autovacuum_enabled":   nil,
 	"vacuum_index_cleanup": nil,
-	//"toast.vacuum_index_cleanup": nil,
-	"vacuum_truncate": nil,
-	//"toast.vacuum_truncate":      nil,
-	"user_catalog_table": nil,
+	"vacuum_truncate":      nil,
+	"user_catalog_table":   nil,
 }
 
 func (p *printer) printDefElem(node *nodes.DefElem) string {
 	arg := p.printNode(node.Arg)
+	ns := ""
+
+	if node.Defnamespace != "" {
+		ns = node.Defnamespace + "."
+	}
+
 	// Storage Parameters
 	if _, ok := StorageParametersNumeric[node.Defname]; ok {
-		if node.Defnamespace != "" {
-			return p.keyword(node.Defnamespace+"."+node.Defname+"=") + arg
-		}
-
-		return p.keyword(node.Defname+"=") + arg
+		return p.keyword(ns+node.Defname+"=") + arg
 	}
+
 	if _, ok := StorageParametersBool[node.Defname]; ok {
 		arg = stripQuote(arg)
 		if arg != "" {
 			arg = "=" + arg
 		}
-		if node.Defnamespace != "" {
-			return p.keyword(node.Defnamespace + "." + node.Defname + arg)
-		}
 
-		return p.keyword(node.Defname + arg)
+		return p.keyword(ns + node.Defname + arg)
 	}
 
 	switch node.Defname {

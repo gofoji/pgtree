@@ -196,7 +196,7 @@ var PgTypeNameToKeyword = map[string]string{
 	"interval":    "interval",
 }
 
-// ContraintGeneratedWhenToKeyword maps Constraint GeneratedWhen clauses to keywords
+// ContraintGeneratedWhenToKeyword maps Constraint GeneratedWhen clauses to keywords.
 var ContraintGeneratedWhenToKeyword = map[string]string{
 	"a": "ALWAYS",
 	"d": "BY DEFAULT",
