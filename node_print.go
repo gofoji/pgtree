@@ -420,11 +420,10 @@ func (p *printer) printCreateStmt(node *nodes.CreateStmt) string {
 		b.append(p.printSubClauseInline(node.InhRelations))
 	}
 
-	opts := p.printNodes(node.Options, ",")
-	if opts != "" {
+	if len(node.Options) > 0 {
 		b.LF()
 		b.keyword("WITH")
-		b.append(opts)
+		b.append(p.printSubClause(node.Options))
 	}
 
 	if node.Tablespacename != "" {
@@ -593,8 +592,16 @@ func (p *printer) printConstraint(node *nodes.Constraint) string {
 
 	pre := ""
 	post := ""
-
-	if node.Contype == nodes.CONSTR_CHECK {
+	switch node.Contype {
+	case nodes.CONSTR_GENERATED:
+		b.keyword(nodes.ContraintGeneratedWhenToKeyword[node.GeneratedWhen])
+		b.keyword("AS")
+		pre = "("
+		post = ") " + p.keyword("STORED")
+	case nodes.CONSTR_IDENTITY:
+		b.keyword(nodes.ContraintGeneratedWhenToKeyword[node.GeneratedWhen])
+		b.keyword("AS IDENTITY")
+	case nodes.CONSTR_CHECK:
 		pre = "("
 		post = ")"
 	}
@@ -617,10 +624,13 @@ func (p *printer) printConstraint(node *nodes.Constraint) string {
 		b.append(node.Indexname)
 	}
 
-	opts := p.printNodes(node.Options, ",")
-	if opts != "" {
-		b.keyword("WITH")
-		b.append(opts)
+	if len(node.Options) > 0 {
+		if node.Contype == nodes.CONSTR_IDENTITY {
+			b.append(p.printSubClauseCustom("(", ")", " ", node.Options, false))
+		} else {
+			b.keyword("WITH")
+			b.append(p.printSubClauseInline(node.Options))
+		}
 	}
 
 	if len(node.Exclusions) > 0 {
@@ -1036,8 +1046,67 @@ func (p *printer) printFunctionParameter(node *nodes.FunctionParameter) string {
 	return b.join(" ")
 }
 
+var StorageParametersNumeric = map[string]interface{}{
+	"fillfactor":                  nil,
+	"toast_tuple_target":          nil,
+	"parallel_workers":            nil,
+	"autovacuum_vacuum_threshold": nil,
+	//"toast.autovacuum_vacuum_threshold":nil,
+	"autovacuum_vacuum_scale_factor": nil,
+	//"toast.autovacuum_vacuum_scale_factor":nil,
+	"autovacuum_analyze_threshold":    nil,
+	"autovacuum_analyze_scale_factor": nil,
+	"autovacuum_vacuum_cost_delay":    nil,
+	//"toast.autovacuum_vacuum_cost_delay":nil,
+	"autovacuum_vacuum_cost_limit": nil,
+	//"toast.autovacuum_vacuum_cost_limit":nil,
+	"autovacuum_freeze_min_age": nil,
+	//"toast.autovacuum_freeze_min_age":nil,
+	"autovacuum_freeze_max_age": nil,
+	//"toast.autovacuum_freeze_max_age":nil,
+	"autovacuum_freeze_table_age": nil,
+	//"toast.autovacuum_freeze_table_age":nil,
+	"autovacuum_multixact_freeze_min_age": nil,
+	//"toast.autovacuum_multixact_freeze_min_age":nil,
+	"autovacuum_multixact_freeze_max_age": nil,
+	//"toast.autovacuum_multixact_freeze_max_age":nil,
+	"autovacuum_multixact_freeze_table_age": nil,
+	//"toast.autovacuum_multixact_freeze_table_age":nil,
+	"log_autovacuum_min_duration": nil,
+	//"toast.log_autovacuum_min_duration":nil,
+}
+
+var StorageParametersBool = map[string]interface{}{
+	"autovacuum_enabled": nil,
+	//"toast.autovacuum_enabled":   nil,
+	"vacuum_index_cleanup": nil,
+	//"toast.vacuum_index_cleanup": nil,
+	"vacuum_truncate": nil,
+	//"toast.vacuum_truncate":      nil,
+	"user_catalog_table": nil,
+}
+
 func (p *printer) printDefElem(node *nodes.DefElem) string {
 	arg := p.printNode(node.Arg)
+	// Storage Parameters
+	if _, ok := StorageParametersNumeric[node.Defname]; ok {
+		if node.Defnamespace != "" {
+			return p.keyword(node.Defnamespace+"."+node.Defname+"=") + arg
+		}
+
+		return p.keyword(node.Defname+"=") + arg
+	}
+	if _, ok := StorageParametersBool[node.Defname]; ok {
+		arg = stripQuote(arg)
+		if arg != "" {
+			arg = "=" + arg
+		}
+		if node.Defnamespace != "" {
+			return p.keyword(node.Defnamespace + "." + node.Defname + arg)
+		}
+
+		return p.keyword(node.Defname + arg)
+	}
 
 	switch node.Defname {
 	case "as":
@@ -1057,14 +1126,16 @@ func (p *printer) printDefElem(node *nodes.DefElem) string {
 		return p.keyword(node.Defname)
 	case "format":
 		return p.keyword("FORMAT " + arg)
-	case "fillfactor":
-		return p.keyword("(FILLFACTOR=" + arg + ")")
 	case "schema":
 		return p.keyword("SCHEMA ") + p.identifier(arg)
 	case "new_version":
 		return p.keyword("VERSION ") + p.identifier(arg)
 	case "old_version":
 		return p.keyword("FROM ") + p.identifier(arg)
+	case "start":
+		return p.keyword("START WITH ") + arg
+	case "increment":
+		return p.keyword("INCREMENT BY ") + arg
 	case "oids":
 		if arg != "" {
 			return p.keyword("oids=") + stripQuote(arg)

@@ -134,6 +134,8 @@ var ConstrTypeKeyword = map[ConstrType]string{
 	CONSTR_UNIQUE:    "UNIQUE",
 	CONSTR_EXCLUSION: "EXCLUDE",
 	CONSTR_FOREIGN:   "FOREIGN KEY",
+	CONSTR_GENERATED: "GENERATED",
+	CONSTR_IDENTITY:  "GENERATED",
 }
 
 // AlterTableCommand maps AlterTableType enums to sql commands.
@@ -192,4 +194,10 @@ var PgTypeNameToKeyword = map[string]string{
 	"timestamp":   "timestamp",
 	"timestamptz": "timestamp with time zone",
 	"interval":    "interval",
+}
+
+// ContraintGeneratedWhenToKeyword maps Constraint GeneratedWhen clauses to keywords
+var ContraintGeneratedWhenToKeyword = map[string]string{
+	"a": "ALWAYS",
+	"d": "BY DEFAULT",
 }

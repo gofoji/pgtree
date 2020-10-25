@@ -33,5 +33,39 @@ CREATE UNLOGGED TABLE IF NOT EXISTS complex_table
         CONSTRAINT unique_package_id UNIQUE USING INDEX package_tmp_id_idx
     )
 INHERITS (parent_table)
-WITH (FILLFACTOR = 70)
+WITH (
+    fillfactor=1,
+    toast_tuple_target=2,
+    parallel_workers=3,
+    autovacuum_vacuum_threshold=4,
+    toast.autovacuum_vacuum_threshold=5,
+    autovacuum_vacuum_scale_factor=6,
+    toast.autovacuum_vacuum_scale_factor=7,
+    autovacuum_analyze_threshold=8,
+    autovacuum_analyze_scale_factor=9,
+    autovacuum_vacuum_cost_delay =10,
+    toast.autovacuum_vacuum_cost_delay=11,
+    autovacuum_vacuum_cost_limit =12,
+    toast.autovacuum_vacuum_cost_limit=13,
+    autovacuum_freeze_min_age =14,
+    toast.autovacuum_freeze_min_age=15,
+    autovacuum_freeze_max_age=16,
+    toast.autovacuum_freeze_max_age=17,
+    autovacuum_freeze_table_age=18,
+    toast.autovacuum_freeze_table_age=19,
+    autovacuum_multixact_freeze_min_age=20,
+    toast.autovacuum_multixact_freeze_min_age=21,
+    autovacuum_multixact_freeze_max_age=22,
+    toast.autovacuum_multixact_freeze_max_age=23,
+    autovacuum_multixact_freeze_table_age=24,
+    toast.autovacuum_multixact_freeze_table_age=25,
+    log_autovacuum_min_duration=26,
+    toast.log_autovacuum_min_duration=27,
+    autovacuum_enabled=true,
+    toast.autovacuum_enabled=true,
+    vacuum_index_cleanup=true,
+    toast.vacuum_index_cleanup=true,
+    vacuum_truncate=false,
+    toast.vacuum_truncate=false,
+    user_catalog_table=false)
 TABLESPACE diskvol1;
