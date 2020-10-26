@@ -12,6 +12,7 @@ linters:
     - dupl
     - gochecknoglobals
     - exhaustive
+    - exhaustivestruct
 
 linters-settings:
   gocritic:

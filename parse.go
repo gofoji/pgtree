@@ -18,7 +18,7 @@ func Parse(sql string) (nodes.Node, error) {
 
 	err = json.Unmarshal([]byte(r), result)
 
-	return result, err
+	return result, err //nolint
 }
 
 // JSON uses the postgres 12 parsing engine to generate the json of the graph.
