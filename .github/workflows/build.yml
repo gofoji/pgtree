@@ -4,6 +4,15 @@ on:
   pull_request:
 name: build
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: v1.32
   build-test:
     strategy:
       matrix:
@@ -25,7 +34,3 @@ jobs:
         uses: codecov/codecov-action@v1
         with:
           file: ./coverage.txt
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v2
-        with:
-          version: v1.29
