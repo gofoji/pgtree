@@ -2,7 +2,7 @@ genNode:
 	foji weld nodeProto
 
 lint:
-	golangci-lint run
+	golangci-lint run --sort-results
 
 test:
 	go test ./...
