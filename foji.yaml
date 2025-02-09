@@ -12,7 +12,5 @@ processes:
       files:
         - "parse_tree.proto"
     ProtoFile:
-      'nodes/node_gen.go': foji/node.go.tpl
-      'nodes/node_json_gen.go': foji/node_json.go.tpl
       'node_walk_gen.go': foji/node_walk.go.tpl
       '!node_print_gen.go': foji/node_print.go.tpl

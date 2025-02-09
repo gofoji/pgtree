@@ -4,21 +4,21 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gofoji/pgtree/nodes"
+	nodes "github.com/pganalyze/pg_query_go/v6"
 )
 
 // ExtractString is a simple utility to join the output of all String nodes by the sep.
-func ExtractString(list []nodes.Node, sep string) string {
+func ExtractString(list []*nodes.Node, sep string) string {
 	return strings.Join(extractStrings(list), sep)
 }
 
-func extractStrings(list []nodes.Node) []string {
+func extractStrings(list []*nodes.Node) []string {
 	var result []string
 
 	for _, n := range list {
-		s, ok := n.(*nodes.String)
+		s, ok := (n.Node).(*nodes.Node_String_)
 		if ok {
-			result = append(result, s.Str)
+			result = append(result, s.String_.Sval)
 		}
 	}
 
@@ -55,21 +55,21 @@ func (t TableRef) String() string {
 }
 
 // ExtractTables returns all tables identified in the SQL.
-func ExtractTables(node nodes.Node) []TableRef {
+func ExtractTables(node *nodes.Node) []TableRef {
 	var result []TableRef
 
-	Walk(node, nil, func(node nodes.Node, stack []nodes.Node, v Visitor) Visitor {
-		switch n := node.(type) {
-		case *nodes.RangeVar:
+	Walk(node, nil, func(node *nodes.Node, stack []*nodes.Node, v Visitor) Visitor {
+		switch n := node.Node.(type) {
+		case *nodes.Node_RangeVar:
 			t := TableRef{
-				Catalog: n.Catalogname,
-				Schema:  n.Schemaname,
-				Table:   n.Relname,
-				Ref:     n,
+				Catalog: n.RangeVar.Catalogname,
+				Schema:  n.RangeVar.Schemaname,
+				Table:   n.RangeVar.Relname,
+				Ref:     n.RangeVar,
 			}
 
-			if n.Alias != nil {
-				t.Alias = n.Alias.Aliasname
+			if n.RangeVar.Alias != nil {
+				t.Alias = n.RangeVar.Alias.Aliasname
 			}
 
 			result = append(result, t)
@@ -104,17 +104,17 @@ func (p QueryParam) String() string {
 	return name
 }
 
-func extractParamNameAndType(node *nodes.AExpr) (string, string) {
-	switch n := node.Rexpr.(type) {
-	case *nodes.ColumnRef:
-		return ExtractString(n.Fields, "??"), ""
-	case *nodes.TypeCast:
-		t, err := Print(n.TypeName)
+func extractParamNameAndType(node *nodes.A_Expr) (string, string) {
+	switch n := node.Rexpr.Node.(type) {
+	case *nodes.Node_ColumnRef:
+		return ExtractString(n.ColumnRef.Fields, "??"), ""
+	case *nodes.Node_TypeCast:
+		t, err := PrintWithOptions(&nodes.Node{Node: &nodes.Node_TypeName{TypeName: n.TypeCast.TypeName}}, DefaultFragmentFormat)
 		if err != nil {
 			return "", ""
 		}
 
-		name, err := Print(n.Arg)
+		name, err := PrintWithOptions(n.TypeCast.Arg, DefaultFragmentFormat)
 		if err != nil {
 			return "", ""
 		}
@@ -125,17 +125,17 @@ func extractParamNameAndType(node *nodes.AExpr) (string, string) {
 	return "", ""
 }
 
-func findReference(parent nodes.Node) *nodes.ColumnRef {
-	p, ok := parent.(*nodes.AExpr)
+func findReference(parent *nodes.Node) *nodes.ColumnRef {
+	p, ok := parent.Node.(*nodes.Node_AExpr)
 	if ok {
-		r, ok := p.Lexpr.(*nodes.ColumnRef)
+		r, ok := p.AExpr.Lexpr.Node.(*nodes.Node_ColumnRef)
 		if ok {
-			return r
+			return r.ColumnRef
 		}
 
-		r, ok = p.Rexpr.(*nodes.ColumnRef)
+		r, ok = p.AExpr.Rexpr.Node.(*nodes.Node_ColumnRef)
 		if ok {
-			return r
+			return r.ColumnRef
 		}
 	}
 
@@ -148,23 +148,22 @@ const paramToken = "@"
 //
 // Example Usage:
 //
-//    sql := "select * from foo where id = @myParam"
-//    root, _ := pgtree.Parse(sql)
-//    params := pgtree.ExtractParams(root)
-//    fmt.Println(params)
+//	sql := "select * from foo where id = @myParam"
+//	root, _ := pgtree.Parse(sql)
+//	params := pgtree.ExtractParams(root)
+//	fmt.Println(params)
 //
 // Output
 //
-//    [`myparam = id`]
-//
-func ExtractParams(node nodes.Node) Params {
+//	[`myparam = id`]
+func ExtractParams(node *nodes.Node) Params {
 	var result Params
 
-	Walk(node, nil, func(node nodes.Node, stack []nodes.Node, v Visitor) Visitor {
-		switch n := node.(type) {
-		case *nodes.AExpr:
-			if ExtractString(n.Name, "") == paramToken {
-				name, t := extractParamNameAndType(n)
+	Walk(node, nil, func(node *nodes.Node, stack []*nodes.Node, v Visitor) Visitor {
+		switch n := node.Node.(type) {
+		case *nodes.Node_AExpr:
+			if ExtractString(n.AExpr.Name, "") == paramToken {
+				name, t := extractParamNameAndType(n.AExpr)
 				if name != "" {
 					p := QueryParam{
 						Name:      name,

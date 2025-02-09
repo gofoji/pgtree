@@ -67,7 +67,7 @@ func startsWithSpace(s string) bool {
 	return len(s) > 0 && asciiSpace[s[0]] == 1
 }
 
-func (c sqlBuilder) join(sep string) string {
+func (c *sqlBuilder) join(sep string) string {
 	lenSS := len(c.ss)
 	switch lenSS {
 	case 0:
@@ -100,7 +100,7 @@ func (c sqlBuilder) join(sep string) string {
 	return b.String()
 }
 
-func (c sqlBuilder) lines() []string {
+func (c *sqlBuilder) lines() []string {
 	return c.ss
 }
 

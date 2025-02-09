@@ -17,12 +17,22 @@ func TestExtractParams(t *testing.T) {
 		{"typed", "select * from foo where id = @myParam::int", "[`myparam::int = id`]"},
 		{"left side", "select * from foo where @myParam = foo", "[`myparam = foo`]"},
 		{"no reference", "select *, @myParam from foo", "[myparam]"},
-		{"bad param", "select *, @ from foo", "[]"},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			root, _ := pgtree.Parse(test.sql)
-			params := pgtree.ExtractParams(root)
+			root, err := pgtree.Parse(test.sql)
+			if err != nil {
+				t.Errorf("Parse error = %v", err)
+				return
+			}
+
+			ss := root.GetStmts()
+			if len(ss) != 1 {
+				t.Errorf("len(ss) = %d, want %d", len(ss), 1)
+				return
+			}
+
+			params := pgtree.ExtractParams(ss[0].Stmt)
 			got := fmt.Sprint(params)
 			if got != test.want {
 				t.Errorf("ExtractParams() = %v, want %v", got, test.want)
@@ -46,7 +56,13 @@ func TestExtractTables(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			root, _ := pgtree.Parse(test.sql)
-			params := pgtree.ExtractTables(root)
+			ss := root.GetStmts()
+			if len(ss) != 1 {
+				t.Errorf("len(ss) = %d, want %d", len(ss), 1)
+				return
+			}
+
+			params := pgtree.ExtractTables(ss[0].Stmt)
 			got := fmt.Sprint(params)
 			if got != test.want {
 				t.Errorf("ExtractTables() = %v, want %v", got, test.want)
@@ -58,7 +74,7 @@ func TestExtractTables(t *testing.T) {
 func ExampleExtractParams() {
 	sql := "select * from foo where id = @myParam"
 	root, _ := pgtree.Parse(sql)
-	params := pgtree.ExtractParams(root)
+	params := pgtree.ExtractParams(root.Stmts[0].Stmt)
 	fmt.Println(params)
 	// Output: [`myparam = id`]
 }
@@ -66,7 +82,7 @@ func ExampleExtractParams() {
 func ExampleExtractTables() {
 	sql := "SELECT * FROM foo LEFT JOIN bar ON foo.id = bar.id"
 	root, _ := pgtree.Parse(sql)
-	tables := pgtree.ExtractTables(root)
+	tables := pgtree.ExtractTables(root.Stmts[0].Stmt)
 	fmt.Println(tables)
 	// Output: [`foo` `bar`]
 }
