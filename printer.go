@@ -3,7 +3,7 @@ package pgtree
 import (
 	"strings"
 
-	"github.com/gofoji/pgtree/nodes"
+	nodes "github.com/pganalyze/pg_query_go/v6"
 )
 
 // FormatOptions controls the formatting of the SQL output.
@@ -14,6 +14,7 @@ type FormatOptions struct {
 	UpperType              bool   // If true it forces all types to uppercase.  Default is to force all to lower.
 	SimpleLen              int    // Statements shorter than SimpleLen will disable pretty printing (default 50).
 	Padding                string // Used for indentation when Pretty printing.  Default is four spaces.
+	Unterminated           bool   // Do not add statement terminator `;`
 }
 
 const defaultSimpleLen = 50
@@ -26,6 +27,12 @@ var DefaultFormat = FormatOptions{
 	SimpleLen:              defaultSimpleLen,
 }
 
+// DefaultFragmentFormat used by PrettyPrint to print fragments of statements.
+var DefaultFragmentFormat = FormatOptions{
+	Pretty:       false,
+	Unterminated: true,
+}
+
 type printer struct {
 	FormatOptions
 	debug       bool
@@ -35,36 +42,40 @@ type printer struct {
 }
 
 // PrintWithOptions renders the Node with the supplied format options.
-func PrintWithOptions(root nodes.Node, opts FormatOptions) (string, error) {
+func PrintWithOptions(root *nodes.Node, opts FormatOptions) (string, error) {
 	p := printer{FormatOptions: opts}
 	result := p.printNode(root)
 
 	if len(p.errs) > 0 {
-		return "", printErrors{p.errs}
+		return "", printError{p.errs}
 	}
 
-	return result, nil
+	if p.Unterminated {
+		return result, nil
+	}
+
+	return p.closeStatement(result), nil
 }
 
 // Print renders the Node with minimal spacing.
-func Print(root nodes.Node) (string, error) {
+func Print(root *nodes.Node) (string, error) {
 	return PrintWithOptions(root, FormatOptions{})
 }
 
 // PrettyPrint renders the Node with indented formatting.
-func PrettyPrint(root nodes.Node) (string, error) {
+func PrettyPrint(root *nodes.Node) (string, error) {
 	return PrintWithOptions(root, DefaultFormat)
 }
 
 // Debug renders the Node with indented formatting and render graph.
 // the second param is an indented trace of the call graph with results.  Very useful for
 // defining new formatting rules or adding support for new Nodes.
-func Debug(root nodes.Node) (string, []string, error) {
+func Debug(root *nodes.Node) (string, []string, error) {
 	p := printer{FormatOptions: DefaultFormat, debug: true}
 	result := p.printNode(root)
 
 	if len(p.errs) > 0 {
-		return result, p.debugOutput, printErrors{p.errs}
+		return result, p.debugOutput, printError{p.errs}
 	}
 
 	return result, p.debugOutput, nil
@@ -91,7 +102,7 @@ func (p *printer) padLines(s string) string {
 	return strings.Join(ss, "\n")
 }
 
-func (p *printer) printNodes(list nodes.Nodes, sep string) string {
+func (p *printer) printNodes(list []*nodes.Node, sep string) string {
 	b := p.builder()
 
 	for i := range list {
@@ -101,7 +112,7 @@ func (p *printer) printNodes(list nodes.Nodes, sep string) string {
 	return b.join(sep)
 }
 
-func (p *printer) printArr(list nodes.Nodes) []string {
+func (p *printer) printArr(list []*nodes.Node) []string {
 	b := p.builder()
 
 	for i := range list {

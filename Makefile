@@ -10,3 +10,5 @@ test:
 cover:
 	go test	-coverprofile cp.out ./...
 	go tool cover -html=cp.out
+
+.PHONY: test

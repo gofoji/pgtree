@@ -20,11 +20,11 @@ const (
 	ErrPrinter = pgtreeError("printer")
 )
 
-type printErrors struct {
+type printError struct {
 	errs []error
 }
 
-func (p printErrors) Error() string {
+func (p printError) Error() string {
 	result := make([]string, len(p.errs))
 	for i, e := range p.errs {
 		result[i] = e.Error()

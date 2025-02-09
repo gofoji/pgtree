@@ -9,7 +9,7 @@ import (
 	"strings"
 	"unsafe"
 
-	"github.com/gofoji/pgtree/nodes"
+	nodes "github.com/pganalyze/pg_query_go/v6"
 )
 
 // Thanks to zerolog for this utility
@@ -17,7 +17,7 @@ func isNilValue(i interface{}) bool {
 	return (*[2]uintptr)(unsafe.Pointer(&i))[1] == 0
 }
 
-func (p *printer) printNode(node nodes.Node) (result string) {
+func (p *printer) printNode(node *nodes.Node) (result string) {
 	if node == nil || isNilValue(node) {
 		return
 	}
@@ -36,18 +36,22 @@ func (p *printer) printNode(node nodes.Node) (result string) {
 		p.level -= 1
 	}()
 
-	switch n := node.(type) {
+	switch n := node.Node.(type) {
 	{{- range .Messages }}
-		{{- if not (eq .MessageName "Node") }}
-			case *nodes.{{ pascal .MessageName }}:
-			return p.print{{ pascal .MessageName }}(n)
+        {{ $message :=  pascal .MessageName }}
+        {{ if eq $message "String" -}}
+            {{ $message = "String_" -}}
+        {{ end -}}
+        {{- if not (in $message "Node" "ParseResult" "ScanResult" "ScanToken") }}
+			case *nodes.Node_{{ $message }}:
+			return p.print{{ pascal .MessageName }}(n.{{$message}})
 		{{- end }}
 	{{- end }}
 
-	case *nodes.Root:
-		return p.printNode(n.Node)
-	case nodes.Nodes:
-		return p.printNodes(n, " ")
+{{/*	case *nodes.Root:*/}}
+{{/*		return p.printNode(n.Node)*/}}
+{{/*	case nodes.Nodes:*/}}
+{{/*		return p.printNodes(n, " ")*/}}
 	default:
 		p.addError(errors.New("unhandled node type: " + reflect.TypeOf(node).String()))
 	}
@@ -55,10 +59,43 @@ func (p *printer) printNode(node nodes.Node) (result string) {
 	return result
 }
 {{- range .Messages }}
-	{{- if not (eq .MessageName "Node") }}
+    {{ $message :=  pascal .MessageName }}
+    {{ if eq $message "AStar" -}}
+        {{ $message = "A_Star" -}}
+    {{ else if eq $message "AConst" -}}
+        {{ $message = "A_Const" -}}
+    {{ else if eq $message "AArrayExpr" -}}
+        {{ $message = "A_ArrayExpr" -}}
+    {{ else if eq $message "AIndices" -}}
+        {{ $message = "A_Indices" -}}
+    {{ else if eq $message "AIndirection" -}}
+        {{ $message = "A_Indirection" -}}
+    {{ else if eq $message "AExpr" -}}
+        {{ $message = "A_Expr" -}}
+    {{ else if eq $message "SqlvalueFunction" -}}
+        {{ $message = "SQLValueFunction" -}}
+	{{ else if eq $message "CoerceViaIo" -}}
+        {{ $message = "CoerceViaIO" -}}
+	{{ else if eq $message "RtepermissionInfo" -}}
+        {{ $message = "RTEPermissionInfo" -}}
+	{{ else if eq $message "CtesearchClause" -}}
+        {{ $message = "CTESearchClause" -}}
+	{{ else if eq $message "CtecycleClause" -}}
+        {{ $message = "CTECycleClause" -}}
+	{{ else if eq $message "PlassignStmt" -}}
+        {{ $message = "PLAssignStmt" -}}
+	{{ else if eq $message "CreatePlangStmt" -}}
+        {{ $message = "CreatePLangStmt" -}}
+	{{ else if eq $message "AlterTsdictionaryStmt" -}}
+        {{ $message = "AlterTSDictionaryStmt" -}}
+	{{ else if eq $message "AlterTsconfigurationStmt" -}}
+        {{ $message = "AlterTSConfigurationStmt" -}}
+    {{ end -}}
 
-func (p *printer) print{{ pascal .MessageName }}(node *nodes.{{ pascal .MessageName }}) string {
-	p.addError(errors.New("{{ .MessageName }} not implemented"))
+    {{- if not (in $message "Node" "ParseResult" "ScanResult" "ScanToken") }}
+
+func (p *printer) print{{ pascal .MessageName }}(node *nodes.{{ $message }}) string {
+	p.addError(errors.New("{{ $message }} not implemented"))
 	return "NOT IMPLEMENTED"
 }
 	{{- end }}

@@ -20,4 +20,4 @@ WHERE
     OR y ILIKE 'asdf%'
     OR y NOT ILIKE 'aaaa'
     OR y SIMILAR TO '1222'
-    OR z = ?;
+    OR z = $1;
